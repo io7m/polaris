@@ -12,11 +12,11 @@
     <version>0.0.1</version>
   </parent>
 
-  <artifactId>com.io7m.polaris.tests</artifactId>
-  <packaging>jar</packaging>
+  <artifactId>com.io7m.polaris.parser.api</artifactId>
+  <packaging>bundle</packaging>
 
-  <name>com.io7m.polaris.tests</name>
-  <description>Embedded, statically-typed, impure functional language (Test suite)</description>
+  <name>com.io7m.polaris.parser.api</name>
+  <description>Embedded, statically-typed, impure functional language (Parser API)</description>
   <url>http://io7m.github.io/polaris/</url>
 
   <dependencies>
@@ -30,33 +30,32 @@
       <artifactId>com.io7m.polaris.model</artifactId>
       <version>${project.version}</version>
     </dependency>
-    <dependency>
-      <groupId>${project.groupId}</groupId>
-      <artifactId>com.io7m.polaris.parser.api</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>${project.groupId}</groupId>
-      <artifactId>com.io7m.polaris.parser</artifactId>
-      <version>${project.version}</version>
-    </dependency>
 
+    <dependency>
+      <groupId>com.io7m.junreachable</groupId>
+      <artifactId>com.io7m.junreachable.core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.io7m.jaffirm</groupId>
+      <artifactId>com.io7m.jaffirm.core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.io7m.jlexing</groupId>
+      <artifactId>com.io7m.jlexing.core</artifactId>
+    </dependency>
     <dependency>
       <groupId>com.io7m.jsx</groupId>
-      <artifactId>com.io7m.jsx.parser</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.logging.log4j</groupId>
-      <artifactId>log4j-core</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.logging.log4j</groupId>
-      <artifactId>log4j-slf4j-impl</artifactId>
+      <artifactId>com.io7m.jsx.parser.api</artifactId>
     </dependency>
 
     <dependency>
-      <groupId>org.junit.jupiter</groupId>
-      <artifactId>junit-jupiter-engine</artifactId>
+      <groupId>io.vavr</groupId>
+      <artifactId>vavr</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.immutables</groupId>
+      <artifactId>value</artifactId>
+      <scope>provided</scope>
     </dependency>
   </dependencies>
 
@@ -68,10 +67,19 @@
         <artifactId>maven-checkstyle-plugin</artifactId>
       </plugin>
 
-      <!-- Determine test coverage -->
+      <!-- Process annotations -->
       <plugin>
-        <groupId>org.jacoco</groupId>
-        <artifactId>jacoco-maven-plugin</artifactId>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <annotationProcessorPaths>
+            <dependency>
+              <groupId>org.immutables</groupId>
+              <artifactId>value</artifactId>
+              <version>${io7m.org.immutables.version}</version>
+            </dependency>
+          </annotationProcessorPaths>
+        </configuration>
       </plugin>
     </plugins>
   </build>
