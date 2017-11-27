@@ -282,8 +282,7 @@ public final class PParsing
     if (e.size() >= 2) {
       final Vector<SExpressionType> e_subs = Vector.ofAll(e).tail();
       final SExpressionType e_body = e_subs.last();
-      final Vector<SExpressionType> e_locals =
-        e_subs.tail().take(Math.max(0, e_subs.size() - 1));
+      final Vector<SExpressionType> e_locals = e_subs.dropRight(1);
 
       final Validation<Seq<PParseError>, Vector<PExpressionOrDeclarationType<PParsed>>> r_locals =
         PValidation.sequence(e_locals, PParsing::parseExpressionOrDeclaration);

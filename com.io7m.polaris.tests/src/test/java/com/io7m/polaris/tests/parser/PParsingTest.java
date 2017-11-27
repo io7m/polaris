@@ -92,6 +92,29 @@ public final class PParsingTest
   }
 
   @Test
+  public void testLocal1()
+    throws Exception
+  {
+    final SExpressionType se = this.parse("(local [y] [z] x)");
+    final Validation<Seq<PParseError>, PExpressionOrDeclarationType<PParsed>> r =
+      PParsing.parseExpressionOrDeclaration(se);
+
+    dump(r);
+
+    Assertions.assertTrue(r.isValid());
+
+    final PExprLocal<PParsed> e = (PExprLocal<PParsed>) r.get();
+    final PExprReference<PParsed> x = (PExprReference<PParsed>) e.body();
+    Assertions.assertEquals("x", x.name().value());
+    Assertions.assertEquals(2, e.locals().size());
+
+    final PExprApplication<PParsed> y = (PExprApplication<PParsed>) e.locals().get(0);
+    Assertions.assertEquals("y", ((PExprReference<PParsed>) y.function()).name().value());
+    final PExprApplication<PParsed> z = (PExprApplication<PParsed>) e.locals().get(1);
+    Assertions.assertEquals("z", ((PExprReference<PParsed>) z.function()).name().value());
+  }
+
+  @Test
   public void testLocalInvalid_0()
     throws Exception
   {
