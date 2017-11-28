@@ -16,10 +16,9 @@
 
 package com.io7m.polaris.model;
 
-import com.io7m.jlexing.core.LexicalPosition;
+import com.io7m.jlexing.core.LexicalType;
 
 import java.net.URI;
-import java.util.Optional;
 
 /**
  * The type of model elements
@@ -27,14 +26,8 @@ import java.util.Optional;
  * @param <T> The type of associated data
  */
 
-public interface PModelElementType<T>
+public interface PModelElementType<T> extends LexicalType<URI>
 {
-  /**
-   * @return The lexical information for the element
-   */
-
-  Optional<LexicalPosition<URI>> lexical();
-
   /**
    * @return The associated data
    */

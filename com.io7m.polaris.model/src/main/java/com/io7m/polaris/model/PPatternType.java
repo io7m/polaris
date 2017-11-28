@@ -40,7 +40,7 @@ public interface PPatternType<T> extends PModelElementType<T>
   Kind kind();
 
   @Override
-  Optional<LexicalPosition<URI>> lexical();
+  LexicalPosition<URI> lexical();
 
   @Override
   T data();
@@ -101,7 +101,7 @@ public interface PPatternType<T> extends PModelElementType<T>
     @Override
     @Value.Parameter
     @Value.Auxiliary
-    Optional<LexicalPosition<URI>> lexical();
+    LexicalPosition<URI> lexical();
 
     @Override
     @Value.Parameter
@@ -142,7 +142,7 @@ public interface PPatternType<T> extends PModelElementType<T>
     @Override
     @Value.Parameter
     @Value.Auxiliary
-    Optional<LexicalPosition<URI>> lexical();
+    LexicalPosition<URI> lexical();
 
     @Override
     @Value.Parameter
@@ -176,7 +176,7 @@ public interface PPatternType<T> extends PModelElementType<T>
     @Override
     @Value.Parameter
     @Value.Auxiliary
-    Optional<LexicalPosition<URI>> lexical();
+    LexicalPosition<URI> lexical();
 
     @Override
     @Value.Parameter
@@ -210,7 +210,7 @@ public interface PPatternType<T> extends PModelElementType<T>
     @Override
     @Value.Parameter
     @Value.Auxiliary
-    Optional<LexicalPosition<URI>> lexical();
+    LexicalPosition<URI> lexical();
 
     @Override
     @Value.Parameter
@@ -237,7 +237,7 @@ public interface PPatternType<T> extends PModelElementType<T>
     @Override
     @Value.Parameter
     @Value.Auxiliary
-    Optional<LexicalPosition<URI>> lexical();
+    LexicalPosition<URI> lexical();
 
     @Override
     @Value.Parameter

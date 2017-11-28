@@ -37,7 +37,7 @@ public interface PTermNameType<T> extends PModelElementType<T>
   @Override
   @Value.Parameter
   @Value.Auxiliary
-  Optional<LexicalPosition<URI>> lexical();
+  LexicalPosition<URI> lexical();
 
   @Override
   @Value.Parameter

@@ -17,6 +17,7 @@
 package com.io7m.polaris.parser.api;
 
 import com.io7m.polaris.model.PExpressionOrDeclarationType;
+import com.io7m.polaris.model.PPatternType;
 import io.vavr.collection.Seq;
 import io.vavr.control.Validation;
 
@@ -40,5 +41,17 @@ public interface PParserType extends Closeable
 
   Validation<Seq<PParseError>, Optional<PExpressionOrDeclarationType<PParsed>>>
   parseExpressionOrDeclaration()
+    throws IOException;
+
+  /**
+   * Parse a pattern or EOF.
+   *
+   * @return A parsed expression, or a list of parse errors
+   *
+   * @throws IOException On I/O errors
+   */
+
+  Validation<Seq<PParseError>, Optional<PPatternType<PParsed>>>
+  parsePattern()
     throws IOException;
 }

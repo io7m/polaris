@@ -19,6 +19,7 @@ package com.io7m.polaris.parser.implementation;
 import com.io7m.jsx.SExpressionSymbolType;
 import com.io7m.junreachable.UnreachableCodeException;
 import com.io7m.polaris.parser.api.PParseError;
+import com.io7m.polaris.parser.api.PParseErrorMessagesType;
 import io.vavr.Tuple;
 import io.vavr.Tuple2;
 import io.vavr.collection.Seq;
@@ -27,6 +28,9 @@ import io.vavr.control.Validation;
 import java.math.BigInteger;
 import java.util.Objects;
 import java.util.regex.Pattern;
+
+import static com.io7m.polaris.parser.api.PParseErrorCode.INVALID_INTEGER;
+import static com.io7m.polaris.parser.implementation.PValidation.invalid;
 
 /**
  * Functions to parse integers.
@@ -46,12 +50,14 @@ public final class PParsingIntegers
   /**
    * Parse the given expression as an integer.
    *
+   * @param m A message provider
    * @param e The expression
    *
    * @return A value and radix, or a sequence of parse errors
    */
 
   public static Validation<Seq<PParseError>, Tuple2<BigInteger, Integer>> parseInteger(
+    final PParseErrorMessagesType m,
     final SExpressionSymbolType e)
   {
     Objects.requireNonNull(e, "Expression");
@@ -62,16 +68,18 @@ public final class PParsingIntegers
       final int radix;
       if (no_underscores.startsWith("0x")) {
         radix = 16;
-        final String text = PREFIX_HEX.matcher(no_underscores).replaceFirst("");
+        final String text =
+          PREFIX_HEX.matcher(no_underscores).replaceFirst("");
         value = new BigInteger(text, radix);
       } else if (no_underscores.startsWith("0o")) {
         radix = 8;
-        final String text = PREFIX_OCTAL.matcher(no_underscores).replaceFirst("");
+        final String text =
+          PREFIX_OCTAL.matcher(no_underscores).replaceFirst("");
         value = new BigInteger(text, radix);
       } else if (no_underscores.startsWith("0b")) {
         radix = 2;
-        final String text = PREFIX_BINARY.matcher(no_underscores).replaceFirst(
-          "");
+        final String text =
+          PREFIX_BINARY.matcher(no_underscores).replaceFirst("");
         value = new BigInteger(text, radix);
       } else {
         radix = 10;
@@ -80,8 +88,7 @@ public final class PParsingIntegers
 
       return Validation.valid(Tuple.of(value, Integer.valueOf(radix)));
     } catch (final NumberFormatException ex) {
-      return PParseErrors.errorInvalid(PParseErrors.parseError(
-        e, () -> PParseErrors.errorUnparseableInteger(e.text())));
+      return invalid(m.errorExpressionException(INVALID_INTEGER, e, ex));
     }
   }
 

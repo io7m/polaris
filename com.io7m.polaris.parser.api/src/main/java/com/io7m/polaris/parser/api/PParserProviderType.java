@@ -41,6 +41,21 @@ public interface PParserProviderType
     InputStream stream);
 
   /**
+   * Create a parser using the given error message dictionary.
+   *
+   * @param errors The error message dictionary
+   * @param uri    The URI, for diagnostic messages
+   * @param stream The input stream
+   *
+   * @return A parser
+   */
+
+  PParserType createWithErrors(
+    PParseErrorMessagesType errors,
+    URI uri,
+    InputStream stream);
+
+  /**
    * Create a configured s-expression parser.
    *
    * @param uri    The URI, for diagnostic messages

@@ -41,7 +41,7 @@ public interface PExpressionType<T> extends PExpressionOrDeclarationType<T>
   PTermExpressionKind termExpressionKind();
 
   @Override
-  Optional<LexicalPosition<URI>> lexical();
+  LexicalPosition<URI> lexical();
 
   @Override
   T data();
@@ -95,12 +95,6 @@ public interface PExpressionType<T> extends PExpressionOrDeclarationType<T>
     EXPR_REFERENCE,
 
     /**
-     * @see PExprRecordFieldAccessType
-     */
-
-    EXPR_RECORD_FIELD_ACCESS,
-
-    /**
      * @see PExprLocalType
      */
 
@@ -132,7 +126,7 @@ public interface PExpressionType<T> extends PExpressionOrDeclarationType<T>
     @Override
     @Value.Parameter
     @Value.Auxiliary
-    Optional<LexicalPosition<URI>> lexical();
+    LexicalPosition<URI> lexical();
 
     @Override
     @Value.Parameter
@@ -173,7 +167,7 @@ public interface PExpressionType<T> extends PExpressionOrDeclarationType<T>
     @Override
     @Value.Parameter
     @Value.Auxiliary
-    Optional<LexicalPosition<URI>> lexical();
+    LexicalPosition<URI> lexical();
 
     @Override
     @Value.Parameter
@@ -207,7 +201,7 @@ public interface PExpressionType<T> extends PExpressionOrDeclarationType<T>
     @Override
     @Value.Parameter
     @Value.Auxiliary
-    Optional<LexicalPosition<URI>> lexical();
+    LexicalPosition<URI> lexical();
 
     @Override
     @Value.Parameter
@@ -241,7 +235,7 @@ public interface PExpressionType<T> extends PExpressionOrDeclarationType<T>
     @Override
     @Value.Parameter
     @Value.Auxiliary
-    Optional<LexicalPosition<URI>> lexical();
+    LexicalPosition<URI> lexical();
 
     @Override
     @Value.Parameter
@@ -282,7 +276,7 @@ public interface PExpressionType<T> extends PExpressionOrDeclarationType<T>
     @Override
     @Value.Parameter
     @Value.Auxiliary
-    Optional<LexicalPosition<URI>> lexical();
+    LexicalPosition<URI> lexical();
 
     @Override
     @Value.Parameter
@@ -321,7 +315,7 @@ public interface PExpressionType<T> extends PExpressionOrDeclarationType<T>
     }
 
     @Override
-    default Optional<LexicalPosition<URI>> lexical()
+    default LexicalPosition<URI> lexical()
     {
       return this.name().lexical();
     }
@@ -372,7 +366,7 @@ public interface PExpressionType<T> extends PExpressionOrDeclarationType<T>
     @Override
     @Value.Parameter
     @Value.Auxiliary
-    Optional<LexicalPosition<URI>> lexical();
+    LexicalPosition<URI> lexical();
 
     @Override
     @Value.Parameter
@@ -413,7 +407,7 @@ public interface PExpressionType<T> extends PExpressionOrDeclarationType<T>
     @Override
     @Value.Parameter
     @Value.Auxiliary
-    Optional<LexicalPosition<URI>> lexical();
+    LexicalPosition<URI> lexical();
 
     @Override
     @Value.Parameter
@@ -448,7 +442,7 @@ public interface PExpressionType<T> extends PExpressionOrDeclarationType<T>
     @Override
     @Value.Parameter
     @Value.Auxiliary
-    Optional<LexicalPosition<URI>> lexical();
+    LexicalPosition<URI> lexical();
 
     @Override
     @Value.Parameter

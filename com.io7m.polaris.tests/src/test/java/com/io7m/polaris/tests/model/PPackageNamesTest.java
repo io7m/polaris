@@ -24,14 +24,17 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.net.URI;
-import java.nio.file.Path;
 import java.util.List;
 import java.util.Optional;
 
 import static java.lang.Boolean.TRUE;
 
+
 public final class PPackageNamesTest
 {
+  private static final LexicalPosition<URI> LEXICAL =
+    LexicalPosition.of(1, 0, Optional.empty());
+
   @Test
   public void testValid()
   {
@@ -69,92 +72,92 @@ public final class PPackageNamesTest
       () -> {
         Assertions.assertEquals(
           Vector.of("x"),
-          PPackageName.of(Optional.empty(), TRUE, "x").nameComponents());
+          PPackageName.of(LEXICAL, TRUE, "x").nameComponents());
       },
       () -> {
         Assertions.assertEquals(
           Vector.of("x", "y"),
-          PPackageName.of(Optional.empty(), TRUE, "x.y").nameComponents());
+          PPackageName.of(LEXICAL, TRUE, "x.y").nameComponents());
       },
       () -> {
         Assertions.assertEquals(
           Vector.of("x", "y", "z"),
-          PPackageName.of(Optional.empty(), TRUE, "x.y.z").nameComponents());
+          PPackageName.of(LEXICAL, TRUE, "x.y.z").nameComponents());
       });
   }
 
   @Test
   public void testLexical()
   {
-    final Optional<LexicalPosition<URI>> lex0 =
-      Optional.of(LexicalPosition.of(23, 34, Optional.empty()));
-    final Optional<LexicalPosition<URI>> lex1 =
-      Optional.of(LexicalPosition.of(24, 34, Optional.empty()));
+    final LexicalPosition<URI> lex0 =
+      LexicalPosition.of(23, 34, Optional.empty());
+    final LexicalPosition<URI> lex1 =
+      LexicalPosition.of(24, 34, Optional.empty());
 
     Assertions.assertEquals(
       lex0,
-      PPackageName.of(lex0, TRUE, "a").lexical());
+      PPackageName.of(lex0, LEXICAL, "a").lexical());
 
     Assertions.assertNotEquals(
-      PPackageName.of(lex1, TRUE, "a").withLexical(lex0),
-      PPackageName.of(lex0, TRUE, "a").lexical());
+      PPackageName.of(lex1, LEXICAL, "a").withLexical(lex0),
+      PPackageName.of(lex0, LEXICAL, "a").lexical());
 
     Assertions.assertNotEquals(
-      PPackageName.of(lex0, TRUE, "a").lexical(),
-      PPackageName.of(lex1, TRUE, "b").lexical());
+      PPackageName.of(lex0, LEXICAL, "a").lexical(),
+      PPackageName.of(lex1, LEXICAL, "b").lexical());
 
     Assertions.assertNotEquals(
-      PPackageName.of(lex0, TRUE, "a").withLexical(lex1),
-      PPackageName.of(lex0, TRUE, "a").lexical());
+      PPackageName.of(lex0, LEXICAL, "a").withLexical(lex1),
+      PPackageName.of(lex0, LEXICAL, "a").lexical());
   }
 
   @Test
   public void testEquals()
   {
     Assertions.assertEquals(
-      PPackageName.of(Optional.empty(), TRUE, "a"),
-      PPackageName.of(Optional.empty(), TRUE, "a"));
+      PPackageName.of(LEXICAL, TRUE, "a"),
+      PPackageName.of(LEXICAL, TRUE, "a"));
 
     Assertions.assertEquals(
-      PPackageName.of(Optional.empty(), TRUE, "a").value(),
-      PPackageName.of(Optional.empty(), TRUE, "a").value());
+      PPackageName.of(LEXICAL, TRUE, "a").value(),
+      PPackageName.of(LEXICAL, TRUE, "a").value());
 
     Assertions.assertEquals(
       PPackageName.copyOf(
-        PPackageName.of(Optional.empty(), TRUE, "a")),
+        PPackageName.of(LEXICAL, TRUE, "a")),
       PPackageName.copyOf(
-        PPackageName.of(Optional.empty(), TRUE, "a")));
+        PPackageName.of(LEXICAL, TRUE, "a")));
 
     Assertions.assertEquals(
-      PPackageName.of(Optional.empty(), TRUE, "a").withValue("c"),
-      PPackageName.of(Optional.empty(), TRUE, "c"));
+      PPackageName.of(LEXICAL, TRUE, "a").withValue("c"),
+      PPackageName.of(LEXICAL, TRUE, "c"));
 
     Assertions.assertNotEquals(
-      PPackageName.of(Optional.empty(), TRUE, "a"),
-      PPackageName.of(Optional.empty(), TRUE, "b"));
+      PPackageName.of(LEXICAL, TRUE, "a"),
+      PPackageName.of(LEXICAL, TRUE, "b"));
 
     Assertions.assertNotEquals(
-      PPackageName.of(Optional.empty(), TRUE, "a").value(),
-      PPackageName.of(Optional.empty(), TRUE, "b").value());
+      PPackageName.of(LEXICAL, TRUE, "a").value(),
+      PPackageName.of(LEXICAL, TRUE, "b").value());
   }
 
   @Test
   public void testToString()
   {
     Assertions.assertEquals(
-      PPackageName.of(Optional.empty(), TRUE, "a").toString(),
-      PPackageName.of(Optional.empty(), TRUE, "a").toString());
+      PPackageName.of(LEXICAL, TRUE, "a").toString(),
+      PPackageName.of(LEXICAL, TRUE, "a").toString());
 
     Assertions.assertNotEquals(
-      PPackageName.of(Optional.empty(), TRUE, "a").toString(),
-      PPackageName.of(Optional.empty(), TRUE, "b").toString());
+      PPackageName.of(LEXICAL, TRUE, "a").toString(),
+      PPackageName.of(LEXICAL, TRUE, "b").toString());
   }
 
   @Test
   public void testHashCode()
   {
     Assertions.assertEquals(
-      PPackageName.of(Optional.empty(), TRUE, "a").hashCode(),
-      PPackageName.of(Optional.empty(), TRUE, "a").hashCode());
+      PPackageName.of(LEXICAL, TRUE, "a").hashCode(),
+      PPackageName.of(LEXICAL, TRUE, "a").hashCode());
   }
 }

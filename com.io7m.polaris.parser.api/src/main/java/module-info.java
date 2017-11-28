@@ -23,6 +23,7 @@ module com.io7m.polaris.parser.api
   requires com.io7m.polaris.core;
   requires com.io7m.polaris.model;
   requires io.vavr;
+  requires com.io7m.jsx.core;
 
   exports com.io7m.polaris.parser.api;
 }

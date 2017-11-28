@@ -14,7 +14,7 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package com.io7m.polaris.parser;
+package com.io7m.polaris.parser.implementation;
 
 import com.io7m.jaffirm.core.Preconditions;
 import com.io7m.jsx.SExpressionListType;
@@ -38,28 +38,25 @@ import com.io7m.polaris.model.PMatchCase;
 import com.io7m.polaris.model.PPatternType;
 import com.io7m.polaris.model.PTermName;
 import com.io7m.polaris.parser.api.PParseError;
+import com.io7m.polaris.parser.api.PParseErrorMessagesType;
 import com.io7m.polaris.parser.api.PParsed;
-import com.io7m.polaris.parser.implementation.PParsingIntegers;
-import com.io7m.polaris.parser.implementation.PParsingNames;
-import com.io7m.polaris.parser.implementation.PParsingPatterns;
-import com.io7m.polaris.parser.implementation.PParsingReals;
-import com.io7m.polaris.parser.implementation.PValidation;
 import io.vavr.collection.Seq;
 import io.vavr.collection.Vector;
 import io.vavr.control.Validation;
 
 import java.util.Objects;
-import java.util.function.Function;
 
+import static com.io7m.polaris.parser.api.PParseErrorCode.EXPECTED_EXPRESSION_BUT_GOT_DECLARATION;
+import static com.io7m.polaris.parser.api.PParseErrorCode.INVALID_APPLICATION;
+import static com.io7m.polaris.parser.api.PParseErrorCode.INVALID_LAMBDA;
+import static com.io7m.polaris.parser.api.PParseErrorCode.INVALID_LOCAL;
+import static com.io7m.polaris.parser.api.PParseErrorCode.INVALID_MATCH;
+import static com.io7m.polaris.parser.api.PParseErrorCode.INVALID_MATCH_CASE;
 import static com.io7m.polaris.parser.api.PParsed.parsed;
-import static com.io7m.polaris.parser.implementation.PParseErrors.errorExpectedExpressionGotDeclaration;
-import static com.io7m.polaris.parser.implementation.PParseErrors.errorInvalidExpression;
-import static com.io7m.polaris.parser.implementation.PParseErrors.errorMessageEmptyExpression;
-import static com.io7m.polaris.parser.implementation.PParseErrors.errorMessageExpectedKeyword;
-import static com.io7m.polaris.parser.implementation.PParseErrors.errorMessageInvalidLambda;
-import static com.io7m.polaris.parser.implementation.PParseErrors.errorMessageInvalidLocal;
-import static com.io7m.polaris.parser.implementation.PParseErrors.errorMessageInvalidMatch;
-import static com.io7m.polaris.parser.implementation.PParseErrors.errorMessageInvalidMatchCase;
+import static com.io7m.polaris.parser.implementation.PValidation.cast;
+import static com.io7m.polaris.parser.implementation.PValidation.errorsFlatten;
+import static com.io7m.polaris.parser.implementation.PValidation.invalid;
+import static com.io7m.polaris.parser.implementation.PValidation.sequence;
 
 /**
  * Functions to transform s-expressions to AST elements.
@@ -75,29 +72,35 @@ public final class PParsing
   /**
    * Parse the given s-expression as a pattern.
    *
+   * @param m An error message provider
    * @param e The input expression
    *
    * @return A pattern
    */
 
   public static Validation<Seq<PParseError>, PPatternType<PParsed>> parsePattern(
+    final PParseErrorMessagesType m,
     final SExpressionType e)
   {
+    Objects.requireNonNull(m, "Messages");
     Objects.requireNonNull(e, "Expression");
-    return PParsingPatterns.parseAsPattern(e);
+    return PParsingPatterns.parseAsPattern(m, e);
   }
 
   /**
    * Parse the given s-expression as a term-level expression or a declaration.
    *
+   * @param m  An error message provider
    * @param ex The input expression
    *
    * @return A term-level expression or declaration
    */
 
   public static Validation<Seq<PParseError>, PExpressionOrDeclarationType<PParsed>> parseExpressionOrDeclaration(
+    final PParseErrorMessagesType m,
     final SExpressionType ex)
   {
+    Objects.requireNonNull(m, "Messages");
     Objects.requireNonNull(ex, "Expression");
 
     return ex.matchExpression(
@@ -109,7 +112,7 @@ public final class PParsing
         public Validation<Seq<PParseError>, PExpressionOrDeclarationType<PParsed>> list(
           final SExpressionListType e)
         {
-          return parseExpressionOrDeclarationList(e);
+          return parseExpressionOrDeclarationList(m, e);
         }
 
         @Override
@@ -123,7 +126,7 @@ public final class PParsing
         public Validation<Seq<PParseError>, PExpressionOrDeclarationType<PParsed>> symbol(
           final SExpressionSymbolType e)
         {
-          return parseExpressionOrDeclarationSymbol(e);
+          return parseExpressionOrDeclarationSymbol(m, e);
         }
       });
   }
@@ -131,24 +134,27 @@ public final class PParsing
   /**
    * Parse the given s-expression as an expression.
    *
+   * @param m An error message provider
    * @param e The input expression
    *
    * @return A term-level expression
    */
 
   public static Validation<Seq<PParseError>, PExpressionType<PParsed>> parseExpression(
+    final PParseErrorMessagesType m,
     final SExpressionType e)
   {
+    Objects.requireNonNull(m, "Messages");
     Objects.requireNonNull(e, "Expression");
 
     final Validation<Seq<PParseError>, PExpressionOrDeclarationType<PParsed>> result =
-      parseExpressionOrDeclaration(e);
+      parseExpressionOrDeclaration(m, e);
 
     return result.flatMap(ex -> {
       switch (ex.expressionOrDeclarationKind()) {
         case DECLARATION: {
-          return errorInvalidExpression(
-            e, () -> errorExpectedExpressionGotDeclaration(e));
+          return invalid(m.errorExpression(
+            EXPECTED_EXPRESSION_BUT_GOT_DECLARATION, e));
         }
         case EXPRESSION: {
           return Validation.valid((PExpressionType<PParsed>) ex);
@@ -160,17 +166,18 @@ public final class PParsing
   }
 
   private static Validation<Seq<PParseError>, PExpressionType<PParsed>> onSymbol(
+    final PParseErrorMessagesType m,
     final SExpressionSymbolType e)
   {
     final String text = e.text();
 
     if (PParsingIntegers.appearsToBeNumeric(text)) {
       if (PParsingReals.appearsToBeReal(text)) {
-        return PParsingReals.parseReal(e)
+        return PParsingReals.parseReal(m, e)
           .map(value -> PExprConstantReal.of(e.lexical(), parsed(), value));
       }
 
-      return PParsingIntegers.parseInteger(e)
+      return PParsingIntegers.parseInteger(m, e)
         .map(pair -> PExprConstantInteger.of(
           e.lexical(),
           parsed(),
@@ -178,18 +185,18 @@ public final class PParsing
           pair._1));
     }
 
-    return PParsingNames.parseTermPath(e)
+    return PParsingNames.parseTermReference(m, e)
       .map(PParsing::transformPathToReference);
   }
 
   private static PExpressionType<PParsed> transformPathToReference(
-    final PParsingNames.PTermReferencePath path)
+    final PParsingNames.PTermReference path)
   {
     return PExprReference.of(
       parsed(),
       path.unit(),
       path.base(),
-      path.path().map(Function.identity()));
+      PVectors.vectorCast(path.path()));
   }
 
   private static Validation<Seq<PParseError>, PExpressionType<PParsed>> onQuotedString(
@@ -201,20 +208,22 @@ public final class PParsing
 
   private static Validation<Seq<PParseError>, PExpressionOrDeclarationType<PParsed>>
   parseExpressionOrDeclarationSymbol(
+    final PParseErrorMessagesType m,
     final SExpressionSymbolType e)
   {
-    return onSymbol(e).map(Function.identity());
+    return cast(onSymbol(m, e));
   }
 
   private static Validation<Seq<PParseError>, PExpressionOrDeclarationType<PParsed>>
   parseExpressionOrDeclarationQuotedString(
     final SExpressionQuotedStringType e)
   {
-    return onQuotedString(e).map(Function.identity());
+    return cast(onQuotedString(e));
   }
 
   private static Validation<Seq<PParseError>, PExpressionOrDeclarationType<PParsed>>
   parseExpressionOrDeclarationList(
+    final PParseErrorMessagesType m,
     final SExpressionListType e)
   {
     /*
@@ -222,7 +231,7 @@ public final class PParsing
      */
 
     if (e.size() == 0) {
-      return errorInvalidExpression(e, () -> errorMessageEmptyExpression(e));
+      return invalid(m.errorExpression(INVALID_APPLICATION, e));
     }
 
     /*
@@ -232,18 +241,35 @@ public final class PParsing
     if (e.get(0) instanceof SExpressionSymbolType) {
       final SExpressionSymbolType sym = (SExpressionSymbolType) e.get(0);
       switch (sym.text()) {
+
         case "lambda": {
-          return parseExpressionLambda(e).map(Function.identity());
+          return cast(parseExpressionLambda(m, e));
         }
+
         case "λ": {
-          return parseExpressionLambda(e).map(Function.identity());
+          return cast(parseExpressionLambda(m, e));
         }
+
         case "match": {
-          return parseExpressionMatch(e).map(Function.identity());
+          return cast(parseExpressionMatch(m, e));
         }
+
         case "local": {
-          return parseExpressionLocal(e).map(Function.identity());
+          return cast(parseExpressionLocal(m, e));
         }
+
+        case "value": {
+          return cast(PParsingValues.parseValue(m, e));
+        }
+
+        case "function": {
+          return cast(PParsingFunctions.parseFunction(m, e));
+        }
+
+        case "record": {
+          return cast(PParsingRecords.parseRecord(m, e));
+        }
+
         default: {
           break;
         }
@@ -255,16 +281,14 @@ public final class PParsing
       e.size() > 0,
       c -> "Expression size must be > 0");
 
-    return PValidation.sequence(e, PParsing::parseExpression)
-      .flatMap(exprs -> Validation.valid(PExprApplication.of(
-        e.lexical(),
-        parsed(),
-        exprs.head(),
-        exprs.tail())));
+    return sequence(e, se -> parseExpression(m, se))
+      .flatMap(es -> Validation.valid(
+        PExprApplication.of(e.lexical(), parsed(), es.head(), es.tail())));
   }
 
   private static Validation<Seq<PParseError>, PExpressionType<PParsed>>
   parseExpressionLocal(
+    final PParseErrorMessagesType m,
     final SExpressionListType e)
   {
     Preconditions.checkPreconditionI(
@@ -285,9 +309,9 @@ public final class PParsing
       final Vector<SExpressionType> e_locals = e_subs.dropRight(1);
 
       final Validation<Seq<PParseError>, Vector<PExpressionOrDeclarationType<PParsed>>> r_locals =
-        PValidation.sequence(e_locals, PParsing::parseExpressionOrDeclaration);
+        sequence(e_locals, ex -> parseExpressionOrDeclaration(m, ex));
       final Validation<Seq<PParseError>, PExpressionType<PParsed>> r_body =
-        parseExpression(e_body);
+        parseExpression(m, e_body);
 
       final Validation<Seq<Seq<PParseError>>, PExpressionType<PParsed>> r_result =
         Validation.combine(r_locals, r_body)
@@ -297,10 +321,10 @@ public final class PParsing
             locals,
             body));
 
-      return PValidation.errorsFlatten(r_result);
+      return errorsFlatten(r_result);
     }
 
-    return errorInvalidExpression(e, () -> errorMessageInvalidLocal(e));
+    return invalid(m.errorExpression(INVALID_LOCAL, e));
   }
 
   /*
@@ -310,6 +334,7 @@ public final class PParsing
 
   private static Validation<Seq<PParseError>, PExpressionType<PParsed>>
   parseExpressionMatch(
+    final PParseErrorMessagesType m,
     final SExpressionListType e)
   {
     Preconditions.checkPreconditionI(
@@ -329,64 +354,50 @@ public final class PParsing
       final Vector<SExpressionType> e_rest = Vector.ofAll(e).tail().tail();
 
       final Validation<Seq<PParseError>, PExpressionType<PParsed>> r_target =
-        parseExpression(e_target);
+        parseExpression(m, e_target);
       final Validation<Seq<PParseError>, Vector<PMatchCaseType<PParsed>>> r_cases =
-        PValidation.sequence(e_rest, PParsing::parseMatchCase);
+        sequence(e_rest, ex -> parseMatchCase(m, ex));
       final Validation<Seq<Seq<PParseError>>, PExpressionType<PParsed>> r_match =
         Validation.combine(r_target, r_cases)
           .ap((expr, cases) ->
                 PExprMatch.of(e.lexical(), parsed(), expr, cases));
 
-      return PValidation.errorsFlatten(r_match);
+      return errorsFlatten(r_match);
     }
 
-    return errorInvalidExpression(e, () -> errorMessageInvalidMatch(e));
+    return invalid(m.errorExpression(INVALID_MATCH, e));
   }
 
   private static Validation<Seq<PParseError>, PMatchCaseType<PParsed>>
   parseMatchCase(
+    final PParseErrorMessagesType m,
     final SExpressionType e)
   {
     if (e instanceof SExpressionListType) {
       final SExpressionListType e_list = (SExpressionListType) e;
       if (e_list.size() == 3) {
         final Validation<Seq<PParseError>, String> r_keyword =
-          parseKeyword(e_list.get(0), "case");
+          PParsingNames.parseKeyword(m, e_list.get(0), "case");
         final Validation<Seq<PParseError>, PPatternType<PParsed>> r_pattern =
-          parsePattern(e_list.get(1));
+          parsePattern(m, e_list.get(1));
         final Validation<Seq<PParseError>, PExpressionType<PParsed>> r_express =
-          parseExpression(e_list.get(2));
+          parseExpression(m, e_list.get(2));
 
         final Validation<Seq<Seq<PParseError>>, PMatchCaseType<PParsed>> r_result =
           Validation.combine(r_keyword, r_pattern, r_express)
             .ap((keyword, pattern, expression) ->
                   PMatchCase.of(e.lexical(), parsed(), pattern, expression));
 
-        return PValidation.errorsFlatten(r_result);
+        return errorsFlatten(r_result);
       }
     }
 
-    return errorInvalidExpression(e, () -> errorMessageInvalidMatchCase(e));
-  }
-
-  private static Validation<Seq<PParseError>, String>
-  parseKeyword(
-    final SExpressionType e,
-    final String name)
-  {
-    if (e instanceof SExpressionSymbolType) {
-      final SExpressionSymbolType es = (SExpressionSymbolType) e;
-      if (Objects.equals(es.text(), name)) {
-        return Validation.valid(name);
-      }
-    }
-
-    return errorInvalidExpression(
-      e, () -> errorMessageExpectedKeyword(e, name));
+    return invalid(m.errorExpression(INVALID_MATCH_CASE, e));
   }
 
   private static Validation<Seq<PParseError>, PExpressionType<PParsed>>
   parseExpressionLambda(
+    final PParseErrorMessagesType m,
     final SExpressionListType e)
   {
     Preconditions.checkPreconditionI(
@@ -407,23 +418,23 @@ public final class PParsing
       if (e_param_list instanceof SExpressionListType) {
 
         final Validation<Seq<PParseError>, Vector<PTermName<PParsed>>> r_params =
-          PValidation.sequence(
+          sequence(
             (SExpressionListType) e_param_list,
-            PParsingNames::parseTermNameUnqualified);
+            ex -> PParsingNames.parseTermNameUnqualified(m, ex));
 
         final Validation<Seq<PParseError>, PExpressionType<PParsed>> r_body =
-          parseExpression(e_body);
+          parseExpression(m, e_body);
 
         final Validation<Seq<Seq<PParseError>>, PExpressionType<PParsed>> rr =
           Validation
             .combine(r_params, r_body)
             .ap((names, body) -> parseExpressionLambdaMake(e, names, body));
 
-        return PValidation.errorsFlatten(rr);
+        return errorsFlatten(rr);
       }
     }
 
-    return errorInvalidExpression(e, () -> errorMessageInvalidLambda(e));
+    return invalid(m.errorExpression(INVALID_LAMBDA, e));
   }
 
   private static PExprLambda<PParsed> parseExpressionLambdaMake(
@@ -432,7 +443,7 @@ public final class PParsing
     final PExpressionType<PParsed> body)
   {
     return PExprLambda.of(
-      e.lexical(), parsed(), names.map(Function.identity()), body);
+      e.lexical(), parsed(), PVectors.vectorCast(names), body);
   }
 
 }

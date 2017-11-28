@@ -19,11 +19,15 @@ package com.io7m.polaris.parser.implementation;
 import com.io7m.jsx.SExpressionSymbolType;
 import com.io7m.junreachable.UnreachableCodeException;
 import com.io7m.polaris.parser.api.PParseError;
+import com.io7m.polaris.parser.api.PParseErrorMessagesType;
 import io.vavr.collection.Seq;
 import io.vavr.control.Validation;
 
 import java.math.BigDecimal;
 import java.util.Objects;
+
+import static com.io7m.polaris.parser.api.PParseErrorCode.INVALID_REAL;
+import static com.io7m.polaris.parser.implementation.PValidation.invalid;
 
 /**
  * Functions to parse real values.
@@ -39,12 +43,14 @@ public final class PParsingReals
   /**
    * Parse the given expression as a real number.
    *
+   * @param m A message provider
    * @param e The expression
    *
    * @return A real number, or a sequence of parse errors
    */
 
   public static Validation<Seq<PParseError>, BigDecimal> parseReal(
+    final PParseErrorMessagesType m,
     final SExpressionSymbolType e)
   {
     Objects.requireNonNull(e, "Expression");
@@ -52,8 +58,7 @@ public final class PParsingReals
     try {
       return Validation.valid(new BigDecimal(e.text()));
     } catch (final NumberFormatException ex) {
-      return PParseErrors.errorInvalid(PParseErrors.parseError(
-        e, () -> PParseErrors.errorUnparseableReal(e.text())));
+      return invalid(m.errorExpressionException(INVALID_REAL, e, ex));
     }
   }
 

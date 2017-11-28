@@ -16,14 +16,18 @@
 
 package com.io7m.polaris.parser.implementation;
 
+import com.io7m.jlexing.core.LexicalPosition;
 import com.io7m.jsx.SExpressionSymbolType;
 import com.io7m.jsx.SExpressionType;
 import com.io7m.junreachable.UnreachableCodeException;
 import com.io7m.polaris.model.PTermName;
 import com.io7m.polaris.model.PTermNames;
+import com.io7m.polaris.model.PTypeName;
+import com.io7m.polaris.model.PTypeNames;
 import com.io7m.polaris.model.PUnitName;
 import com.io7m.polaris.model.PUnitNames;
 import com.io7m.polaris.parser.api.PParseError;
+import com.io7m.polaris.parser.api.PParseErrorMessagesType;
 import com.io7m.polaris.parser.api.PParsed;
 import io.vavr.Tuple;
 import io.vavr.Tuple2;
@@ -31,16 +35,22 @@ import io.vavr.collection.Seq;
 import io.vavr.collection.Vector;
 import io.vavr.control.Validation;
 
+import java.net.URI;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.function.Function;
 
+import static com.io7m.polaris.parser.api.PParseErrorCode.EXPECTED_TERM_NAME_UNQUALIFIED_GOT_EXPRESSION;
+import static com.io7m.polaris.parser.api.PParseErrorCode.EXPECTED_TERM_REFERENCE_GOT_EXPRESSION;
+import static com.io7m.polaris.parser.api.PParseErrorCode.EXPECTED_TYPE_NAME_UNQUALIFIED_GOT_EXPRESSION;
+import static com.io7m.polaris.parser.api.PParseErrorCode.EXPECTED_TYPE_REFERENCE_GOT_EXPRESSION;
+import static com.io7m.polaris.parser.api.PParseErrorCode.INVALID_TERM_NAME;
+import static com.io7m.polaris.parser.api.PParseErrorCode.INVALID_TYPE_NAME;
+import static com.io7m.polaris.parser.api.PParseErrorCode.INVALID_UNIT_NAME;
 import static com.io7m.polaris.parser.api.PParsed.parsed;
-import static com.io7m.polaris.parser.implementation.PParseErrors.errorExpectedTermNameGotExpression;
-import static com.io7m.polaris.parser.implementation.PParseErrors.errorExpectedTermReferenceGotExpression;
-import static com.io7m.polaris.parser.implementation.PParseErrors.errorInvalidExpression;
-import static com.io7m.polaris.parser.implementation.PParseErrors.errorMessageTermNameNotValid;
-import static com.io7m.polaris.parser.implementation.PParseErrors.errorMessageUnitNameNotValid;
+import static com.io7m.polaris.parser.implementation.PValidation.cast;
+import static com.io7m.polaris.parser.implementation.PValidation.errorsFlatten;
+import static com.io7m.polaris.parser.implementation.PValidation.invalid;
+import static com.io7m.polaris.parser.implementation.PValidation.sequence;
 
 /**
  * Functions for parsing names.
@@ -56,6 +66,7 @@ public final class PParsingNames
   /**
    * Parse the given expression as an unqualified term name.
    *
+   * @param m An error message provider
    * @param e The input expression
    *
    * @return An unqualified term name, or a list of parse errors
@@ -63,8 +74,10 @@ public final class PParsingNames
 
   public static Validation<Seq<PParseError>, PTermName<PParsed>>
   parseTermNameUnqualified(
+    final PParseErrorMessagesType m,
     final SExpressionType e)
   {
+    Objects.requireNonNull(m, "Messages");
     Objects.requireNonNull(e, "Expression");
 
     if (e instanceof SExpressionSymbolType) {
@@ -73,24 +86,52 @@ public final class PParsingNames
       if (PTermNames.isValid(text)) {
         return Validation.valid(PTermName.of(es.lexical(), parsed(), text));
       }
-      return errorInvalidExpression(
-        e, () -> errorMessageTermNameNotValid(text));
+      return invalid(m.errorExpression(INVALID_TERM_NAME, e));
     }
+    return invalid(m.errorExpression(
+      EXPECTED_TERM_NAME_UNQUALIFIED_GOT_EXPRESSION, e));
+  }
 
-    return errorInvalidExpression(
-      e, () -> errorExpectedTermNameGotExpression(e));
+  /**
+   * Parse the given expression as an unqualified type name.
+   *
+   * @param m An error message provider
+   * @param e The input expression
+   *
+   * @return An unqualified term name, or a list of parse errors
+   */
+
+  public static Validation<Seq<PParseError>, PTypeName<PParsed>>
+  parseTypeNameUnqualified(
+    final PParseErrorMessagesType m,
+    final SExpressionType e)
+  {
+    Objects.requireNonNull(e, "Expression");
+
+    if (e instanceof SExpressionSymbolType) {
+      final SExpressionSymbolType es = (SExpressionSymbolType) e;
+      final String text = es.text();
+      if (PTypeNames.isValid(text)) {
+        return Validation.valid(PTypeName.of(es.lexical(), parsed(), text));
+      }
+      return invalid(m.errorExpression(INVALID_TYPE_NAME, e));
+    }
+    return invalid(m.errorExpression(
+      EXPECTED_TYPE_NAME_UNQUALIFIED_GOT_EXPRESSION, e));
   }
 
   /**
    * Parse the given expression as a term reference.
    *
+   * @param m An error message provider
    * @param e The input expression
    *
    * @return A term reference, or a list of parse errors
    */
 
-  public static Validation<Seq<PParseError>, PTermReferencePath>
-  parseTermPath(
+  public static Validation<Seq<PParseError>, PTermReference>
+  parseTermReference(
+    final PParseErrorMessagesType m,
     final SExpressionType e)
   {
     if (e instanceof SExpressionSymbolType) {
@@ -108,17 +149,17 @@ public final class PParsingNames
         final String t_rest = et.substring(colon + 1);
 
         final Validation<Seq<PParseError>, PUnitName<PParsed>> r_unit =
-          parseUnitName(es, colon, t_unit).map(Function.identity());
+          cast(parseUnitName(m, es, colon, t_unit));
         final Validation<Seq<PParseError>, Vector<PTermName<PParsed>>> r_terms =
-          parseTermNames(es, colon, t_rest);
-        final Validation<Seq<Seq<PParseError>>, PTermReferencePath> r_result =
+          parseTermNames(m, es, colon, t_rest);
+        final Validation<Seq<Seq<PParseError>>, PTermReference> r_result =
           Validation.combine(r_unit, r_terms)
-            .ap((unit, path) -> new PTermReferencePath(
+            .ap((unit, path) -> new PTermReference(
               Optional.of(unit),
               path.get(0),
               path.tail()));
 
-        return PValidation.errorsFlatten(r_result);
+        return errorsFlatten(r_result);
       }
 
       /*
@@ -126,29 +167,28 @@ public final class PParsingNames
        */
 
       final Validation<Seq<PParseError>, Vector<PTermName<PParsed>>> r_terms =
-        parseTermNames(es, 0, et);
+        parseTermNames(m, es, 0, et);
 
       return r_terms.map(
-        terms ->
-          new PTermReferencePath(
-            Optional.empty(),
-            terms.get(0),
-            terms.tail()));
+        terms -> new PTermReference(
+          Optional.empty(),
+          terms.get(0),
+          terms.tail()));
     }
 
-    return errorInvalidExpression(
-      e, () -> errorExpectedTermReferenceGotExpression(e));
+    return invalid(m.errorExpression(
+      EXPECTED_TERM_REFERENCE_GOT_EXPRESSION, e));
   }
 
   private static Validation<Seq<PParseError>, Vector<PTermName<PParsed>>> parseTermNames(
+    final PParseErrorMessagesType m,
     final SExpressionSymbolType es,
     final int offset,
     final String text)
   {
     final Vector<String> pieces = Vector.of(text.split("\\."));
     if (pieces.isEmpty()) {
-      return errorInvalidExpression(
-        es, () -> errorMessageTermNameNotValid(text));
+      return invalid(m.errorExpression(INVALID_TERM_NAME, es));
     }
 
     Vector<Tuple2<Integer, String>> pieces_offsets = Vector.empty();
@@ -159,45 +199,134 @@ public final class PParsingNames
       current_offset += piece.length();
     }
 
-    return PValidation.sequence(
-      pieces_offsets, pair -> parseTermName(es, pair._1.intValue(), pair._2));
+    return sequence(
+      pieces_offsets,
+      pair -> parseTermName(m, es, pair._1.intValue(), pair._2));
   }
 
   private static Validation<Seq<PParseError>, PTermName<PParsed>> parseTermName(
+    final PParseErrorMessagesType m,
     final SExpressionSymbolType es,
     final int offset,
     final String name)
   {
+    final LexicalPosition<URI> lex = es.lexical().withColumn(offset);
     if (PTermNames.isValid(name)) {
-      return Validation.valid(
-        PTermName.of(
-          es.lexical().map(lex -> lex.withColumn(offset)),
-          parsed(),
-          name));
+      return Validation.valid(PTermName.of(lex, parsed(), name));
     }
-    return errorInvalidExpression(es, () -> errorMessageTermNameNotValid(name));
+    return invalid(m.errorLexical(INVALID_TERM_NAME, lex, name));
+  }
+
+  private static Validation<Seq<PParseError>, PTypeName<PParsed>> parseTypeName(
+    final PParseErrorMessagesType m,
+    final SExpressionSymbolType es,
+    final int offset,
+    final String name)
+  {
+    final LexicalPosition<URI> lex = es.lexical().withColumn(offset);
+    if (PTypeNames.isValid(name)) {
+      return Validation.valid(PTypeName.of(lex, parsed(), name));
+    }
+    return invalid(m.errorLexical(INVALID_TYPE_NAME, lex, name));
   }
 
   private static Validation<Seq<PParseError>, PUnitName<PParsed>> parseUnitName(
+    final PParseErrorMessagesType m,
     final SExpressionSymbolType es,
     final int offset,
-    final String unit)
+    final String name)
   {
-    if (PUnitNames.isValid(unit)) {
-      return Validation.valid(
-        PUnitName.of(
-          es.lexical().map(lex -> lex.withColumn(lex.column() + offset)),
-          parsed(),
-          unit));
+    final LexicalPosition<URI> lex = es.lexical().withColumn(offset);
+    if (PUnitNames.isValid(name)) {
+      return Validation.valid(PUnitName.of(lex, parsed(), name));
     }
-    return errorInvalidExpression(es, () -> errorMessageUnitNameNotValid(unit));
+    return invalid(m.errorLexical(INVALID_UNIT_NAME, lex, name));
   }
 
   /**
-   * A term path.
+   * Parse the given expression as a keyword.
+   *
+   * @param m    An error message provider
+   * @param e    The expression
+   * @param name The expected keyword
+   *
+   * @return {@code name}
    */
 
-  public static final class PTermReferencePath
+  public static Validation<Seq<PParseError>, String>
+  parseKeyword(
+    final PParseErrorMessagesType m,
+    final SExpressionType e,
+    final String name)
+  {
+    if (e instanceof SExpressionSymbolType) {
+      final SExpressionSymbolType es = (SExpressionSymbolType) e;
+      if (Objects.equals(es.text(), name)) {
+        return Validation.valid(name);
+      }
+    }
+
+    return invalid(m.errorExpectedKeyword(e, name));
+  }
+
+  /**
+   * Parse the given expression as a type reference.
+   *
+   * @param m An error message provider
+   * @param e The input expression
+   *
+   * @return A type reference, or a list of parse errors
+   */
+
+  public static Validation<Seq<PParseError>, PTypeReference> parseTypeReference(
+    final PParseErrorMessagesType m,
+    final SExpressionType e)
+  {
+    if (e instanceof SExpressionSymbolType) {
+      final SExpressionSymbolType es = (SExpressionSymbolType) e;
+      final String et = es.text();
+
+      /*
+       * If the reference contains a ":", then treat it as a name prefixed by
+       * a unit name.
+       */
+
+      if (et.contains(":")) {
+        final int colon = et.indexOf(':');
+        final String t_unit = et.substring(0, colon);
+        final String t_rest = et.substring(colon + 1);
+
+        final Validation<Seq<PParseError>, PUnitName<PParsed>> r_unit =
+          cast(parseUnitName(m, es, colon, t_unit));
+        final Validation<Seq<PParseError>, PTypeName<PParsed>> r_base =
+          parseTypeName(m, es, colon, t_rest);
+
+        final Validation<Seq<Seq<PParseError>>, PTypeReference> r_result =
+          Validation.combine(r_unit, r_base)
+            .ap((unit, base) -> new PTypeReference(Optional.of(unit), base));
+
+        return errorsFlatten(r_result);
+      }
+
+      /*
+       * Otherwise, treat the reference as a simple type name.
+       */
+
+      final Validation<Seq<PParseError>, PTypeName<PParsed>> r_base =
+        parseTypeName(m, es, 0, et);
+
+      return r_base.map(base -> new PTypeReference(Optional.empty(), base));
+    }
+
+    return invalid(m.errorExpression(
+      EXPECTED_TYPE_REFERENCE_GOT_EXPRESSION, e));
+  }
+
+  /**
+   * A term reference.
+   */
+
+  public static final class PTermReference
   {
     private final Optional<PUnitName<PParsed>> unit;
     private final PTermName<PParsed> base;
@@ -211,7 +340,7 @@ public final class PParsingNames
      * @param in_path The series of record accesses
      */
 
-    public PTermReferencePath(
+    public PTermReference(
       final Optional<PUnitName<PParsed>> in_unit,
       final PTermName<PParsed> in_base,
       final Vector<PTermName<PParsed>> in_path)
@@ -249,4 +378,46 @@ public final class PParsingNames
     }
   }
 
+  /**
+   * A term path.
+   */
+
+  public static final class PTypeReference
+  {
+    private final Optional<PUnitName<PParsed>> unit;
+    private final PTypeName<PParsed> base;
+
+    /**
+     * Construct a type reference.
+     *
+     * @param in_unit The unit, if any
+     * @param in_base The term
+     */
+
+    public PTypeReference(
+      final Optional<PUnitName<PParsed>> in_unit,
+      final PTypeName<PParsed> in_base)
+    {
+      this.unit = Objects.requireNonNull(in_unit, "Unit");
+      this.base = Objects.requireNonNull(in_base, "Base");
+    }
+
+    /**
+     * @return The unit, if any
+     */
+
+    public Optional<PUnitName<PParsed>> unit()
+    {
+      return this.unit;
+    }
+
+    /**
+     * @return The base name
+     */
+
+    public PTypeName<PParsed> base()
+    {
+      return this.base;
+    }
+  }
 }

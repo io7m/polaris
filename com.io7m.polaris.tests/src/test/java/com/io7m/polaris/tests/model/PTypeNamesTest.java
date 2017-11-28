@@ -23,7 +23,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.net.URI;
-import java.nio.file.Path;
 import java.util.List;
 import java.util.Optional;
 
@@ -31,6 +30,9 @@ import static java.lang.Boolean.TRUE;
 
 public final class PTypeNamesTest
 {
+  private static final LexicalPosition<URI> LEXICAL =
+    LexicalPosition.of(1, 0, Optional.empty());
+
   @Test
   public void testValid()
   {
@@ -39,7 +41,7 @@ public final class PTypeNamesTest
         "x",
         "xa",
         "x_3",
-        "x-3")
+        "x3")
         .stream()
         .map(name -> () -> Assertions.assertTrue(
           PTypeNames.isValid(name),
@@ -66,10 +68,10 @@ public final class PTypeNamesTest
   @Test
   public void testLexical()
   {
-    final Optional<LexicalPosition<URI>> lex0 =
-      Optional.of(LexicalPosition.of(23, 34, Optional.empty()));
-    final Optional<LexicalPosition<URI>> lex1 =
-      Optional.of(LexicalPosition.of(24, 34, Optional.empty()));
+    final LexicalPosition<URI> lex0 =
+      LexicalPosition.of(23, 34, Optional.empty());
+    final LexicalPosition<URI> lex1 =
+      LexicalPosition.of(24, 34, Optional.empty());
 
     Assertions.assertEquals(
       lex0,
@@ -92,47 +94,47 @@ public final class PTypeNamesTest
   public void testEquals()
   {
     Assertions.assertEquals(
-      PTypeName.of(Optional.empty(), TRUE, "a"),
-      PTypeName.of(Optional.empty(), TRUE, "a"));
+      PTypeName.of(LEXICAL, TRUE, "a"),
+      PTypeName.of(LEXICAL, TRUE, "a"));
 
     Assertions.assertEquals(
-      PTypeName.of(Optional.empty(), TRUE, "a").value(),
-      PTypeName.of(Optional.empty(), TRUE, "a").value());
+      PTypeName.of(LEXICAL, TRUE, "a").value(),
+      PTypeName.of(LEXICAL, TRUE, "a").value());
 
     Assertions.assertEquals(
-      PTypeName.copyOf(PTypeName.of(Optional.empty(), TRUE, "a")),
-      PTypeName.copyOf(PTypeName.of(Optional.empty(), TRUE, "a")));
+      PTypeName.copyOf(PTypeName.of(LEXICAL, TRUE, "a")),
+      PTypeName.copyOf(PTypeName.of(LEXICAL, TRUE, "a")));
 
     Assertions.assertEquals(
-      PTypeName.of(Optional.empty(), TRUE, "a").withValue("c"),
-      PTypeName.of(Optional.empty(), TRUE, "c"));
+      PTypeName.of(LEXICAL, TRUE, "a").withValue("c"),
+      PTypeName.of(LEXICAL, TRUE, "c"));
 
     Assertions.assertNotEquals(
-      PTypeName.of(Optional.empty(), TRUE, "a"),
-      PTypeName.of(Optional.empty(), TRUE, "b"));
+      PTypeName.of(LEXICAL, TRUE, "a"),
+      PTypeName.of(LEXICAL, TRUE, "b"));
 
     Assertions.assertNotEquals(
-      PTypeName.of(Optional.empty(), TRUE, "a").value(),
-      PTypeName.of(Optional.empty(), TRUE, "b").value());
+      PTypeName.of(LEXICAL, TRUE, "a").value(),
+      PTypeName.of(LEXICAL, TRUE, "b").value());
   }
 
   @Test
   public void testToString()
   {
     Assertions.assertEquals(
-      PTypeName.of(Optional.empty(), TRUE, "a").toString(),
-      PTypeName.of(Optional.empty(), TRUE, "a").toString());
+      PTypeName.of(LEXICAL, TRUE, "a").toString(),
+      PTypeName.of(LEXICAL, TRUE, "a").toString());
 
     Assertions.assertNotEquals(
-      PTypeName.of(Optional.empty(), TRUE, "a").toString(),
-      PTypeName.of(Optional.empty(), TRUE, "b").toString());
+      PTypeName.of(LEXICAL, TRUE, "a").toString(),
+      PTypeName.of(LEXICAL, TRUE, "b").toString());
   }
 
   @Test
   public void testHashCode()
   {
     Assertions.assertEquals(
-      PTypeName.of(Optional.empty(), TRUE, "a").hashCode(),
-      PTypeName.of(Optional.empty(), TRUE, "a").hashCode());
+      PTypeName.of(LEXICAL, TRUE, "a").hashCode(),
+      PTypeName.of(LEXICAL, TRUE, "a").hashCode());
   }
 }

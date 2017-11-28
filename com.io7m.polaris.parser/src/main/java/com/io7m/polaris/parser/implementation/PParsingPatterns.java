@@ -29,17 +29,21 @@ import com.io7m.polaris.model.PPatternConstructor;
 import com.io7m.polaris.model.PPatternType;
 import com.io7m.polaris.model.PPatternWildcard;
 import com.io7m.polaris.parser.api.PParseError;
+import com.io7m.polaris.parser.api.PParseErrorMessagesType;
 import com.io7m.polaris.parser.api.PParsed;
-import com.io7m.polaris.parser.implementation.PParsingNames.PTermReferencePath;
+import com.io7m.polaris.parser.implementation.PParsingNames.PTermReference;
 import io.vavr.collection.Seq;
 import io.vavr.control.Validation;
 
 import java.util.Objects;
 import java.util.Optional;
 
+import static com.io7m.polaris.parser.api.PParseErrorCode.INVALID_PATTERN;
+import static com.io7m.polaris.parser.api.PParseErrorCode.INVALID_PATTERN_EXPECTED_CONSTRUCTOR_REFERENCE;
+import static com.io7m.polaris.parser.api.PParseErrorCode.INVALID_PATTERN_EXPECTED_CONSTRUCTOR_UNQUALIIFIED_ARGUMENT_NAME;
 import static com.io7m.polaris.parser.api.PParsed.parsed;
-import static com.io7m.polaris.parser.implementation.PParseErrors.errorInvalidExpression;
-import static com.io7m.polaris.parser.implementation.PParseErrors.errorMessageInvalidPattern;
+import static com.io7m.polaris.parser.implementation.PValidation.errorsFlatten;
+import static com.io7m.polaris.parser.implementation.PValidation.invalid;
 
 /**
  * Functions to parse patterns.
@@ -55,12 +59,14 @@ public final class PParsingPatterns
   /**
    * Parse the given expression as a pattern.
    *
+   * @param m A message provider
    * @param e The expression
    *
    * @return A parsed pattern, or a sequence of errors
    */
 
   public static Validation<Seq<PParseError>, PPatternType<PParsed>> parseAsPattern(
+    final PParseErrorMessagesType m,
     final SExpressionType e)
   {
     Objects.requireNonNull(e, "Expression");
@@ -72,39 +78,39 @@ public final class PParsingPatterns
         public Validation<Seq<PParseError>, PPatternType<PParsed>> list(
           final SExpressionListType el)
         {
-          return parsePatternList(el);
+          return parsePatternList(m, el);
         }
 
         @Override
         public Validation<Seq<PParseError>, PPatternType<PParsed>> quotedString(
           final SExpressionQuotedStringType eq)
         {
-          return parsePatternQuotedString(eq);
+          return parsePatternQuotedString(m, eq);
         }
 
         @Override
         public Validation<Seq<PParseError>, PPatternType<PParsed>> symbol(
           final SExpressionSymbolType es)
         {
-          return parsePatternSymbol(es);
+          return parsePatternSymbol(m, es);
         }
       });
   }
 
   private static Validation<Seq<PParseError>, PPatternType<PParsed>> parsePatternList(
+    final PParseErrorMessagesType m,
     final SExpressionListType e)
   {
     if (e.size() == 2) {
       final SExpressionType e0 = e.get(0);
       final SExpressionType e1 = e.get(1);
 
-      final Validation<Seq<PParseError>, PTermReferencePath> r_constructor =
-        PParsingNames.parseTermPath(e0)
-          .flatMap(path -> requireEmptyPath(e0, path));
-
-      final Validation<Seq<PParseError>, PTermReferencePath> r_arg =
-        PParsingNames.parseTermPath(e1)
-          .flatMap(path -> requireEmptyPathAndUnit(e1, path));
+      final Validation<Seq<PParseError>, PTermReference> r_constructor =
+        PParsingNames.parseTermReference(m, e0)
+          .flatMap(path -> requireEmptyPath(m, e0, path));
+      final Validation<Seq<PParseError>, PTermReference> r_arg =
+        PParsingNames.parseTermReference(m, e1)
+          .flatMap(path -> requireEmptyPathAndUnit(m, e1, path));
 
       final Validation<Seq<Seq<PParseError>>, PPatternType<PParsed>> r_result =
         Validation.combine(r_constructor, r_arg)
@@ -116,37 +122,40 @@ public final class PParsingPatterns
                   cons_path.base(),
                   Optional.of(arg_path.base())));
 
-      return PValidation.errorsFlatten(r_result);
+      return errorsFlatten(r_result);
     }
 
-    return errorInvalidExpression(e, () -> errorMessageInvalidPattern(e));
+    return invalid(m.errorExpression(INVALID_PATTERN, e));
   }
 
-  private static Validation<Seq<PParseError>, PTermReferencePath> requireEmptyPath(
+  private static Validation<Seq<PParseError>, PTermReference> requireEmptyPath(
+    final PParseErrorMessagesType m,
     final SExpressionType e,
-    final PTermReferencePath path)
+    final PTermReference path)
   {
     if (path.path().isEmpty()) {
       return Validation.valid(path);
     }
 
-    return errorInvalidExpression(
-      e, () -> PParseErrors.errorMessagePatternInvalidExpectedNoPath(e));
+    return invalid(m.errorExpression(
+      INVALID_PATTERN_EXPECTED_CONSTRUCTOR_REFERENCE, e));
   }
 
-  private static Validation<Seq<PParseError>, PTermReferencePath> requireEmptyPathAndUnit(
+  private static Validation<Seq<PParseError>, PTermReference> requireEmptyPathAndUnit(
+    final PParseErrorMessagesType m,
     final SExpressionType e,
-    final PTermReferencePath path)
+    final PTermReference path)
   {
     if (path.path().isEmpty() && !path.unit().isPresent()) {
       return Validation.valid(path);
     }
 
-    return errorInvalidExpression(
-      e, () -> PParseErrors.errorMessagePatternInvalidExpectedNoPathNoUnit(e));
+    return invalid(m.errorExpression(
+      INVALID_PATTERN_EXPECTED_CONSTRUCTOR_UNQUALIIFIED_ARGUMENT_NAME, e));
   }
 
   private static Validation<Seq<PParseError>, PPatternType<PParsed>> parsePatternSymbol(
+    final PParseErrorMessagesType m,
     final SExpressionSymbolType e)
   {
     final String text = e.text();
@@ -157,10 +166,10 @@ public final class PParsingPatterns
 
     if (PParsingIntegers.appearsToBeNumeric(text)) {
       if (PParsingReals.appearsToBeReal(text)) {
-        return PParsingReals.parseReal(e)
+        return PParsingReals.parseReal(m, e)
           .map(value -> PPatternConstantReal.of(e.lexical(), parsed(), value));
       }
-      return PParsingIntegers.parseInteger(e)
+      return PParsingIntegers.parseInteger(m, e)
         .map(pair -> PPatternConstantInteger.of(
           e.lexical(),
           parsed(),
@@ -168,8 +177,8 @@ public final class PParsingPatterns
           pair._1));
     }
 
-    return PParsingNames.parseTermPath(e)
-      .flatMap(path -> requireEmptyPath(e, path))
+    return PParsingNames.parseTermReference(m, e)
+      .flatMap(path -> requireEmptyPath(m, e, path))
       .map(path -> PPatternConstructor.of(
         e.lexical(),
         parsed(),
@@ -179,6 +188,7 @@ public final class PParsingPatterns
   }
 
   private static Validation<Seq<PParseError>, PPatternType<PParsed>> parsePatternQuotedString(
+    final PParseErrorMessagesType m,
     final SExpressionQuotedStringType e)
   {
     return Validation.valid(

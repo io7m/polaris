@@ -14,44 +14,28 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package com.io7m.polaris.model;
+package com.io7m.polaris.tests.parser.api;
+
+import com.io7m.polaris.parser.api.PParserType;
+import org.slf4j.Logger;
 
 /**
- * The type of declarations.
- *
- * @param <T> The type of associated data
+ * The base type of parser contracts.
  */
 
-public interface PDeclarationType<T> extends PExpressionOrDeclarationType<T>
+public interface PParserContractBaseType
 {
   /**
-   * @return The kind of declaration
+   * @param text The program text
+   *
+   * @return A parser for the given string
    */
 
-  TermTypeDeclarationKind termTypeDeclarationKind();
-
-  @Override
-  default PExpressionOrDeclarationKind expressionOrDeclarationKind()
-  {
-    return PExpressionOrDeclarationKind.DECLARATION;
-  }
+  PParserType parserForString(String text);
 
   /**
-   * The kind of declaration
+   * @return The logger
    */
 
-  enum TermTypeDeclarationKind
-  {
-    /**
-     * @see PTermDeclarationType
-     */
-
-    TERM_DECLARATION,
-
-    /**
-     * @see PTypeDeclarationType
-     */
-
-    TYPE_DECLARATION
-  }
+  Logger log();
 }

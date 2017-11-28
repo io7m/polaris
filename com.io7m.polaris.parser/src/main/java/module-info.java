@@ -31,4 +31,7 @@ module com.io7m.polaris.parser
 
   provides com.io7m.polaris.parser.api.PParserProviderType
     with com.io7m.polaris.parser.PParsers;
+
+  provides com.io7m.polaris.parser.api.PParseErrorMessagesProviderType
+    with com.io7m.polaris.parser.implementation.PParseErrorMessagesProvider;
 }

@@ -14,44 +14,28 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package com.io7m.polaris.model;
+package com.io7m.polaris.tests;
 
-/**
- * The type of declarations.
- *
- * @param <T> The type of associated data
- */
+import com.io7m.polaris.parser.api.PParseError;
+import io.vavr.collection.Seq;
+import io.vavr.control.Validation;
+import org.slf4j.Logger;
 
-public interface PDeclarationType<T> extends PExpressionOrDeclarationType<T>
+public final class PTestUtilities
 {
-  /**
-   * @return The kind of declaration
-   */
-
-  TermTypeDeclarationKind termTypeDeclarationKind();
-
-  @Override
-  default PExpressionOrDeclarationKind expressionOrDeclarationKind()
+  private PTestUtilities()
   {
-    return PExpressionOrDeclarationKind.DECLARATION;
+
   }
 
-  /**
-   * The kind of declaration
-   */
-
-  enum TermTypeDeclarationKind
+  public static <T> void dump(
+    final Logger log,
+    final Validation<Seq<PParseError>, T> r)
   {
-    /**
-     * @see PTermDeclarationType
-     */
-
-    TERM_DECLARATION,
-
-    /**
-     * @see PTypeDeclarationType
-     */
-
-    TYPE_DECLARATION
+    if (r.isValid()) {
+      log.debug("valid: {}", r.get());
+    } else {
+      r.getError().forEach(e -> log.error("invalid: {}", e));
+    }
   }
 }

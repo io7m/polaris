@@ -14,44 +14,31 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package com.io7m.polaris.model;
+package com.io7m.polaris.parser.api;
+
+import java.util.Locale;
 
 /**
- * The type of declarations.
- *
- * @param <T> The type of associated data
+ * A provider of error message dictionaries.
  */
 
-public interface PDeclarationType<T> extends PExpressionOrDeclarationType<T>
+public interface PParseErrorMessagesProviderType
 {
   /**
-   * @return The kind of declaration
+   * @return An error message dictionary using the current default locale
    */
 
-  TermTypeDeclarationKind termTypeDeclarationKind();
-
-  @Override
-  default PExpressionOrDeclarationKind expressionOrDeclarationKind()
+  default PParseErrorMessagesType create()
   {
-    return PExpressionOrDeclarationKind.DECLARATION;
+    return this.createWithLocale(Locale.getDefault());
   }
 
   /**
-   * The kind of declaration
+   * @param locale The locale for error messages
+   *
+   * @return An error message dictionary using the given locale
    */
 
-  enum TermTypeDeclarationKind
-  {
-    /**
-     * @see PTermDeclarationType
-     */
-
-    TERM_DECLARATION,
-
-    /**
-     * @see PTypeDeclarationType
-     */
-
-    TYPE_DECLARATION
-  }
+  PParseErrorMessagesType createWithLocale(
+    Locale locale);
 }

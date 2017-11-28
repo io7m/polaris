@@ -33,7 +33,7 @@ public final class PTypeNames
 
   public static final Pattern PATTERN =
     Pattern.compile(
-      "\\p{Ll}[\\p{Ll}\\p{Digit}_\\-]{0,127}",
+      "\\p{Ll}[\\p{Ll}\\p{Digit}_]{0,127}",
       Pattern.UNICODE_CHARACTER_CLASS);
 
   private PTypeNames()

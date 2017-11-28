@@ -21,7 +21,17 @@ import com.io7m.polaris.model.PPackageNames;
 import com.io7m.polaris.model.PTermNames;
 import com.io7m.polaris.model.PTypeNames;
 import com.io7m.polaris.model.PUnitNames;
-import com.io7m.polaris.parser.PParsing;
+import com.io7m.polaris.parser.implementation.PParsing;
+import com.io7m.polaris.parser.implementation.PParsingFunctions;
+import com.io7m.polaris.parser.implementation.PParsingIntegers;
+import com.io7m.polaris.parser.implementation.PParsingNames;
+import com.io7m.polaris.parser.implementation.PParsingPatterns;
+import com.io7m.polaris.parser.implementation.PParsingReals;
+import com.io7m.polaris.parser.implementation.PParsingRecords;
+import com.io7m.polaris.parser.implementation.PParsingTypeExpressions;
+import com.io7m.polaris.parser.implementation.PParsingValues;
+import com.io7m.polaris.parser.implementation.PValidation;
+import com.io7m.polaris.parser.implementation.PVectors;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.Executable;
@@ -51,7 +61,17 @@ public final class UnreachableTest
   {
     Assertions.assertAll(
       List.of(
+        PParsingNames.class,
+        PParsingRecords.class,
+        PParsingTypeExpressions.class,
+        PParsingFunctions.class,
+        PParsingValues.class,
+        PParsingPatterns.class,
+        PParsingIntegers.class,
+        PParsingReals.class,
         PParsing.class,
+        PVectors.class,
+        PValidation.class,
         PPackageNames.class,
         PTermNames.class,
         PTypeNames.class,

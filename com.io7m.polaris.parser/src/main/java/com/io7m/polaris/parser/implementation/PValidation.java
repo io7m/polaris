@@ -52,6 +52,24 @@ public final class PValidation
   }
 
   /**
+   * Safely cast a validation of elements of type {@code A} to a validation of
+   * elements of type {@code B}, assuming {@code B <: A}.
+   *
+   * @param v   The input validation
+   * @param <A> The type of input elements
+   * @param <B> The type of output elements
+   *
+   * @return {@code v}
+   */
+
+  @SuppressWarnings("unchecked")
+  public static <E, A, B extends A> Validation<Seq<E>, A> cast(
+    final Validation<Seq<E>, B> v)
+  {
+    return (Validation<Seq<E>, A>) v;
+  }
+
+  /**
    * Execute {@code f} for each element of {@code xs}. If {@code f} returns a
    * valid value for every {@code x} in {@code xs}, the function returns a list
    * of the results. Otherwise, it returns a list of every error encountered
@@ -88,5 +106,22 @@ public final class PValidation
     }
 
     return Validation.valid(results);
+  }
+
+  /**
+   * Create a validation typed as a sequence of errors, based on the given
+   * initial error value.
+   *
+   * @param error The initial error
+   * @param <E>   The type of errors
+   * @param <T>   The type of result values
+   *
+   * @return A new sequence-typed validation
+   */
+
+  public static <E, T> Validation<Seq<E>, T> invalid(
+    final E error)
+  {
+    return Validation.invalid(Vector.of(error));
   }
 }

@@ -53,6 +53,13 @@ public interface PParseErrorType
   String message();
 
   /**
+   * @return The error code
+   */
+
+  @Value.Parameter
+  PParseErrorCode code();
+
+  /**
    * @return The exception raised, if any
    */
 

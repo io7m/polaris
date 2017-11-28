@@ -14,44 +14,37 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package com.io7m.polaris.model;
+package com.io7m.polaris.parser.implementation;
+
+import com.io7m.junreachable.UnreachableCodeException;
+import io.vavr.collection.Vector;
 
 /**
- * The type of declarations.
- *
- * @param <T> The type of associated data
+ * Missing functions over {@link Vector}.
  */
 
-public interface PDeclarationType<T> extends PExpressionOrDeclarationType<T>
+public final class PVectors
 {
-  /**
-   * @return The kind of declaration
-   */
-
-  TermTypeDeclarationKind termTypeDeclarationKind();
-
-  @Override
-  default PExpressionOrDeclarationKind expressionOrDeclarationKind()
+  private PVectors()
   {
-    return PExpressionOrDeclarationKind.DECLARATION;
+    throw new UnreachableCodeException();
   }
 
   /**
-   * The kind of declaration
+   * Safely cast a vector of elements of type {@code A} to a vector of elements
+   * of type {@code B}, assuming {@code B <: A}.
+   *
+   * @param v   The input vector
+   * @param <A> The type of input elements
+   * @param <B> The type of output elements
+   *
+   * @return {@code v}
    */
 
-  enum TermTypeDeclarationKind
+  @SuppressWarnings("unchecked")
+  public static <A, B extends A> Vector<A> vectorCast(
+    final Vector<B> v)
   {
-    /**
-     * @see PTermDeclarationType
-     */
-
-    TERM_DECLARATION,
-
-    /**
-     * @see PTypeDeclarationType
-     */
-
-    TYPE_DECLARATION
+    return (Vector<A>) v;
   }
 }

@@ -23,7 +23,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.net.URI;
-import java.nio.file.Path;
 import java.util.List;
 import java.util.Optional;
 
@@ -31,6 +30,9 @@ import static java.lang.Boolean.TRUE;
 
 public final class PUnitNamesTest
 {
+  private static final LexicalPosition<URI> LEXICAL =
+    LexicalPosition.of(1, 0, Optional.empty());
+
   @Test
   public void testValid()
   {
@@ -41,7 +43,9 @@ public final class PUnitNamesTest
         "X_3",
         "X3")
         .stream()
-        .map(name -> () -> Assertions.assertTrue(PUnitNames.isValid(name), name)));
+        .map(name -> () -> Assertions.assertTrue(
+          PUnitNames.isValid(name),
+          name)));
   }
 
   @Test
@@ -56,16 +60,18 @@ public final class PUnitNamesTest
         "$",
         ".")
         .stream()
-        .map(name -> () -> Assertions.assertFalse(PUnitNames.isValid(name), name)));
+        .map(name -> () -> Assertions.assertFalse(
+          PUnitNames.isValid(name),
+          name)));
   }
 
   @Test
   public void testLexical()
   {
-    final Optional<LexicalPosition<URI>> lex0 =
-      Optional.of(LexicalPosition.of(23, 34, Optional.empty()));
-    final Optional<LexicalPosition<URI>> lex1 =
-      Optional.of(LexicalPosition.of(24, 34, Optional.empty()));
+    final LexicalPosition<URI> lex0 =
+      LexicalPosition.of(23, 34, Optional.empty());
+    final LexicalPosition<URI> lex1 =
+      LexicalPosition.of(24, 34, Optional.empty());
 
     Assertions.assertEquals(
       lex0,
@@ -88,47 +94,47 @@ public final class PUnitNamesTest
   public void testEquals()
   {
     Assertions.assertEquals(
-      PUnitName.of(Optional.empty(), TRUE, "A"),
-      PUnitName.of(Optional.empty(), TRUE, "A"));
+      PUnitName.of(LEXICAL, TRUE, "A"),
+      PUnitName.of(LEXICAL, TRUE, "A"));
 
     Assertions.assertEquals(
-      PUnitName.of(Optional.empty(), TRUE, "A").value(),
-      PUnitName.of(Optional.empty(), TRUE, "A").value());
+      PUnitName.of(LEXICAL, TRUE, "A").value(),
+      PUnitName.of(LEXICAL, TRUE, "A").value());
 
     Assertions.assertEquals(
-      PUnitName.copyOf(PUnitName.of(Optional.empty(), TRUE, "A")),
-      PUnitName.copyOf(PUnitName.of(Optional.empty(), TRUE, "A")));
+      PUnitName.copyOf(PUnitName.of(LEXICAL, TRUE, "A")),
+      PUnitName.copyOf(PUnitName.of(LEXICAL, TRUE, "A")));
 
     Assertions.assertEquals(
-      PUnitName.of(Optional.empty(), TRUE, "A").withValue("C"),
-      PUnitName.of(Optional.empty(), TRUE, "C"));
+      PUnitName.of(LEXICAL, TRUE, "A").withValue("C"),
+      PUnitName.of(LEXICAL, TRUE, "C"));
 
     Assertions.assertNotEquals(
-      PUnitName.of(Optional.empty(), TRUE, "A"),
-      PUnitName.of(Optional.empty(), TRUE, "B"));
+      PUnitName.of(LEXICAL, TRUE, "A"),
+      PUnitName.of(LEXICAL, TRUE, "B"));
 
     Assertions.assertNotEquals(
-      PUnitName.of(Optional.empty(), TRUE, "A").value(),
-      PUnitName.of(Optional.empty(), TRUE, "B").value());
+      PUnitName.of(LEXICAL, TRUE, "A").value(),
+      PUnitName.of(LEXICAL, TRUE, "B").value());
   }
 
   @Test
   public void testToString()
   {
     Assertions.assertEquals(
-      PUnitName.of(Optional.empty(), TRUE, "A").toString(),
-      PUnitName.of(Optional.empty(), TRUE, "A").toString());
+      PUnitName.of(LEXICAL, TRUE, "A").toString(),
+      PUnitName.of(LEXICAL, TRUE, "A").toString());
 
     Assertions.assertNotEquals(
-      PUnitName.of(Optional.empty(), TRUE, "A").toString(),
-      PUnitName.of(Optional.empty(), TRUE, "B").toString());
+      PUnitName.of(LEXICAL, TRUE, "A").toString(),
+      PUnitName.of(LEXICAL, TRUE, "B").toString());
   }
 
   @Test
   public void testHashCode()
   {
     Assertions.assertEquals(
-      PUnitName.of(Optional.empty(), TRUE, "A").hashCode(),
-      PUnitName.of(Optional.empty(), TRUE, "A").hashCode());
+      PUnitName.of(LEXICAL, TRUE, "A").hashCode(),
+      PUnitName.of(LEXICAL, TRUE, "A").hashCode());
   }
 }

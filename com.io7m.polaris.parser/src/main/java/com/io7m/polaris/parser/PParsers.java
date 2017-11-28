@@ -25,16 +25,19 @@ import com.io7m.jsx.api.parser.JSXParserException;
 import com.io7m.jsx.api.parser.JSXParserSupplierType;
 import com.io7m.jsx.api.parser.JSXParserType;
 import com.io7m.polaris.model.PExpressionOrDeclarationType;
+import com.io7m.polaris.model.PPatternType;
 import com.io7m.polaris.parser.api.PParseError;
+import com.io7m.polaris.parser.api.PParseErrorCode;
+import com.io7m.polaris.parser.api.PParseErrorMessagesType;
 import com.io7m.polaris.parser.api.PParseErrorType;
 import com.io7m.polaris.parser.api.PParsed;
 import com.io7m.polaris.parser.api.PParserProviderType;
 import com.io7m.polaris.parser.api.PParserType;
+import com.io7m.polaris.parser.implementation.PParseErrorMessagesProvider;
+import com.io7m.polaris.parser.implementation.PParsing;
 import io.vavr.collection.Seq;
 import io.vavr.collection.Vector;
 import io.vavr.control.Validation;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -51,10 +54,9 @@ import java.util.ServiceLoader;
 
 public final class PParsers implements PParserProviderType
 {
-  private static final Logger LOG = LoggerFactory.getLogger(PParsers.class);
-
   private final JSXParserSupplierType sexpr_parsers;
   private final JSXLexerSupplierType sexpr_lexers;
+  private final PParseErrorMessagesProvider error_messages;
 
   private PParsers(
     final JSXParserSupplierType in_sexpr_parsers,
@@ -64,6 +66,8 @@ public final class PParsers implements PParserProviderType
       Objects.requireNonNull(in_sexpr_parsers, "Parsers");
     this.sexpr_lexers =
       Objects.requireNonNull(in_sexpr_lexers, "Lexers");
+    this.error_messages =
+      new PParseErrorMessagesProvider();
   }
 
   /**
@@ -117,7 +121,26 @@ public final class PParsers implements PParserProviderType
   {
     Objects.requireNonNull(uri, "URI");
     Objects.requireNonNull(stream, "Stream");
-    return new PParser(uri, stream, this.createSExpressionParser(uri, stream));
+    return new PParser(
+      this.error_messages.create(),
+      uri, stream,
+      this.createSExpressionParser(uri, stream));
+  }
+
+  @Override
+  public PParserType createWithErrors(
+    final PParseErrorMessagesType errors,
+    final URI uri,
+    final InputStream stream)
+  {
+    Objects.requireNonNull(errors, "Errors");
+    Objects.requireNonNull(uri, "URI");
+    Objects.requireNonNull(stream, "Stream");
+
+    return new PParser(
+      errors,
+      uri, stream,
+      this.createSExpressionParser(uri, stream));
   }
 
   @Override
@@ -151,12 +174,15 @@ public final class PParsers implements PParserProviderType
     private final URI uri;
     private final InputStream stream;
     private final JSXParserType parser;
+    private final PParseErrorMessagesType errors;
 
     PParser(
+      final PParseErrorMessagesType in_errors,
       final URI in_uri,
       final InputStream in_stream,
       final JSXParserType in_parser)
     {
+      this.errors = Objects.requireNonNull(in_errors, "Errors");
       this.uri = Objects.requireNonNull(in_uri, "URI");
       this.stream = Objects.requireNonNull(in_stream, "Stream");
       this.parser = Objects.requireNonNull(in_parser, "Parser");
@@ -177,13 +203,39 @@ public final class PParsers implements PParserProviderType
       try {
         final Optional<SExpressionType> opt = this.parser.parseExpressionOrEOF();
         if (opt.isPresent()) {
-          return PParsing.parseExpressionOrDeclaration(opt.get()).map(Optional::of);
+          final SExpressionType expr = opt.get();
+          return PParsing.parseExpressionOrDeclaration(this.errors, expr)
+            .map(Optional::of);
         }
         return Validation.valid(Optional.empty());
       } catch (final JSXParserException e) {
         return Validation.invalid(
           Vector.of(PParseError.builder()
                       .setException(e)
+                      .setCode(PParseErrorCode.INVALID_S_EXPRESSION)
+                      .setLexical(e.getLexicalInformation())
+                      .setMessage(e.getMessage())
+                      .setSeverity(PParseErrorType.Severity.ERROR)
+                      .build()));
+      }
+    }
+
+    @Override
+    public Validation<Seq<PParseError>, Optional<PPatternType<PParsed>>> parsePattern()
+      throws IOException
+    {
+      try {
+        final Optional<SExpressionType> opt = this.parser.parseExpressionOrEOF();
+        if (opt.isPresent()) {
+          final SExpressionType expr = opt.get();
+          return PParsing.parsePattern(this.errors, expr).map(Optional::of);
+        }
+        return Validation.valid(Optional.empty());
+      } catch (final JSXParserException e) {
+        return Validation.invalid(
+          Vector.of(PParseError.builder()
+                      .setException(e)
+                      .setCode(PParseErrorCode.INVALID_S_EXPRESSION)
                       .setLexical(e.getLexicalInformation())
                       .setMessage(e.getMessage())
                       .setSeverity(PParseErrorType.Severity.ERROR)

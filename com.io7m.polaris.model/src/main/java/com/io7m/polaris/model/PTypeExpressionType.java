@@ -39,7 +39,7 @@ public interface PTypeExpressionType<T> extends PModelElementType<T>
   PTypeExpressionKind typeExpressionKind();
 
   @Override
-  Optional<LexicalPosition<URI>> lexical();
+  LexicalPosition<URI> lexical();
 
   @Override
   T data();
@@ -88,7 +88,7 @@ public interface PTypeExpressionType<T> extends PModelElementType<T>
     @Override
     @Value.Parameter
     @Value.Auxiliary
-    Optional<LexicalPosition<URI>> lexical();
+    LexicalPosition<URI> lexical();
 
     @Override
     @Value.Parameter
@@ -136,7 +136,7 @@ public interface PTypeExpressionType<T> extends PModelElementType<T>
     @Override
     @Value.Parameter
     @Value.Auxiliary
-    Optional<LexicalPosition<URI>> lexical();
+    LexicalPosition<URI> lexical();
 
     @Override
     @Value.Parameter
@@ -177,7 +177,7 @@ public interface PTypeExpressionType<T> extends PModelElementType<T>
     @Override
     @Value.Parameter
     @Value.Auxiliary
-    Optional<LexicalPosition<URI>> lexical();
+    LexicalPosition<URI> lexical();
 
     @Override
     @Value.Parameter
