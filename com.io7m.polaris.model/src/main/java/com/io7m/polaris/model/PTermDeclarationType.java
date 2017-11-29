@@ -16,6 +16,7 @@
 
 package com.io7m.polaris.model;
 
+import com.io7m.jaffirm.core.Preconditions;
 import com.io7m.jlexing.core.LexicalPosition;
 import com.io7m.polaris.core.PImmutableStyleType;
 import io.vavr.collection.Vector;
@@ -161,5 +162,18 @@ public interface PTermDeclarationType<T> extends PDeclarationType<T>
 
     @Value.Parameter
     PExpressionType<T> expression();
+
+    /**
+     * Check preconditions for the function.
+     */
+
+    @Value.Check
+    default void checkPreconditions()
+    {
+      Preconditions.checkPrecondition(
+        this.parameters(),
+        this.parameters().size() == this.parameters().toSet().size(),
+        d -> "Function parameter names must be unique");
+    }
   }
 }

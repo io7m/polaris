@@ -22,16 +22,13 @@ import com.io7m.jsx.SExpressionSymbolType;
 import com.io7m.jsx.SExpressionType;
 import com.io7m.junreachable.UnreachableCodeException;
 import com.io7m.polaris.model.PConstructorName;
-import com.io7m.polaris.model.PConstructorNameType;
 import com.io7m.polaris.model.PDeclarationVariant;
 import com.io7m.polaris.model.PTypeExpressionType;
 import com.io7m.polaris.model.PTypeName;
 import com.io7m.polaris.model.PVariantCase;
 import com.io7m.polaris.parser.api.PParseError;
-import com.io7m.polaris.parser.api.PParseErrorCode;
 import com.io7m.polaris.parser.api.PParseErrorMessagesType;
 import com.io7m.polaris.parser.api.PParsed;
-import io.vavr.collection.HashMap;
 import io.vavr.collection.Seq;
 import io.vavr.collection.Vector;
 import io.vavr.control.Validation;
@@ -39,6 +36,10 @@ import io.vavr.control.Validation;
 import java.util.Objects;
 import java.util.Optional;
 
+import static com.io7m.polaris.parser.api.PParseErrorCode.INVALID_VARIANT;
+import static com.io7m.polaris.parser.api.PParseErrorCode.INVALID_VARIANT_CASE;
+import static com.io7m.polaris.parser.api.PParseErrorCode.INVALID_VARIANT_DUPLICATE_CASE;
+import static com.io7m.polaris.parser.api.PParseErrorCode.INVALID_VARIANT_TYPE_PARAMETERS;
 import static com.io7m.polaris.parser.api.PParsed.parsed;
 import static com.io7m.polaris.parser.implementation.PValidation.errorsFlatten;
 import static com.io7m.polaris.parser.implementation.PValidation.invalid;
@@ -102,7 +103,7 @@ public final class PParsingVariants
       return errorsFlatten(r_result);
     }
 
-    return invalid(m.errorExpression(PParseErrorCode.INVALID_VARIANT, e));
+    return invalid(m.errorExpression(INVALID_VARIANT, e));
   }
 
   private static Validation<Seq<PParseError>, VariantParameters> parseForAllAndCases(
@@ -135,27 +136,11 @@ public final class PParsingVariants
     final PParseErrorMessagesType messages,
     final Vector<PVariantCase<PParsed>> cases)
   {
-    HashMap<PConstructorNameType<PParsed>, Integer> m = HashMap.empty();
-    for (int index = 0; index < cases.size(); ++index) {
-      final PVariantCase<PParsed> t_case = cases.get(index);
-      final PConstructorNameType<PParsed> name = t_case.name();
-      final Integer next =
-        Integer.valueOf(m.getOrElse(name, Integer.valueOf(0)).intValue() + 1);
-      m = m.put(name, next);
-    }
-
-    final HashMap<PConstructorNameType<PParsed>, Integer> duplicates =
-      m.filter((name, count) -> count.intValue() > 1);
-
-    if (duplicates.isEmpty()) {
-      return Validation.valid(cases);
-    }
-
-    return Validation.invalid(duplicates.map(
-      pair -> messages.errorLexical(
-        PParseErrorCode.INVALID_VARIANT_DUPLICATE_CASE,
-        pair._1.lexical(),
-        pair._1.value())));
+    return PParsingNames.requireUniqueNames(
+      cases,
+      PVariantCase::name,
+      dups -> dups.map(dup -> messages.errorLexical(
+        INVALID_VARIANT_DUPLICATE_CASE, dup.lexical(), dup.value())));
   }
 
   private static Validation<Seq<PParseError>, PVariantCase<PParsed>> parseCase(
@@ -191,7 +176,7 @@ public final class PParsingVariants
       }
     }
 
-    return invalid(m.errorExpression(PParseErrorCode.INVALID_VARIANT_CASE, ex));
+    return invalid(m.errorExpression(INVALID_VARIANT_CASE, ex));
   }
 
   private static Validation<Seq<PParseError>, Vector<PTypeName<PParsed>>> parseForAll(
@@ -214,7 +199,7 @@ public final class PParsingVariants
     }
 
     return invalid(m.errorExpression(
-      PParseErrorCode.INVALID_VARIANT_TYPE_PARAMETERS,
+      INVALID_VARIANT_TYPE_PARAMETERS,
       e));
   }
 

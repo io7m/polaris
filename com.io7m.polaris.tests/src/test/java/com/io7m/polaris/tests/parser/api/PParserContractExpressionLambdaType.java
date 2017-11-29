@@ -198,4 +198,30 @@ public interface PParserContractExpressionLambdaType
     Assertions.assertTrue(r.isInvalid());
     Assertions.assertTrue(r.getError().exists(e -> e.code() == PParseErrorCode.EXPECTED_EXPRESSION_BUT_GOT_DECLARATION));
   }
+
+  @Test
+  default void testLambdaInvalid_6()
+    throws Exception
+  {
+    final PParserType p = this.parserForString("(λ (x x) (x))");
+    final Validation<Seq<PParseError>, Optional<PExpressionOrDeclarationType<PParsed>>> r =
+      p.parseExpressionOrDeclaration();
+
+    dump(this.log(), r);
+    Assertions.assertTrue(r.isInvalid());
+    Assertions.assertTrue(r.getError().exists(e -> e.code() == PParseErrorCode.INVALID_LAMBDA_DUPLICATE_PARAMETER));
+  }
+
+  @Test
+  default void testLambdaInvalid_7()
+    throws Exception
+  {
+    final PParserType p = this.parserForString("(lambda (x x) (x))");
+    final Validation<Seq<PParseError>, Optional<PExpressionOrDeclarationType<PParsed>>> r =
+      p.parseExpressionOrDeclaration();
+
+    dump(this.log(), r);
+    Assertions.assertTrue(r.isInvalid());
+    Assertions.assertTrue(r.getError().exists(e -> e.code() == PParseErrorCode.INVALID_LAMBDA_DUPLICATE_PARAMETER));
+  }
 }

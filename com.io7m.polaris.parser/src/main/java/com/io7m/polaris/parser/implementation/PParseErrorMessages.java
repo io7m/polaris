@@ -218,7 +218,11 @@ public final class PParseErrorMessages implements PParseErrorMessagesType
         return base;
       case INVALID_LAMBDA:
         return base;
+      case INVALID_LAMBDA_DUPLICATE_PARAMETER:
+        return base;
       case INVALID_FUNCTION:
+        return base;
+      case INVALID_FUNCTION_DUPLICATE_PARAMETER:
         return base;
       case INVALID_VALUE:
         return base;

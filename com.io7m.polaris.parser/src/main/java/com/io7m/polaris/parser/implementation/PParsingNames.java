@@ -31,11 +31,14 @@ import com.io7m.polaris.model.PUnitNames;
 import com.io7m.polaris.parser.api.PParseError;
 import com.io7m.polaris.parser.api.PParseErrorMessagesType;
 import com.io7m.polaris.parser.api.PParsed;
+import io.vavr.collection.HashMap;
 import io.vavr.collection.Seq;
+import io.vavr.collection.Vector;
 import io.vavr.control.Validation;
 
 import java.net.URI;
 import java.util.Objects;
+import java.util.function.Function;
 
 import static com.io7m.polaris.parser.api.PParseErrorCode.INVALID_CONSTRUCTOR_NAME;
 import static com.io7m.polaris.parser.api.PParseErrorCode.INVALID_TERM_NAME;
@@ -264,4 +267,40 @@ public final class PParsingNames
 
     return invalid(m.errorExpectedKeyword(e, name));
   }
+
+  /**
+   * Require that the given vector of values contains no duplicates.
+   *
+   * @param values     The values
+   * @param value_name A function to extract a name from a value
+   * @param on_error   The function called with the list of duplicates if any
+   *                   exist
+   * @param <T>        The type of name
+   *
+   * @return A sequence of unique names, or a sequence of errors
+   */
+
+  public static <T, S> Validation<Seq<PParseError>, Vector<T>> requireUniqueNames(
+    final Vector<T> values,
+    final Function<T, S> value_name,
+    final Function<Vector<S>, Seq<PParseError>> on_error)
+  {
+    HashMap<S, Integer> m = HashMap.empty();
+    for (int index = 0; index < values.size(); ++index) {
+      final S name = value_name.apply(values.get(index));
+      final Integer next =
+        Integer.valueOf(m.getOrElse(name, Integer.valueOf(0)).intValue() + 1);
+      m = m.put(name, next);
+    }
+
+    final HashMap<S, Integer> duplicates =
+      m.filter((name, count) -> count.intValue() > 1);
+
+    if (duplicates.isEmpty()) {
+      return Validation.valid(values);
+    }
+
+    return Validation.invalid(on_error.apply(duplicates.keySet().toVector()));
+  }
+
 }

@@ -24,13 +24,11 @@ import com.io7m.junreachable.UnreachableCodeException;
 import com.io7m.polaris.model.PDeclarationRecord;
 import com.io7m.polaris.model.PRecordField;
 import com.io7m.polaris.model.PTermName;
-import com.io7m.polaris.model.PTermNameType;
 import com.io7m.polaris.model.PTypeExpressionType;
 import com.io7m.polaris.model.PTypeName;
 import com.io7m.polaris.parser.api.PParseError;
 import com.io7m.polaris.parser.api.PParseErrorMessagesType;
 import com.io7m.polaris.parser.api.PParsed;
-import io.vavr.collection.HashMap;
 import io.vavr.collection.Seq;
 import io.vavr.collection.Vector;
 import io.vavr.control.Validation;
@@ -137,25 +135,11 @@ public final class PParsingRecords
     final PParseErrorMessagesType messages,
     final Vector<PRecordField<PParsed>> fields)
   {
-    HashMap<PTermNameType<PParsed>, Integer> m = HashMap.empty();
-    for (int index = 0; index < fields.size(); ++index) {
-      final PRecordField<PParsed> field = fields.get(index);
-      final PTermNameType<PParsed> name = field.name();
-      final Integer next =
-        Integer.valueOf(m.getOrElse(name, Integer.valueOf(0)).intValue() + 1);
-      m = m.put(name, next);
-    }
-
-    final HashMap<PTermNameType<PParsed>, Integer> duplicates =
-      m.filter((name, count) -> count.intValue() > 1);
-
-    if (duplicates.isEmpty()) {
-      return Validation.valid(fields);
-    }
-
-    return Validation.invalid(duplicates.map(
-      pair -> messages.errorLexical(
-        INVALID_RECORD_DUPLICATE_FIELD, pair._1.lexical(), pair._1.value())));
+    return PParsingNames.requireUniqueNames(
+      fields,
+      PRecordField::name,
+      dups -> dups.map(dup -> messages.errorLexical(
+        INVALID_RECORD_DUPLICATE_FIELD, dup.lexical(), dup.value())));
   }
 
   private static Validation<Seq<PParseError>, PRecordField<PParsed>> parseField(

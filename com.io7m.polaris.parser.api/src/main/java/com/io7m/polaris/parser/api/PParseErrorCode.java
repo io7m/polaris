@@ -66,10 +66,22 @@ public enum PParseErrorCode
   INVALID_LAMBDA,
 
   /**
+   * The given lambda expression is invalid due to a duplicate parameter name.
+   */
+
+  INVALID_LAMBDA_DUPLICATE_PARAMETER,
+
+  /**
    * The given function declaration is invalid.
    */
 
   INVALID_FUNCTION,
+
+  /**
+   * The given function declaration is invalid due to a duplicate parameter name.
+   */
+
+  INVALID_FUNCTION_DUPLICATE_PARAMETER,
 
   /**
    * The given value declaration is invalid.

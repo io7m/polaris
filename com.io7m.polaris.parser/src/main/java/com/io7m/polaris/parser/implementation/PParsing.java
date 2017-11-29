@@ -45,10 +45,12 @@ import io.vavr.collection.Vector;
 import io.vavr.control.Validation;
 
 import java.util.Objects;
+import java.util.function.Function;
 
 import static com.io7m.polaris.parser.api.PParseErrorCode.EXPECTED_EXPRESSION_BUT_GOT_DECLARATION;
 import static com.io7m.polaris.parser.api.PParseErrorCode.INVALID_APPLICATION;
 import static com.io7m.polaris.parser.api.PParseErrorCode.INVALID_LAMBDA;
+import static com.io7m.polaris.parser.api.PParseErrorCode.INVALID_LAMBDA_DUPLICATE_PARAMETER;
 import static com.io7m.polaris.parser.api.PParseErrorCode.INVALID_LOCAL;
 import static com.io7m.polaris.parser.api.PParseErrorCode.INVALID_MATCH;
 import static com.io7m.polaris.parser.api.PParseErrorCode.INVALID_MATCH_CASE;
@@ -413,7 +415,8 @@ public final class PParsing
         final Validation<Seq<PParseError>, Vector<PTermName<PParsed>>> r_params =
           sequence(
             (SExpressionListType) e_param_list,
-            ex -> PParsingNames.parseTermName(m, ex));
+            ex -> PParsingNames.parseTermName(m, ex))
+            .flatMap(params -> requireUniqueNames(m, params));
 
         final Validation<Seq<PParseError>, PExpressionType<PParsed>> r_body =
           parseExpression(m, e_body);
@@ -430,6 +433,18 @@ public final class PParsing
     return invalid(m.errorExpression(INVALID_LAMBDA, e));
   }
 
+  private static Validation<Seq<PParseError>, Vector<PTermName<PParsed>>>
+  requireUniqueNames(
+    final PParseErrorMessagesType m,
+    final Vector<PTermName<PParsed>> names)
+  {
+    return PParsingNames.requireUniqueNames(
+      names,
+      Function.identity(),
+      dups -> dups.map(dup -> m.errorLexical(
+        INVALID_LAMBDA_DUPLICATE_PARAMETER, dup.lexical(), dup.value())));
+  }
+
   private static PExprLambda<PParsed> parseExpressionLambdaMake(
     final SExpressionListType e,
     final Vector<PTermName<PParsed>> names,
@@ -438,5 +453,4 @@ public final class PParsing
     return PExprLambda.of(
       e.lexical(), parsed(), PVectors.vectorCast(names), body);
   }
-
 }

@@ -33,8 +33,10 @@ import io.vavr.collection.Vector;
 import io.vavr.control.Validation;
 
 import java.util.Objects;
+import java.util.function.Function;
 
 import static com.io7m.polaris.parser.api.PParseErrorCode.INVALID_FUNCTION;
+import static com.io7m.polaris.parser.api.PParseErrorCode.INVALID_FUNCTION_DUPLICATE_PARAMETER;
 import static com.io7m.polaris.parser.api.PParsed.parsed;
 import static com.io7m.polaris.parser.implementation.PValidation.errorsFlatten;
 import static com.io7m.polaris.parser.implementation.PValidation.invalid;
@@ -92,6 +94,7 @@ public final class PParsingFunctions
           PParsingNames.parseTermName(m, e_name);
         final Validation<Seq<PParseError>, Vector<PTermNameType<PParsed>>> r_params =
           sequence(el_params, x -> PParsingNames.parseTermName(m, x))
+            .flatMap(names -> requireUniqueNames(m, names))
             .map(PVectors::vectorCast);
 
         final Validation<Seq<PParseError>, PExpressionType<PParsed>> r_body =
@@ -108,5 +111,16 @@ public final class PParsingFunctions
     }
 
     return invalid(m.errorExpression(INVALID_FUNCTION, e));
+  }
+
+  private static Validation<Seq<PParseError>, Vector<PTermName<PParsed>>> requireUniqueNames(
+    final PParseErrorMessagesType m,
+    final Vector<PTermName<PParsed>> names)
+  {
+    return PParsingNames.requireUniqueNames(
+      names,
+      Function.identity(),
+      dups -> dups.map(dup -> m.errorLexical(
+        INVALID_FUNCTION_DUPLICATE_PARAMETER, dup.lexical(), dup.value())));
   }
 }

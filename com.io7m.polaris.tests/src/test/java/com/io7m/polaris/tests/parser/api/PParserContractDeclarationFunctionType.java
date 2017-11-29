@@ -71,4 +71,18 @@ public interface PParserContractDeclarationFunctionType
     Assertions.assertTrue(r.isInvalid());
     Assertions.assertTrue(r.getError().exists(e -> e.code() == PParseErrorCode.INVALID_FUNCTION));
   }
+
+  @Test
+  default void testDeclarationFunctionInvalid1()
+    throws Exception
+  {
+    final PParserType p = this.parserForString("(function id (x x) y)");
+    final Validation<Seq<PParseError>, Optional<PExpressionOrDeclarationType<PParsed>>> r =
+      p.parseExpressionOrDeclaration();
+
+    dump(this.log(), r);
+
+    Assertions.assertTrue(r.isInvalid());
+    Assertions.assertTrue(r.getError().exists(e -> e.code() == PParseErrorCode.INVALID_FUNCTION_DUPLICATE_PARAMETER));
+  }
 }
