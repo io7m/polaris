@@ -243,6 +243,12 @@ public enum PParseErrorCode
   INVALID_CONSTRUCTOR_REFERENCE,
 
   /**
+   * The given type signature is invalid.
+   */
+
+  INVALID_TYPE_SIGNATURE,
+
+  /**
    * Expected a term name but got some other kind of expression.
    */
 

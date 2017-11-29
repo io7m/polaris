@@ -48,6 +48,7 @@ public interface PParserContractType extends
   PParserContractDeclarationValueType,
   PParserContractDeclarationRecordType,
   PParserContractDeclarationVariantType,
+  PParserContractDeclarationSignatureType,
   PParserContractPatternType,
   PParserContractTypeExpressionType
 {

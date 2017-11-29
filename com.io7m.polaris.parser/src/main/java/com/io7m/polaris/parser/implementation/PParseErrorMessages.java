@@ -276,6 +276,8 @@ public final class PParseErrorMessages implements PParseErrorMessagesType
         return base;
       case INVALID_CONSTRUCTOR_REFERENCE:
         return base;
+      case INVALID_TYPE_SIGNATURE:
+        return base;
       case EXPECTED_TERM_NAME_UNQUALIFIED_GOT_EXPRESSION:
         return base;
       case EXPECTED_TYPE_NAME_UNQUALIFIED_GOT_EXPRESSION:

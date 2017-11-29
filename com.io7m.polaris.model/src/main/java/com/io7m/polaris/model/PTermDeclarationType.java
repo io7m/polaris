@@ -57,6 +57,12 @@ public interface PTermDeclarationType<T> extends PDeclarationType<T>
     FUNCTION_DECLARATION,
 
     /**
+     * @see PDeclarationSignatureType
+     */
+
+    SIGNATURE_DECLARATION,
+
+    /**
      * @see PDeclarationValueType
      */
 
@@ -175,5 +181,52 @@ public interface PTermDeclarationType<T> extends PDeclarationType<T>
         this.parameters().size() == this.parameters().toSet().size(),
         d -> "Function parameter names must be unique");
     }
+  }
+
+  /**
+   * A type signature declaration.
+   *
+   * @param <T> The type of associated data
+   */
+
+  @PImmutableStyleType
+  @Value.Immutable
+  interface PDeclarationSignatureType<T> extends PTermDeclarationType<T>
+  {
+    @Override
+    default TermTypeDeclarationKind termTypeDeclarationKind()
+    {
+      return TermTypeDeclarationKind.TERM_DECLARATION;
+    }
+
+    @Override
+    default TermDeclarationKind termDeclarationKind()
+    {
+      return TermDeclarationKind.SIGNATURE_DECLARATION;
+    }
+
+    @Override
+    @Value.Parameter
+    @Value.Auxiliary
+    LexicalPosition<URI> lexical();
+
+    @Override
+    @Value.Parameter
+    @Value.Auxiliary
+    T data();
+
+    /**
+     * @return The name of the term
+     */
+
+    @Value.Parameter
+    PTermNameType<T> name();
+
+    /**
+     * @return The type
+     */
+
+    @Value.Parameter
+    PTypeExpressionType<T> type();
   }
 }

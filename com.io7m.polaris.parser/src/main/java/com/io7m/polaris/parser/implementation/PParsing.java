@@ -266,6 +266,10 @@ public final class PParsing
           return cast(PParsingVariants.parseVariant(m, e));
         }
 
+        case ":": {
+          return cast(PParsingSignatures.parseSignature(m, e));
+        }
+
         default: {
           break;
         }
