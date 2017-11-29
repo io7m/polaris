@@ -16,13 +16,13 @@
 
 package com.io7m.polaris.tests.parser.api;
 
-import com.io7m.polaris.model.PExprConstantInteger;
-import com.io7m.polaris.model.PExprMatch;
-import com.io7m.polaris.model.PExprReference;
-import com.io7m.polaris.model.PExpressionOrDeclarationType;
-import com.io7m.polaris.model.PExpressionType;
-import com.io7m.polaris.model.PPatternConstantInteger;
-import com.io7m.polaris.model.PTermReferenceVariable;
+import com.io7m.polaris.ast.PExprConstantInteger;
+import com.io7m.polaris.ast.PExprMatch;
+import com.io7m.polaris.ast.PExprReference;
+import com.io7m.polaris.ast.PExpressionOrDeclarationType;
+import com.io7m.polaris.ast.PExpressionType;
+import com.io7m.polaris.ast.PPatternConstantInteger;
+import com.io7m.polaris.ast.PTermReferenceVariable;
 import com.io7m.polaris.parser.api.PParseError;
 import com.io7m.polaris.parser.api.PParseErrorCode;
 import com.io7m.polaris.parser.api.PParsed;

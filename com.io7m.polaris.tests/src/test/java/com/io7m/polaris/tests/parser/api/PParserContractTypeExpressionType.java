@@ -16,12 +16,12 @@
 
 package com.io7m.polaris.tests.parser.api;
 
-import com.io7m.polaris.model.PTypeExprApplication;
-import com.io7m.polaris.model.PTypeExprArrow;
-import com.io7m.polaris.model.PTypeExprForAll;
-import com.io7m.polaris.model.PTypeExprReference;
-import com.io7m.polaris.model.PTypeExpressionType;
-import com.io7m.polaris.model.PTypeReferenceVariable;
+import com.io7m.polaris.ast.PTypeExprApplication;
+import com.io7m.polaris.ast.PTypeExprArrow;
+import com.io7m.polaris.ast.PTypeExprForAll;
+import com.io7m.polaris.ast.PTypeExprReference;
+import com.io7m.polaris.ast.PTypeExpressionType;
+import com.io7m.polaris.ast.PTypeReferenceVariable;
 import com.io7m.polaris.parser.api.PParseError;
 import com.io7m.polaris.parser.api.PParseErrorCode;
 import com.io7m.polaris.parser.api.PParsed;

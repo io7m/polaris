@@ -16,9 +16,9 @@
 
 package com.io7m.polaris.parser.api;
 
-import com.io7m.polaris.model.PExpressionOrDeclarationType;
-import com.io7m.polaris.model.PPatternType;
-import com.io7m.polaris.model.PTypeExpressionType;
+import com.io7m.polaris.ast.PExpressionOrDeclarationType;
+import com.io7m.polaris.ast.PPatternType;
+import com.io7m.polaris.ast.PTypeExpressionType;
 import io.vavr.collection.Seq;
 import io.vavr.control.Validation;
 

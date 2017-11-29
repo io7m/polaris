@@ -16,8 +16,8 @@
 
 package com.io7m.polaris.tests.parser.api;
 
-import com.io7m.polaris.model.PExprConstantInteger;
-import com.io7m.polaris.model.PExpressionOrDeclarationType;
+import com.io7m.polaris.ast.PExprConstantInteger;
+import com.io7m.polaris.ast.PExpressionOrDeclarationType;
 import com.io7m.polaris.parser.api.PParseError;
 import com.io7m.polaris.parser.api.PParseErrorCode;
 import com.io7m.polaris.parser.api.PParsed;

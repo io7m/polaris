@@ -16,12 +16,12 @@
 
 package com.io7m.polaris.tests.parser.api;
 
-import com.io7m.polaris.model.PPatternConstantInteger;
-import com.io7m.polaris.model.PPatternConstantReal;
-import com.io7m.polaris.model.PPatternConstantString;
-import com.io7m.polaris.model.PPatternConstructor;
-import com.io7m.polaris.model.PPatternType;
-import com.io7m.polaris.model.PPatternWildcard;
+import com.io7m.polaris.ast.PPatternConstantInteger;
+import com.io7m.polaris.ast.PPatternConstantReal;
+import com.io7m.polaris.ast.PPatternConstantString;
+import com.io7m.polaris.ast.PPatternConstructor;
+import com.io7m.polaris.ast.PPatternType;
+import com.io7m.polaris.ast.PPatternWildcard;
 import com.io7m.polaris.parser.api.PParseError;
 import com.io7m.polaris.parser.api.PParseErrorCode;
 import com.io7m.polaris.parser.api.PParsed;

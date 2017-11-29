@@ -2,7 +2,7 @@ package com.io7m.polaris.tests.parser;
 
 import com.io7m.jsx.lexer.JSXLexerSupplier;
 import com.io7m.jsx.parser.JSXParserSupplier;
-import com.io7m.polaris.model.PExpressionOrDeclarationType;
+import com.io7m.polaris.ast.PExpressionOrDeclarationType;
 import com.io7m.polaris.parser.PParsers;
 import com.io7m.polaris.parser.api.PParseError;
 import com.io7m.polaris.parser.api.PParsed;

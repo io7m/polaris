@@ -25,7 +25,7 @@
     <module>com.io7m.polaris.tests</module>
     <module>com.io7m.polaris.checkstyle</module>
     <module>com.io7m.polaris.documentation</module>
-    <module>com.io7m.polaris.model</module>
+    <module>com.io7m.polaris.ast</module>
     <module>com.io7m.polaris.core</module>
     <module>com.io7m.polaris.parser.api</module>
     <module>com.io7m.polaris.parser</module>

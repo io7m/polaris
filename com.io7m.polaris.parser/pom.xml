@@ -32,7 +32,7 @@
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>com.io7m.polaris.model</artifactId>
+      <artifactId>com.io7m.polaris.ast</artifactId>
       <version>${project.version}</version>
     </dependency>
 
