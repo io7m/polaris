@@ -20,6 +20,7 @@ import com.io7m.polaris.model.PDeclarationVariant;
 import com.io7m.polaris.model.PExpressionOrDeclarationType;
 import com.io7m.polaris.model.PTypeDeclarationType;
 import com.io7m.polaris.model.PTypeExprReference;
+import com.io7m.polaris.model.PTypeReferenceConstructor;
 import com.io7m.polaris.parser.api.PParseError;
 import com.io7m.polaris.parser.api.PParseErrorCode;
 import com.io7m.polaris.parser.api.PParsed;
@@ -40,7 +41,7 @@ public interface PParserContractDeclarationVariantType
   default void testDeclarationVariant0()
     throws Exception
   {
-    final PParserType p = this.parserForString("(variant t [case A integer])");
+    final PParserType p = this.parserForString("(variant T [case A Integer])");
     final Validation<Seq<PParseError>, Optional<PExpressionOrDeclarationType<PParsed>>> r =
       p.parseExpressionOrDeclaration();
 
@@ -51,13 +52,14 @@ public interface PParserContractDeclarationVariantType
     Assertions.assertEquals(0, e.parameters().size());
     Assertions.assertEquals(1, e.cases().size());
     Assertions.assertTrue(e.casesByName().containsKey("A"));
-    Assertions.assertEquals("t", e.name().value());
+    Assertions.assertEquals("T", e.name().value());
 
     final PTypeDeclarationType.PVariantCaseType<PParsed> case_a = e.casesByName().get(
       "A").get();
     final PTypeExprReference<PParsed> a_type = (PTypeExprReference<PParsed>) case_a.parameter().get();
-    Assertions.assertEquals("integer", a_type.reference().type().value());
-    Assertions.assertEquals(Optional.empty(), a_type.reference().unit());
+    final PTypeReferenceConstructor<PParsed> a_ref = (PTypeReferenceConstructor<PParsed>) a_type.reference();
+    Assertions.assertEquals("Integer", a_ref.constructor().value());
+    Assertions.assertEquals(Optional.empty(), a_ref.unit());
   }
 
   @Test
@@ -65,7 +67,7 @@ public interface PParserContractDeclarationVariantType
     throws Exception
   {
     final PParserType p = this.parserForString(
-      "(variant t [for-all a] [case A integer])");
+      "(variant T [for-all a] [case A Integer])");
     final Validation<Seq<PParseError>, Optional<PExpressionOrDeclarationType<PParsed>>> r =
       p.parseExpressionOrDeclaration();
 
@@ -73,18 +75,19 @@ public interface PParserContractDeclarationVariantType
     Assertions.assertTrue(r.isValid());
 
     final PDeclarationVariant<PParsed> e = (PDeclarationVariant<PParsed>) r.get().get();
-    Assertions.assertEquals("t", e.name().value());
+    Assertions.assertEquals("T", e.name().value());
     Assertions.assertEquals(1, e.parameters().size());
     Assertions.assertEquals("a", e.parameters().get(0).value());
     Assertions.assertEquals(1, e.cases().size());
     Assertions.assertTrue(e.casesByName().containsKey("A"));
-    Assertions.assertEquals("t", e.name().value());
+    Assertions.assertEquals("T", e.name().value());
 
     final PTypeDeclarationType.PVariantCaseType<PParsed> case_a = e.casesByName().get(
       "A").get();
     final PTypeExprReference<PParsed> a_type = (PTypeExprReference<PParsed>) case_a.parameter().get();
-    Assertions.assertEquals("integer", a_type.reference().type().value());
-    Assertions.assertEquals(Optional.empty(), a_type.reference().unit());
+    final PTypeReferenceConstructor<PParsed> a_ref = (PTypeReferenceConstructor<PParsed>) a_type.reference();
+    Assertions.assertEquals("Integer", a_ref.constructor().value());
+    Assertions.assertEquals(Optional.empty(), a_ref.unit());
   }
 
   @Test
@@ -92,7 +95,7 @@ public interface PParserContractDeclarationVariantType
     throws Exception
   {
     final PParserType p = this.parserForString(
-      "(variant t [∀ a] [case A integer])");
+      "(variant T [∀ a] [case A Integer])");
     final Validation<Seq<PParseError>, Optional<PExpressionOrDeclarationType<PParsed>>> r =
       p.parseExpressionOrDeclaration();
 
@@ -100,18 +103,19 @@ public interface PParserContractDeclarationVariantType
     Assertions.assertTrue(r.isValid());
 
     final PDeclarationVariant<PParsed> e = (PDeclarationVariant<PParsed>) r.get().get();
-    Assertions.assertEquals("t", e.name().value());
+    Assertions.assertEquals("T", e.name().value());
     Assertions.assertEquals(1, e.parameters().size());
     Assertions.assertEquals("a", e.parameters().get(0).value());
     Assertions.assertEquals(1, e.cases().size());
     Assertions.assertTrue(e.casesByName().containsKey("A"));
-    Assertions.assertEquals("t", e.name().value());
+    Assertions.assertEquals("T", e.name().value());
 
     final PTypeDeclarationType.PVariantCaseType<PParsed> case_a = e.casesByName().get(
       "A").get();
     final PTypeExprReference<PParsed> a_type = (PTypeExprReference<PParsed>) case_a.parameter().get();
-    Assertions.assertEquals("integer", a_type.reference().type().value());
-    Assertions.assertEquals(Optional.empty(), a_type.reference().unit());
+    final PTypeReferenceConstructor<PParsed> a_ref = (PTypeReferenceConstructor<PParsed>) a_type.reference();
+    Assertions.assertEquals("Integer", a_ref.constructor().value());
+    Assertions.assertEquals(Optional.empty(), a_ref.unit());
   }
 
   @Test
@@ -119,7 +123,7 @@ public interface PParserContractDeclarationVariantType
     throws Exception
   {
     final PParserType p = this.parserForString(
-      "(variant t [case A integer] [case B integer])");
+      "(variant T [case A Integer] [case B Integer])");
     final Validation<Seq<PParseError>, Optional<PExpressionOrDeclarationType<PParsed>>> r =
       p.parseExpressionOrDeclaration();
 
@@ -127,31 +131,33 @@ public interface PParserContractDeclarationVariantType
     Assertions.assertTrue(r.isValid());
 
     final PDeclarationVariant<PParsed> e = (PDeclarationVariant<PParsed>) r.get().get();
-    Assertions.assertEquals("t", e.name().value());
+    Assertions.assertEquals("T", e.name().value());
     Assertions.assertEquals(0, e.parameters().size());
     Assertions.assertEquals(2, e.cases().size());
     Assertions.assertTrue(e.casesByName().containsKey("A"));
     Assertions.assertTrue(e.casesByName().containsKey("B"));
-    Assertions.assertEquals("t", e.name().value());
+    Assertions.assertEquals("T", e.name().value());
 
     final PTypeDeclarationType.PVariantCaseType<PParsed> case_a = e.casesByName().get(
       "A").get();
     final PTypeExprReference<PParsed> a_type = (PTypeExprReference<PParsed>) case_a.parameter().get();
-    Assertions.assertEquals("integer", a_type.reference().type().value());
-    Assertions.assertEquals(Optional.empty(), a_type.reference().unit());
+    final PTypeReferenceConstructor<PParsed> a_ref = (PTypeReferenceConstructor<PParsed>) a_type.reference();
+    Assertions.assertEquals("Integer", a_ref.constructor().value());
+    Assertions.assertEquals(Optional.empty(), a_ref.unit());
 
     final PTypeDeclarationType.PVariantCaseType<PParsed> case_b = e.casesByName().get(
       "B").get();
     final PTypeExprReference<PParsed> b_type = (PTypeExprReference<PParsed>) case_b.parameter().get();
-    Assertions.assertEquals("integer", b_type.reference().type().value());
-    Assertions.assertEquals(Optional.empty(), b_type.reference().unit());
+    final PTypeReferenceConstructor<PParsed> b_ref = (PTypeReferenceConstructor<PParsed>) b_type.reference();
+    Assertions.assertEquals("Integer", b_ref.constructor().value());
+    Assertions.assertEquals(Optional.empty(), b_ref.unit());
   }
 
   @Test
   default void testDeclarationVariant4()
     throws Exception
   {
-    final PParserType p = this.parserForString("(variant t [case A])");
+    final PParserType p = this.parserForString("(variant T [case A])");
     final Validation<Seq<PParseError>, Optional<PExpressionOrDeclarationType<PParsed>>> r =
       p.parseExpressionOrDeclaration();
 
@@ -162,7 +168,7 @@ public interface PParserContractDeclarationVariantType
     Assertions.assertEquals(0, e.parameters().size());
     Assertions.assertEquals(1, e.cases().size());
     Assertions.assertTrue(e.casesByName().containsKey("A"));
-    Assertions.assertEquals("t", e.name().value());
+    Assertions.assertEquals("T", e.name().value());
 
     final PTypeDeclarationType.PVariantCaseType<PParsed> case_a = e.casesByName().get(
       "A").get();
@@ -174,7 +180,7 @@ public interface PParserContractDeclarationVariantType
     throws Exception
   {
     final PParserType p = this.parserForString(
-      "(variant t [for-all a] [case A])");
+      "(variant T [for-all a] [case A])");
     final Validation<Seq<PParseError>, Optional<PExpressionOrDeclarationType<PParsed>>> r =
       p.parseExpressionOrDeclaration();
 
@@ -182,12 +188,12 @@ public interface PParserContractDeclarationVariantType
     Assertions.assertTrue(r.isValid());
 
     final PDeclarationVariant<PParsed> e = (PDeclarationVariant<PParsed>) r.get().get();
-    Assertions.assertEquals("t", e.name().value());
+    Assertions.assertEquals("T", e.name().value());
     Assertions.assertEquals(1, e.parameters().size());
     Assertions.assertEquals("a", e.parameters().get(0).value());
     Assertions.assertEquals(1, e.cases().size());
     Assertions.assertTrue(e.casesByName().containsKey("A"));
-    Assertions.assertEquals("t", e.name().value());
+    Assertions.assertEquals("T", e.name().value());
 
     final PTypeDeclarationType.PVariantCaseType<PParsed> case_a = e.casesByName().get(
       "A").get();
@@ -198,7 +204,7 @@ public interface PParserContractDeclarationVariantType
   default void testDeclarationVariant6()
     throws Exception
   {
-    final PParserType p = this.parserForString("(variant t [∀ a] [case A])");
+    final PParserType p = this.parserForString("(variant T [∀ a] [case A])");
     final Validation<Seq<PParseError>, Optional<PExpressionOrDeclarationType<PParsed>>> r =
       p.parseExpressionOrDeclaration();
 
@@ -206,12 +212,12 @@ public interface PParserContractDeclarationVariantType
     Assertions.assertTrue(r.isValid());
 
     final PDeclarationVariant<PParsed> e = (PDeclarationVariant<PParsed>) r.get().get();
-    Assertions.assertEquals("t", e.name().value());
+    Assertions.assertEquals("T", e.name().value());
     Assertions.assertEquals(1, e.parameters().size());
     Assertions.assertEquals("a", e.parameters().get(0).value());
     Assertions.assertEquals(1, e.cases().size());
     Assertions.assertTrue(e.casesByName().containsKey("A"));
-    Assertions.assertEquals("t", e.name().value());
+    Assertions.assertEquals("T", e.name().value());
 
     final PTypeDeclarationType.PVariantCaseType<PParsed> case_a = e.casesByName().get(
       "A").get();
@@ -222,7 +228,7 @@ public interface PParserContractDeclarationVariantType
   default void testDeclarationVariant7()
     throws Exception
   {
-    final PParserType p = this.parserForString("(variant t [case A] [case B])");
+    final PParserType p = this.parserForString("(variant T [case A] [case B])");
     final Validation<Seq<PParseError>, Optional<PExpressionOrDeclarationType<PParsed>>> r =
       p.parseExpressionOrDeclaration();
 
@@ -230,12 +236,12 @@ public interface PParserContractDeclarationVariantType
     Assertions.assertTrue(r.isValid());
 
     final PDeclarationVariant<PParsed> e = (PDeclarationVariant<PParsed>) r.get().get();
-    Assertions.assertEquals("t", e.name().value());
+    Assertions.assertEquals("T", e.name().value());
     Assertions.assertEquals(0, e.parameters().size());
     Assertions.assertEquals(2, e.cases().size());
     Assertions.assertTrue(e.casesByName().containsKey("A"));
     Assertions.assertTrue(e.casesByName().containsKey("B"));
-    Assertions.assertEquals("t", e.name().value());
+    Assertions.assertEquals("T", e.name().value());
 
     final PTypeDeclarationType.PVariantCaseType<PParsed> case_a = e.casesByName().get(
       "A").get();
@@ -250,7 +256,7 @@ public interface PParserContractDeclarationVariantType
     throws Exception
   {
     final PParserType p = this.parserForString(
-      "(variant t [case A integer] [case A integer])");
+      "(variant T [case A Integer] [case A Integer])");
     final Validation<Seq<PParseError>, Optional<PExpressionOrDeclarationType<PParsed>>> r =
       p.parseExpressionOrDeclaration();
 
@@ -264,13 +270,13 @@ public interface PParserContractDeclarationVariantType
     throws Exception
   {
     final PParserType p = this.parserForString(
-      "(variant t [case A T:x.a])");
+      "(variant T [case A T:x.a])");
     final Validation<Seq<PParseError>, Optional<PExpressionOrDeclarationType<PParsed>>> r =
       p.parseExpressionOrDeclaration();
 
     dump(this.log(), r);
     Assertions.assertTrue(r.isInvalid());
-    Assertions.assertTrue(r.getError().exists(e -> e.code() == PParseErrorCode.INVALID_TYPE_NAME));
+    Assertions.assertTrue(r.getError().exists(e -> e.code() == PParseErrorCode.INVALID_TYPE_CONSTRUCTOR_NAME));
   }
 
   @Test
@@ -292,7 +298,7 @@ public interface PParserContractDeclarationVariantType
     throws Exception
   {
     final PParserType p = this.parserForString(
-      "(variant t [for a b] [case A integer])");
+      "(variant T [for a b] [case A Integer])");
     final Validation<Seq<PParseError>, Optional<PExpressionOrDeclarationType<PParsed>>> r =
       p.parseExpressionOrDeclaration();
 
@@ -306,13 +312,13 @@ public interface PParserContractDeclarationVariantType
     throws Exception
   {
     final PParserType p = this.parserForString(
-      "(variant [] [case A integer])");
+      "(variant [] [case A Integer])");
     final Validation<Seq<PParseError>, Optional<PExpressionOrDeclarationType<PParsed>>> r =
       p.parseExpressionOrDeclaration();
 
     dump(this.log(), r);
     Assertions.assertTrue(r.isInvalid());
-    Assertions.assertTrue(r.getError().exists(e -> e.code() == PParseErrorCode.INVALID_TYPE_NAME));
+    Assertions.assertTrue(r.getError().exists(e -> e.code() == PParseErrorCode.INVALID_TYPE_CONSTRUCTOR_NAME));
   }
 
   @Test
@@ -320,7 +326,7 @@ public interface PParserContractDeclarationVariantType
     throws Exception
   {
     final PParserType p = this.parserForString(
-      "(variant t [case A integer] [bad])");
+      "(variant T [case A Integer] [bad])");
     final Validation<Seq<PParseError>, Optional<PExpressionOrDeclarationType<PParsed>>> r =
       p.parseExpressionOrDeclaration();
 
@@ -334,7 +340,7 @@ public interface PParserContractDeclarationVariantType
     throws Exception
   {
     final PParserType p = this.parserForString(
-      "(variant t [] [case A integer])");
+      "(variant T [] [case A Integer])");
     final Validation<Seq<PParseError>, Optional<PExpressionOrDeclarationType<PParsed>>> r =
       p.parseExpressionOrDeclaration();
 
@@ -348,7 +354,7 @@ public interface PParserContractDeclarationVariantType
     throws Exception
   {
     final PParserType p = this.parserForString(
-      "(variant t [case A \"a\"])");
+      "(variant T [case A \"a\"])");
     final Validation<Seq<PParseError>, Optional<PExpressionOrDeclarationType<PParsed>>> r =
       p.parseExpressionOrDeclaration();
 

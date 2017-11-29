@@ -74,9 +74,11 @@ public interface PTermReferenceType<T> extends PModelElementType<T>
     }
 
     @Override
-    @Value.Parameter
-    @Value.Auxiliary
-    LexicalPosition<URI> lexical();
+    default LexicalPosition<URI> lexical()
+    {
+      return this.unit().map(PUnitNameType::lexical)
+        .orElse(this.constructor().lexical());
+    }
 
     @Override
     @Value.Parameter
@@ -95,7 +97,7 @@ public interface PTermReferenceType<T> extends PModelElementType<T>
      */
 
     @Value.Parameter
-    PConstructorNameType<T> constructor();
+    PTermConstructorNameType<T> constructor();
   }
 
   /**
@@ -115,9 +117,11 @@ public interface PTermReferenceType<T> extends PModelElementType<T>
     }
 
     @Override
-    @Value.Parameter
-    @Value.Auxiliary
-    LexicalPosition<URI> lexical();
+    default LexicalPosition<URI> lexical()
+    {
+      return this.unit().map(PUnitNameType::lexical)
+        .orElse(this.term().lexical());
+    }
 
     @Override
     @Value.Parameter

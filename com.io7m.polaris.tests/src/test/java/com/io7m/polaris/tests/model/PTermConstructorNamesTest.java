@@ -17,8 +17,8 @@
 package com.io7m.polaris.tests.model;
 
 import com.io7m.jlexing.core.LexicalPosition;
-import com.io7m.polaris.model.PTypeName;
-import com.io7m.polaris.model.PTypeNames;
+import com.io7m.polaris.model.PTermConstructorName;
+import com.io7m.polaris.model.PTermConstructorNames;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -28,7 +28,7 @@ import java.util.Optional;
 
 import static java.lang.Boolean.TRUE;
 
-public final class PTypeNamesTest
+public final class PTermConstructorNamesTest
 {
   private static final LexicalPosition<URI> LEXICAL =
     LexicalPosition.of(1, 0, Optional.empty());
@@ -38,13 +38,13 @@ public final class PTypeNamesTest
   {
     Assertions.assertAll(
       List.of(
-        "x",
-        "xa",
-        "x_3",
-        "x3")
+        "X",
+        "Xa",
+        "XA",
+        "X_3")
         .stream()
         .map(name -> () -> Assertions.assertTrue(
-          PTypeNames.isValid(name),
+          PTermConstructorNames.isValid(name),
           name)));
   }
 
@@ -53,15 +53,22 @@ public final class PTypeNamesTest
   {
     Assertions.assertAll(
       List.of(
-        "X",
-        "3",
-        "",
+        "a",
+        "a-3",
         "-",
-        "$",
-        ".")
+        "",
+        "0",
+        ".",
+        ";",
+        "[",
+        "/",
+        "<",
+        ">",
+        ".",
+        ":")
         .stream()
         .map(name -> () -> Assertions.assertFalse(
-          PTypeNames.isValid(name),
+          PTermConstructorNames.isValid(name),
           name)));
   }
 
@@ -75,66 +82,66 @@ public final class PTypeNamesTest
 
     Assertions.assertEquals(
       lex0,
-      PTypeName.of(lex0, TRUE, "a").lexical());
+      PTermConstructorName.of(lex0, TRUE, "A").lexical());
 
     Assertions.assertNotEquals(
-      PTypeName.of(lex1, TRUE, "a").withLexical(lex0),
-      PTypeName.of(lex0, TRUE, "a").lexical());
+      PTermConstructorName.of(lex1, TRUE, "A").withLexical(lex0),
+      PTermConstructorName.of(lex0, TRUE, "A").lexical());
 
     Assertions.assertNotEquals(
-      PTypeName.of(lex0, TRUE, "a").lexical(),
-      PTypeName.of(lex1, TRUE, "b").lexical());
+      PTermConstructorName.of(lex0, TRUE, "A").lexical(),
+      PTermConstructorName.of(lex1, TRUE, "B").lexical());
 
     Assertions.assertNotEquals(
-      PTypeName.of(lex0, TRUE, "a").withLexical(lex1),
-      PTypeName.of(lex0, TRUE, "a").lexical());
+      PTermConstructorName.of(lex0, TRUE, "A").withLexical(lex1),
+      PTermConstructorName.of(lex0, TRUE, "A").lexical());
   }
 
   @Test
   public void testEquals()
   {
     Assertions.assertEquals(
-      PTypeName.of(LEXICAL, TRUE, "a"),
-      PTypeName.of(LEXICAL, TRUE, "a"));
+      PTermConstructorName.of(LEXICAL, TRUE, "A"),
+      PTermConstructorName.of(LEXICAL, TRUE, "A"));
 
     Assertions.assertEquals(
-      PTypeName.of(LEXICAL, TRUE, "a").value(),
-      PTypeName.of(LEXICAL, TRUE, "a").value());
+      PTermConstructorName.of(LEXICAL, TRUE, "A").value(),
+      PTermConstructorName.of(LEXICAL, TRUE, "A").value());
 
     Assertions.assertEquals(
-      PTypeName.copyOf(PTypeName.of(LEXICAL, TRUE, "a")),
-      PTypeName.copyOf(PTypeName.of(LEXICAL, TRUE, "a")));
+      PTermConstructorName.copyOf(PTermConstructorName.of(LEXICAL, TRUE, "A")),
+      PTermConstructorName.copyOf(PTermConstructorName.of(LEXICAL, TRUE, "A")));
 
     Assertions.assertEquals(
-      PTypeName.of(LEXICAL, TRUE, "a").withValue("c"),
-      PTypeName.of(LEXICAL, TRUE, "c"));
+      PTermConstructorName.of(LEXICAL, TRUE, "A").withValue("C"),
+      PTermConstructorName.of(LEXICAL, TRUE, "C"));
 
     Assertions.assertNotEquals(
-      PTypeName.of(LEXICAL, TRUE, "a"),
-      PTypeName.of(LEXICAL, TRUE, "b"));
+      PTermConstructorName.of(LEXICAL, TRUE, "A"),
+      PTermConstructorName.of(LEXICAL, TRUE, "B"));
 
     Assertions.assertNotEquals(
-      PTypeName.of(LEXICAL, TRUE, "a").value(),
-      PTypeName.of(LEXICAL, TRUE, "b").value());
+      PTermConstructorName.of(LEXICAL, TRUE, "A").value(),
+      PTermConstructorName.of(LEXICAL, TRUE, "B").value());
   }
 
   @Test
   public void testToString()
   {
     Assertions.assertEquals(
-      PTypeName.of(LEXICAL, TRUE, "a").toString(),
-      PTypeName.of(LEXICAL, TRUE, "a").toString());
+      PTermConstructorName.of(LEXICAL, TRUE, "A").toString(),
+      PTermConstructorName.of(LEXICAL, TRUE, "A").toString());
 
     Assertions.assertNotEquals(
-      PTypeName.of(LEXICAL, TRUE, "a").toString(),
-      PTypeName.of(LEXICAL, TRUE, "b").toString());
+      PTermConstructorName.of(LEXICAL, TRUE, "A").toString(),
+      PTermConstructorName.of(LEXICAL, TRUE, "B").toString());
   }
 
   @Test
   public void testHashCode()
   {
     Assertions.assertEquals(
-      PTypeName.of(LEXICAL, TRUE, "a").hashCode(),
-      PTypeName.of(LEXICAL, TRUE, "a").hashCode());
+      PTermConstructorName.of(LEXICAL, TRUE, "A").hashCode(),
+      PTermConstructorName.of(LEXICAL, TRUE, "A").hashCode());
   }
 }

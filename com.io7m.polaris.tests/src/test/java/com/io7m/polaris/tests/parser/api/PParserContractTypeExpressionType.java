@@ -21,6 +21,7 @@ import com.io7m.polaris.model.PTypeExprArrow;
 import com.io7m.polaris.model.PTypeExprForAll;
 import com.io7m.polaris.model.PTypeExprReference;
 import com.io7m.polaris.model.PTypeExpressionType;
+import com.io7m.polaris.model.PTypeReferenceVariable;
 import com.io7m.polaris.parser.api.PParseError;
 import com.io7m.polaris.parser.api.PParseErrorCode;
 import com.io7m.polaris.parser.api.PParsed;
@@ -63,9 +64,11 @@ public interface PParserContractTypeExpressionType
 
     final PTypeExprArrow<PParsed> e = (PTypeExprArrow<PParsed>) r.get().get();
     Assertions.assertEquals(0, e.parameters().size());
-    final PTypeExprReference<PParsed> ref = (PTypeExprReference<PParsed>) e.returnType();
-    Assertions.assertEquals(Optional.empty(), ref.reference().unit());
-    Assertions.assertEquals("a", ref.reference().type().value());
+
+    final PTypeExprReference<PParsed> r_ref = (PTypeExprReference<PParsed>) e.returnType();
+    final PTypeReferenceVariable<PParsed> rr = (PTypeReferenceVariable<PParsed>) r_ref.reference();
+    Assertions.assertEquals("a", rr.variable().value());
+
     Assertions.assertFalse(e.isVariadic());
   }
 
@@ -85,12 +88,13 @@ public interface PParserContractTypeExpressionType
 
     final PTypeExprReference<PParsed> a_ref = (PTypeExprReference<PParsed>) e.parameters().get(
       0);
-    Assertions.assertEquals(Optional.empty(), a_ref.reference().unit());
-    Assertions.assertEquals("a", a_ref.reference().type().value());
+    final PTypeReferenceVariable<PParsed> a_rr = (PTypeReferenceVariable<PParsed>) a_ref.reference();
+    Assertions.assertEquals("a", a_rr.variable().value());
 
     final PTypeExprReference<PParsed> r_ref = (PTypeExprReference<PParsed>) e.returnType();
-    Assertions.assertEquals(Optional.empty(), r_ref.reference().unit());
-    Assertions.assertEquals("b", r_ref.reference().type().value());
+    final PTypeReferenceVariable<PParsed> rr = (PTypeReferenceVariable<PParsed>) r_ref.reference();
+    Assertions.assertEquals("b", rr.variable().value());
+
     Assertions.assertFalse(e.isVariadic());
   }
 
@@ -110,12 +114,12 @@ public interface PParserContractTypeExpressionType
 
     final PTypeExprReference<PParsed> a_ref = (PTypeExprReference<PParsed>) e.parameters().get(
       0);
-    Assertions.assertEquals(Optional.empty(), a_ref.reference().unit());
-    Assertions.assertEquals("a", a_ref.reference().type().value());
+    final PTypeReferenceVariable<PParsed> a_rr = (PTypeReferenceVariable<PParsed>) a_ref.reference();
+    Assertions.assertEquals("a", a_rr.variable().value());
 
     final PTypeExprReference<PParsed> r_ref = (PTypeExprReference<PParsed>) e.returnType();
-    Assertions.assertEquals(Optional.empty(), r_ref.reference().unit());
-    Assertions.assertEquals("b", r_ref.reference().type().value());
+    final PTypeReferenceVariable<PParsed> rr = (PTypeReferenceVariable<PParsed>) r_ref.reference();
+    Assertions.assertEquals("b", rr.variable().value());
 
     Assertions.assertTrue(e.isVariadic());
   }
@@ -135,8 +139,8 @@ public interface PParserContractTypeExpressionType
     Assertions.assertEquals(0, e.parameters().size());
 
     final PTypeExprReference<PParsed> r_ref = (PTypeExprReference<PParsed>) e.returnType();
-    Assertions.assertEquals(Optional.empty(), r_ref.reference().unit());
-    Assertions.assertEquals("a", r_ref.reference().type().value());
+    final PTypeReferenceVariable<PParsed> rr = (PTypeReferenceVariable<PParsed>) r_ref.reference();
+    Assertions.assertEquals("a", rr.variable().value());
 
     Assertions.assertFalse(e.isVariadic());
   }
@@ -157,12 +161,12 @@ public interface PParserContractTypeExpressionType
 
     final PTypeExprReference<PParsed> a_ref = (PTypeExprReference<PParsed>) e.parameters().get(
       0);
-    Assertions.assertEquals(Optional.empty(), a_ref.reference().unit());
-    Assertions.assertEquals("a", a_ref.reference().type().value());
+    final PTypeReferenceVariable<PParsed> a_rr = (PTypeReferenceVariable<PParsed>) a_ref.reference();
+    Assertions.assertEquals("a", a_rr.variable().value());
 
     final PTypeExprReference<PParsed> r_ref = (PTypeExprReference<PParsed>) e.returnType();
-    Assertions.assertEquals(Optional.empty(), r_ref.reference().unit());
-    Assertions.assertEquals("b", r_ref.reference().type().value());
+    final PTypeReferenceVariable<PParsed> rr = (PTypeReferenceVariable<PParsed>) r_ref.reference();
+    Assertions.assertEquals("b", rr.variable().value());
 
     Assertions.assertFalse(e.isVariadic());
   }
@@ -183,12 +187,12 @@ public interface PParserContractTypeExpressionType
 
     final PTypeExprReference<PParsed> a_ref = (PTypeExprReference<PParsed>) e.parameters().get(
       0);
-    Assertions.assertEquals(Optional.empty(), a_ref.reference().unit());
-    Assertions.assertEquals("a", a_ref.reference().type().value());
+    final PTypeReferenceVariable<PParsed> a_rr = (PTypeReferenceVariable<PParsed>) a_ref.reference();
+    Assertions.assertEquals("a", a_rr.variable().value());
 
     final PTypeExprReference<PParsed> r_ref = (PTypeExprReference<PParsed>) e.returnType();
-    Assertions.assertEquals(Optional.empty(), r_ref.reference().unit());
-    Assertions.assertEquals("b", r_ref.reference().type().value());
+    final PTypeReferenceVariable<PParsed> rr = (PTypeReferenceVariable<PParsed>) r_ref.reference();
+    Assertions.assertEquals("b", rr.variable().value());
 
     Assertions.assertTrue(e.isVariadic());
   }

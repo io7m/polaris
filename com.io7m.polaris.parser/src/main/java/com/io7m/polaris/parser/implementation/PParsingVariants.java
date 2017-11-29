@@ -21,10 +21,11 @@ import com.io7m.jsx.SExpressionListType;
 import com.io7m.jsx.SExpressionSymbolType;
 import com.io7m.jsx.SExpressionType;
 import com.io7m.junreachable.UnreachableCodeException;
-import com.io7m.polaris.model.PConstructorName;
 import com.io7m.polaris.model.PDeclarationVariant;
+import com.io7m.polaris.model.PTermConstructorName;
+import com.io7m.polaris.model.PTypeConstructorName;
 import com.io7m.polaris.model.PTypeExpressionType;
-import com.io7m.polaris.model.PTypeName;
+import com.io7m.polaris.model.PTypeVariableName;
 import com.io7m.polaris.model.PVariantCase;
 import com.io7m.polaris.parser.api.PParseError;
 import com.io7m.polaris.parser.api.PParseErrorMessagesType;
@@ -85,8 +86,8 @@ public final class PParsingVariants
       c -> "Variant declaration must begin with variant keyword");
 
     if (e.size() >= 3) {
-      final Validation<Seq<PParseError>, PTypeName<PParsed>> r_name =
-        PParsingNames.parseTypeName(m, e.get(1));
+      final Validation<Seq<PParseError>, PTypeConstructorName<PParsed>> r_name =
+        PParsingNames.parseTypeConstructorName(m, e.get(1));
       final Validation<Seq<PParseError>, VariantParameters> r_rest =
         parseForAllAndCases(m, Vector.ofAll(e).tail().tail());
 
@@ -111,7 +112,7 @@ public final class PParsingVariants
     final Vector<SExpressionType> exprs)
   {
     if (hasForAll(exprs)) {
-      final Validation<Seq<PParseError>, Vector<PTypeName<PParsed>>> r_forall =
+      final Validation<Seq<PParseError>, Vector<PTypeVariableName<PParsed>>> r_forall =
         parseForAll(messages, exprs.get(0));
       final Validation<Seq<PParseError>, Vector<PVariantCase<PParsed>>> r_cases =
         parseCases(messages, exprs.tail());
@@ -153,8 +154,8 @@ public final class PParsingVariants
       if (exs.size() >= 2) {
         final Validation<Seq<PParseError>, String> r_keyword =
           PParsingNames.parseKeyword(m, exs.get(0), "case");
-        final Validation<Seq<PParseError>, PConstructorName<PParsed>> r_name =
-          PParsingNames.parseConstructorName(m, exs.get(1));
+        final Validation<Seq<PParseError>, PTermConstructorName<PParsed>> r_name =
+          PParsingNames.parseTermConstructorName(m, exs.get(1));
 
         final Validation<Seq<Seq<PParseError>>, PVariantCase<PParsed>> r_result;
         if (exs.size() == 2) {
@@ -179,7 +180,7 @@ public final class PParsingVariants
     return invalid(m.errorExpression(INVALID_VARIANT_CASE, ex));
   }
 
-  private static Validation<Seq<PParseError>, Vector<PTypeName<PParsed>>> parseForAll(
+  private static Validation<Seq<PParseError>, Vector<PTypeVariableName<PParsed>>> parseForAll(
     final PParseErrorMessagesType m,
     final SExpressionType e)
   {
@@ -195,7 +196,7 @@ public final class PParsingVariants
 
       return sequence(
         Vector.ofAll(es).tail(),
-        name -> PParsingNames.parseTypeName(m, name));
+        name -> PParsingNames.parseTypeVariableName(m, name));
     }
 
     return invalid(m.errorExpression(
@@ -229,11 +230,11 @@ public final class PParsingVariants
 
   private static final class VariantParameters
   {
-    private final Vector<PTypeName<PParsed>> parameters;
+    private final Vector<PTypeVariableName<PParsed>> parameters;
     private final Vector<PVariantCase<PParsed>> cases;
 
     VariantParameters(
-      final Vector<PTypeName<PParsed>> in_parameters,
+      final Vector<PTypeVariableName<PParsed>> in_parameters,
       final Vector<PVariantCase<PParsed>> in_cases)
     {
       this.parameters =

@@ -16,41 +16,48 @@
 
 package com.io7m.polaris.model;
 
-import com.io7m.junreachable.UnreachableCodeException;
+import com.io7m.jaffirm.core.Preconditions;
+import com.io7m.jlexing.core.LexicalPosition;
+import com.io7m.polaris.core.PImmutableStyleType;
+import org.immutables.value.Value;
 
-import java.util.Objects;
-import java.util.regex.Pattern;
+import java.net.URI;
 
 /**
- * The type of constructor names.
+ * The type of type constructor names.
+ *
+ * @param <T> The type of associated data
  */
 
-public final class PConstructorNames
+@PImmutableStyleType
+@Value.Immutable(builder = false)
+public interface PTypeConstructorNameType<T> extends PModelElementType<T>
 {
-  /**
-   * A pattern describing valid names.
-   */
+  @Override
+  @Value.Parameter
+  @Value.Auxiliary
+  LexicalPosition<URI> lexical();
 
-  public static final Pattern PATTERN =
-    Pattern.compile(
-      "\\p{Lu}[\\p{Ll}\\p{Lu}\\p{Digit}_]{0,127}",
-      Pattern.UNICODE_CHARACTER_CLASS);
-
-  private PConstructorNames()
-  {
-    throw new UnreachableCodeException();
-  }
+  @Override
+  @Value.Parameter
+  @Value.Auxiliary
+  T data();
 
   /**
-   * @param name The {@code name}
-   *
-   * @return {@code true} iff {@code name} is valid
+   * @return The actual name value
    */
 
-  public static boolean isValid(
-    final String name)
+  @Value.Parameter
+  String value();
+
+  /**
+   * Check preconditions for the type.
+   */
+
+  @Value.Check
+  default void checkPreconditions()
   {
-    Objects.requireNonNull(name, "Name");
-    return PATTERN.matcher(name).matches();
+    Preconditions.checkPrecondition(
+      PTypeConstructorNames.isValid(this.value()), "Name must be valid");
   }
 }

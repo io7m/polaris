@@ -20,9 +20,10 @@ import com.io7m.jlexing.core.LexicalPosition;
 import com.io7m.jsx.SExpressionSymbolType;
 import com.io7m.jsx.SExpressionType;
 import com.io7m.junreachable.UnreachableCodeException;
-import com.io7m.polaris.model.PTypeName;
-import com.io7m.polaris.model.PTypeReference;
+import com.io7m.polaris.model.PTypeConstructorName;
+import com.io7m.polaris.model.PTypeReferenceConstructor;
 import com.io7m.polaris.model.PTypeReferenceType;
+import com.io7m.polaris.model.PTypeReferenceVariable;
 import com.io7m.polaris.model.PUnitName;
 import com.io7m.polaris.parser.api.PParseError;
 import com.io7m.polaris.parser.api.PParseErrorMessagesType;
@@ -81,19 +82,24 @@ public final class PParsingTypeReferences
 
         final Validation<Seq<PParseError>, PUnitName<PParsed>> r_unit =
           PParsingNames.parseUnitNameRaw(m, lex_before, text_before);
-        final Validation<Seq<PParseError>, PTypeName<PParsed>> r_type =
-          PParsingNames.parseTypeNameRaw(m, lex_after, text_after);
+        final Validation<Seq<PParseError>, PTypeConstructorName<PParsed>> r_type =
+          PParsingNames.parseTypeConstructorNameRaw(m, lex_after, text_after);
         final Validation<Seq<Seq<PParseError>>, PTypeReferenceType<PParsed>> r_result =
           Validation.combine(r_unit, r_type)
-            .ap((t_unit, t_type) -> PTypeReference.of(
-              lex_before, parsed(), Optional.of(t_unit), t_type));
+            .ap((t_unit, t_type) -> PTypeReferenceConstructor.of(
+              parsed(), Optional.of(t_unit), t_type));
 
         return errorsFlatten(r_result);
       }
 
-      return PParsingNames.parseTypeName(m, e).map(
-        name -> PTypeReference.of(
-          lex_before, parsed(), Optional.empty(), name));
+      if (Character.isUpperCase(text.codePointAt(0))) {
+        return PParsingNames.parseTypeConstructorName(m, e)
+          .map(name -> PTypeReferenceConstructor.of(
+            parsed(), Optional.empty(), name));
+      }
+
+      return PParsingNames.parseTypeVariableName(m, e)
+        .map(name -> PTypeReferenceVariable.of(parsed(), name));
     }
 
     return invalid(m.errorExpression(INVALID_TYPE_REFERENCE, e));

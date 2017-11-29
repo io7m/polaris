@@ -154,7 +154,7 @@ public interface PParserContractExpressionTermReferenceType
           Assertions.assertTrue(r.getError().exists(
             e -> e.code() == PParseErrorCode.INVALID_TERM_NAME
               || e.code() == PParseErrorCode.INVALID_UNIT_NAME
-              || e.code() == PParseErrorCode.INVALID_CONSTRUCTOR_NAME));
+              || e.code() == PParseErrorCode.INVALID_TERM_CONSTRUCTOR_NAME));
         });
 
     Assertions.assertAll(execs);

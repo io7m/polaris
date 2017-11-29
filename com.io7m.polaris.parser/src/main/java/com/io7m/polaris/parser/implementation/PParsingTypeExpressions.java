@@ -28,16 +28,16 @@ import com.io7m.polaris.model.PTypeExprArrow;
 import com.io7m.polaris.model.PTypeExprForAll;
 import com.io7m.polaris.model.PTypeExprReference;
 import com.io7m.polaris.model.PTypeExpressionType;
-import com.io7m.polaris.model.PTypeName;
+import com.io7m.polaris.model.PTypeVariableName;
 import com.io7m.polaris.parser.api.PParseError;
 import com.io7m.polaris.parser.api.PParseErrorMessagesType;
 import com.io7m.polaris.parser.api.PParsed;
-import io.vavr.collection.HashMap;
 import io.vavr.collection.Seq;
 import io.vavr.collection.Vector;
 import io.vavr.control.Validation;
 
 import java.util.Objects;
+import java.util.function.Function;
 
 import static com.io7m.polaris.parser.api.PParseErrorCode.INVALID_TYPE_EXPRESSION;
 import static com.io7m.polaris.parser.api.PParseErrorCode.INVALID_TYPE_EXPRESSION_ARROW;
@@ -318,9 +318,9 @@ public final class PParsingTypeExpressions
       final Vector<SExpressionType> e_params = es.init();
       final SExpressionType e_last = es.last();
 
-      final Validation<Seq<PParseError>, Vector<PTypeName<PParsed>>> r_params =
-        sequence(e_params, n -> PParsingNames.parseTypeName(m, n));
-      final Validation<Seq<PParseError>, Vector<PTypeName<PParsed>>> r_params_unique =
+      final Validation<Seq<PParseError>, Vector<PTypeVariableName<PParsed>>> r_params =
+        sequence(e_params, n -> PParsingNames.parseTypeVariableName(m, n));
+      final Validation<Seq<PParseError>, Vector<PTypeVariableName<PParsed>>> r_params_unique =
         r_params.flatMap(params -> requireUnique(m, params));
       final Validation<Seq<PParseError>, PTypeExpressionType<PParsed>> r_last =
         parseTypeExpression(m, e_last);
@@ -340,29 +340,16 @@ public final class PParsingTypeExpressions
     return invalid(m.errorExpression(INVALID_TYPE_EXPRESSION_FORALL, e));
   }
 
-  private static Validation<Seq<PParseError>, Vector<PTypeName<PParsed>>> requireUnique(
+  private static Validation<Seq<PParseError>, Vector<PTypeVariableName<PParsed>>> requireUnique(
     final PParseErrorMessagesType messages,
-    final Vector<PTypeName<PParsed>> params)
+    final Vector<PTypeVariableName<PParsed>> params)
   {
-    HashMap<PTypeName<PParsed>, Integer> m = HashMap.empty();
-    for (int index = 0; index < params.size(); ++index) {
-      final PTypeName<PParsed> name = params.get(index);
-      final Integer next =
-        Integer.valueOf(m.getOrElse(name, Integer.valueOf(0)).intValue() + 1);
-      m = m.put(name, next);
-    }
-
-    final HashMap<PTypeName<PParsed>, Integer> duplicates =
-      m.filter((name, count) -> count.intValue() > 1);
-
-    if (duplicates.isEmpty()) {
-      return Validation.valid(params);
-    }
-
-    return Validation.invalid(duplicates.map(
-      pair -> messages.errorLexical(
+    return PParsingNames.requireUniqueNames(
+      params,
+      Function.identity(),
+      dups -> dups.map(dup -> messages.errorLexical(
         INVALID_TYPE_EXPRESSION_FORALL_DUPLICATE_NAME,
-        pair._1.lexical(),
-        pair._1.value())));
+        dup.lexical(),
+        dup.value())));
   }
 }

@@ -21,7 +21,7 @@ import com.io7m.jlexing.core.LexicalPosition;
 import com.io7m.jsx.SExpressionSymbolType;
 import com.io7m.jsx.SExpressionType;
 import com.io7m.junreachable.UnreachableCodeException;
-import com.io7m.polaris.model.PConstructorName;
+import com.io7m.polaris.model.PTermConstructorName;
 import com.io7m.polaris.model.PTermName;
 import com.io7m.polaris.model.PTermNameType;
 import com.io7m.polaris.model.PTermReferenceConstructor;
@@ -148,13 +148,12 @@ public final class PParsingTermReferences
   {
     final Validation<Seq<PParseError>, PUnitName<PParsed>> r_unit =
       PParsingNames.parseUnitNameRaw(m, lexi_before, text_before);
-    final Validation<Seq<PParseError>, PConstructorName<PParsed>> r_term =
-      PParsingNames.parseConstructorNameRaw(m, lexi_after, text_after);
+    final Validation<Seq<PParseError>, PTermConstructorName<PParsed>> r_term =
+      PParsingNames.parseTermConstructorNameRaw(m, lexi_after, text_after);
     final Validation<Seq<Seq<PParseError>>, PTermReferenceType<PParsed>> r_result =
       Validation.combine(r_unit, r_term)
-        .ap((t_unit, t_term) ->
-              PTermReferenceConstructor.of(
-                lexi_before, parsed(), Optional.of(t_unit), t_term));
+        .ap((t_unit, t_term) -> PTermReferenceConstructor.of(
+          parsed(), Optional.of(t_unit), t_term));
     return errorsFlatten(r_result);
   }
 
@@ -183,9 +182,9 @@ public final class PParsingTermReferences
     final LexicalPosition<URI> lexical,
     final String text)
   {
-    return PParsingNames.parseConstructorNameRaw(m, lexical, text)
+    return PParsingNames.parseTermConstructorNameRaw(m, lexical, text)
       .map(name -> PTermReferenceConstructor.of(
-        lexical, parsed(), Optional.empty(), name));
+        parsed(), Optional.empty(), name));
   }
 
   private static Validation<Seq<PParseError>, PTermReferenceType<PParsed>>
@@ -241,6 +240,6 @@ public final class PParsingTermReferences
       path = Vector.empty();
     }
 
-    return PTermReferenceVariable.of(lex, parsed(), unit, params.get(0), path);
+    return PTermReferenceVariable.of(parsed(), unit, params.get(0), path);
   }
 }

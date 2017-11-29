@@ -29,31 +29,108 @@ import java.util.Optional;
  * @param <T> The type of associated data
  */
 
-@PImmutableStyleType
-@Value.Immutable
 public interface PTypeReferenceType<T> extends PModelElementType<T>
 {
-  @Override
-  @Value.Parameter
-  @Value.Auxiliary
-  LexicalPosition<URI> lexical();
-
-  @Override
-  @Value.Parameter
-  @Value.Auxiliary
-  T data();
-
   /**
-   * @return The qualifying unit name, if any
+   * @return The kind of reference
    */
 
-  @Value.Parameter
-  Optional<PUnitNameType<T>> unit();
+  ReferenceKind referenceKind();
 
   /**
-   * @return The type name
+   * The kind of reference.
    */
 
-  @Value.Parameter
-  PTypeNameType<T> type();
+  enum ReferenceKind
+  {
+    /**
+     * @see PTypeReferenceConstructorType
+     */
+
+    REFERENCE_CONSTRUCTOR,
+
+    /**
+     * @see PTypeReferenceVariableType
+     */
+
+    REFERENCE_VARIABLE
+  }
+
+  /**
+   * A reference to a constructor.
+   *
+   * @param <T> The type of associated data
+   */
+
+  @PImmutableStyleType
+  @Value.Immutable
+  interface PTypeReferenceConstructorType<T> extends PTypeReferenceType<T>
+  {
+    @Override
+    default ReferenceKind referenceKind()
+    {
+      return ReferenceKind.REFERENCE_CONSTRUCTOR;
+    }
+
+    @Override
+    default LexicalPosition<URI> lexical()
+    {
+      return this.unit().map(PUnitNameType::lexical)
+        .orElse(this.constructor().lexical());
+    }
+
+    @Override
+    @Value.Parameter
+    @Value.Auxiliary
+    T data();
+
+    /**
+     * @return The qualifying unit name, if any
+     */
+
+    @Value.Parameter
+    Optional<PUnitNameType<T>> unit();
+
+    /**
+     * @return The constructor name
+     */
+
+    @Value.Parameter
+    PTypeConstructorNameType<T> constructor();
+  }
+
+  /**
+   * A reference to a variable.
+   *
+   * @param <T> The type of associated data
+   */
+
+  @PImmutableStyleType
+  @Value.Immutable
+  interface PTypeReferenceVariableType<T> extends PTypeReferenceType<T>
+  {
+    @Override
+    default ReferenceKind referenceKind()
+    {
+      return ReferenceKind.REFERENCE_VARIABLE;
+    }
+
+    @Override
+    default LexicalPosition<URI> lexical()
+    {
+      return this.variable().lexical();
+    }
+
+    @Override
+    @Value.Parameter
+    @Value.Auxiliary
+    T data();
+
+    /**
+     * @return The variable name
+     */
+
+    @Value.Parameter
+    PTypeVariableNameType<T> variable();
+  }
 }

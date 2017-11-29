@@ -19,6 +19,7 @@ package com.io7m.polaris.tests.parser.api;
 import com.io7m.polaris.model.PDeclarationSignature;
 import com.io7m.polaris.model.PExpressionOrDeclarationType;
 import com.io7m.polaris.model.PTypeExprReference;
+import com.io7m.polaris.model.PTypeReferenceConstructor;
 import com.io7m.polaris.parser.api.PParseError;
 import com.io7m.polaris.parser.api.PParseErrorCode;
 import com.io7m.polaris.parser.api.PParsed;
@@ -39,7 +40,7 @@ public interface PParserContractDeclarationSignatureType
   default void testDeclarationSignature0()
     throws Exception
   {
-    final PParserType p = this.parserForString("(: pi real)");
+    final PParserType p = this.parserForString("(: pi Real)");
     final Validation<Seq<PParseError>, Optional<PExpressionOrDeclarationType<PParsed>>> r =
       p.parseExpressionOrDeclaration();
 
@@ -49,9 +50,10 @@ public interface PParserContractDeclarationSignatureType
 
     final PDeclarationSignature<PParsed> e = (PDeclarationSignature<PParsed>) r.get().get();
     Assertions.assertEquals("pi", e.name().value());
-    Assertions.assertEquals(
-      "real",
-      ((PTypeExprReference<PParsed>) e.type()).reference().type().value());
+    final PTypeReferenceConstructor<PParsed> t_ref =
+      (PTypeReferenceConstructor<PParsed>)
+        ((PTypeExprReference<PParsed>) e.type()).reference();
+    Assertions.assertEquals("Real", t_ref.constructor().value());
   }
 
   @Test

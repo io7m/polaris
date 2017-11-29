@@ -38,7 +38,7 @@ public interface PParserContractDeclarationRecordType
   default void testDeclarationRecord0()
     throws Exception
   {
-    final PParserType p = this.parserForString("(record t [field a integer])");
+    final PParserType p = this.parserForString("(record T [field a Integer])");
     final Validation<Seq<PParseError>, Optional<PExpressionOrDeclarationType<PParsed>>> r =
       p.parseExpressionOrDeclaration();
 
@@ -49,7 +49,7 @@ public interface PParserContractDeclarationRecordType
     Assertions.assertEquals(0, e.parameters().size());
     Assertions.assertEquals(1, e.fields().size());
     Assertions.assertTrue(e.fieldsByName().containsKey("a"));
-    Assertions.assertEquals("t", e.name().value());
+    Assertions.assertEquals("T", e.name().value());
   }
 
   @Test
@@ -57,7 +57,7 @@ public interface PParserContractDeclarationRecordType
     throws Exception
   {
     final PParserType p = this.parserForString(
-      "(record t [for-all a] [field a integer])");
+      "(record T [for-all a] [field a Integer])");
     final Validation<Seq<PParseError>, Optional<PExpressionOrDeclarationType<PParsed>>> r =
       p.parseExpressionOrDeclaration();
 
@@ -65,12 +65,11 @@ public interface PParserContractDeclarationRecordType
     Assertions.assertTrue(r.isValid());
 
     final PDeclarationRecord<PParsed> e = (PDeclarationRecord<PParsed>) r.get().get();
-    Assertions.assertEquals("t", e.name().value());
     Assertions.assertEquals(1, e.parameters().size());
     Assertions.assertEquals("a", e.parameters().get(0).value());
     Assertions.assertEquals(1, e.fields().size());
     Assertions.assertTrue(e.fieldsByName().containsKey("a"));
-    Assertions.assertEquals("t", e.name().value());
+    Assertions.assertEquals("T", e.name().value());
   }
 
   @Test
@@ -78,7 +77,7 @@ public interface PParserContractDeclarationRecordType
     throws Exception
   {
     final PParserType p = this.parserForString(
-      "(record t [∀ a] [field a integer])");
+      "(record T [∀ a] [field a Integer])");
     final Validation<Seq<PParseError>, Optional<PExpressionOrDeclarationType<PParsed>>> r =
       p.parseExpressionOrDeclaration();
 
@@ -86,12 +85,11 @@ public interface PParserContractDeclarationRecordType
     Assertions.assertTrue(r.isValid());
 
     final PDeclarationRecord<PParsed> e = (PDeclarationRecord<PParsed>) r.get().get();
-    Assertions.assertEquals("t", e.name().value());
     Assertions.assertEquals(1, e.parameters().size());
     Assertions.assertEquals("a", e.parameters().get(0).value());
     Assertions.assertEquals(1, e.fields().size());
     Assertions.assertTrue(e.fieldsByName().containsKey("a"));
-    Assertions.assertEquals("t", e.name().value());
+    Assertions.assertEquals("T", e.name().value());
   }
 
   @Test
@@ -99,7 +97,7 @@ public interface PParserContractDeclarationRecordType
     throws Exception
   {
     final PParserType p = this.parserForString(
-      "(record t [field a integer] [field b integer])");
+      "(record T [field a Integer] [field b Integer])");
     final Validation<Seq<PParseError>, Optional<PExpressionOrDeclarationType<PParsed>>> r =
       p.parseExpressionOrDeclaration();
 
@@ -107,12 +105,11 @@ public interface PParserContractDeclarationRecordType
     Assertions.assertTrue(r.isValid());
 
     final PDeclarationRecord<PParsed> e = (PDeclarationRecord<PParsed>) r.get().get();
-    Assertions.assertEquals("t", e.name().value());
     Assertions.assertEquals(0, e.parameters().size());
     Assertions.assertEquals(2, e.fields().size());
     Assertions.assertTrue(e.fieldsByName().containsKey("a"));
     Assertions.assertTrue(e.fieldsByName().containsKey("b"));
-    Assertions.assertEquals("t", e.name().value());
+    Assertions.assertEquals("T", e.name().value());
   }
 
   @Test
@@ -120,7 +117,7 @@ public interface PParserContractDeclarationRecordType
     throws Exception
   {
     final PParserType p = this.parserForString(
-      "(record t [field a integer] [field a integer])");
+      "(record T [field a Integer] [field a Integer])");
     final Validation<Seq<PParseError>, Optional<PExpressionOrDeclarationType<PParsed>>> r =
       p.parseExpressionOrDeclaration();
 
@@ -134,13 +131,13 @@ public interface PParserContractDeclarationRecordType
     throws Exception
   {
     final PParserType p = this.parserForString(
-      "(record t [field a T:x.a])");
+      "(record T [field a T:x.a])");
     final Validation<Seq<PParseError>, Optional<PExpressionOrDeclarationType<PParsed>>> r =
       p.parseExpressionOrDeclaration();
 
     dump(this.log(), r);
     Assertions.assertTrue(r.isInvalid());
-    Assertions.assertTrue(r.getError().exists(e -> e.code() == PParseErrorCode.INVALID_TYPE_NAME));
+    Assertions.assertTrue(r.getError().exists(e -> e.code() == PParseErrorCode.INVALID_TYPE_CONSTRUCTOR_NAME));
   }
 
   @Test
@@ -148,7 +145,7 @@ public interface PParserContractDeclarationRecordType
     throws Exception
   {
     final PParserType p = this.parserForString(
-      "(record t)");
+      "(record T)");
     final Validation<Seq<PParseError>, Optional<PExpressionOrDeclarationType<PParsed>>> r =
       p.parseExpressionOrDeclaration();
 
@@ -162,7 +159,7 @@ public interface PParserContractDeclarationRecordType
     throws Exception
   {
     final PParserType p = this.parserForString(
-      "(record t [for a b] [field a integer])");
+      "(record T [for a b] [field a Integer])");
     final Validation<Seq<PParseError>, Optional<PExpressionOrDeclarationType<PParsed>>> r =
       p.parseExpressionOrDeclaration();
 
@@ -176,13 +173,13 @@ public interface PParserContractDeclarationRecordType
     throws Exception
   {
     final PParserType p = this.parserForString(
-      "(record [] [field a integer])");
+      "(record [] [field a Integer])");
     final Validation<Seq<PParseError>, Optional<PExpressionOrDeclarationType<PParsed>>> r =
       p.parseExpressionOrDeclaration();
 
     dump(this.log(), r);
     Assertions.assertTrue(r.isInvalid());
-    Assertions.assertTrue(r.getError().exists(e -> e.code() == PParseErrorCode.INVALID_TYPE_NAME));
+    Assertions.assertTrue(r.getError().exists(e -> e.code() == PParseErrorCode.INVALID_TYPE_CONSTRUCTOR_NAME));
   }
 
   @Test
@@ -190,7 +187,7 @@ public interface PParserContractDeclarationRecordType
     throws Exception
   {
     final PParserType p = this.parserForString(
-      "(record t [field a integer] [bad])");
+      "(record T [field a Integer] [bad])");
     final Validation<Seq<PParseError>, Optional<PExpressionOrDeclarationType<PParsed>>> r =
       p.parseExpressionOrDeclaration();
 
@@ -204,7 +201,7 @@ public interface PParserContractDeclarationRecordType
     throws Exception
   {
     final PParserType p = this.parserForString(
-      "(record t [] [field a integer])");
+      "(record T [] [field a Integer])");
     final Validation<Seq<PParseError>, Optional<PExpressionOrDeclarationType<PParsed>>> r =
       p.parseExpressionOrDeclaration();
 
@@ -218,7 +215,7 @@ public interface PParserContractDeclarationRecordType
     throws Exception
   {
     final PParserType p = this.parserForString(
-      "(record t [field a \"a\"])");
+      "(record T [field a \"a\"])");
     final Validation<Seq<PParseError>, Optional<PExpressionOrDeclarationType<PParsed>>> r =
       p.parseExpressionOrDeclaration();
 

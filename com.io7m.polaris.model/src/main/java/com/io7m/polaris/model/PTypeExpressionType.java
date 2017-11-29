@@ -154,7 +154,7 @@ public interface PTypeExpressionType<T> extends PModelElementType<T>
      */
 
     @Value.Parameter
-    Vector<PTypeNameType<T>> parameters();
+    Vector<PTypeVariableNameType<T>> parameters();
 
     /**
      * @return The quantified expression

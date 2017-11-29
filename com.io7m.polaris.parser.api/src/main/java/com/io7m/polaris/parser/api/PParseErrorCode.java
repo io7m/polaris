@@ -108,22 +108,28 @@ public enum PParseErrorCode
   INVALID_TERM_NAME,
 
   /**
-   * The given type name is invalid.
-   */
-
-  INVALID_TYPE_NAME,
-
-  /**
    * The given unit name is invalid.
    */
 
   INVALID_UNIT_NAME,
 
   /**
-   * The given constructor name is invalid.
+   * The given term constructor name is invalid.
    */
 
-  INVALID_CONSTRUCTOR_NAME,
+  INVALID_TERM_CONSTRUCTOR_NAME,
+
+  /**
+   * The given type constructor name is invalid.
+   */
+
+  INVALID_TYPE_CONSTRUCTOR_NAME,
+
+  /**
+   * The given type variable name is invalid.
+   */
+
+  INVALID_TYPE_VARIABLE_NAME,
 
   /**
    * The given record declaration is invalid.

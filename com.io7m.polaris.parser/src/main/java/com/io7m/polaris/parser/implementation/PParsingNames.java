@@ -20,12 +20,14 @@ import com.io7m.jlexing.core.LexicalPosition;
 import com.io7m.jsx.SExpressionSymbolType;
 import com.io7m.jsx.SExpressionType;
 import com.io7m.junreachable.UnreachableCodeException;
-import com.io7m.polaris.model.PConstructorName;
-import com.io7m.polaris.model.PConstructorNames;
+import com.io7m.polaris.model.PTermConstructorName;
+import com.io7m.polaris.model.PTermConstructorNames;
 import com.io7m.polaris.model.PTermName;
 import com.io7m.polaris.model.PTermNames;
-import com.io7m.polaris.model.PTypeName;
-import com.io7m.polaris.model.PTypeNames;
+import com.io7m.polaris.model.PTypeConstructorName;
+import com.io7m.polaris.model.PTypeConstructorNames;
+import com.io7m.polaris.model.PTypeVariableName;
+import com.io7m.polaris.model.PTypeVariableNames;
 import com.io7m.polaris.model.PUnitName;
 import com.io7m.polaris.model.PUnitNames;
 import com.io7m.polaris.parser.api.PParseError;
@@ -40,9 +42,10 @@ import java.net.URI;
 import java.util.Objects;
 import java.util.function.Function;
 
-import static com.io7m.polaris.parser.api.PParseErrorCode.INVALID_CONSTRUCTOR_NAME;
+import static com.io7m.polaris.parser.api.PParseErrorCode.INVALID_TERM_CONSTRUCTOR_NAME;
 import static com.io7m.polaris.parser.api.PParseErrorCode.INVALID_TERM_NAME;
-import static com.io7m.polaris.parser.api.PParseErrorCode.INVALID_TYPE_NAME;
+import static com.io7m.polaris.parser.api.PParseErrorCode.INVALID_TYPE_CONSTRUCTOR_NAME;
+import static com.io7m.polaris.parser.api.PParseErrorCode.INVALID_TYPE_VARIABLE_NAME;
 import static com.io7m.polaris.parser.api.PParseErrorCode.INVALID_UNIT_NAME;
 import static com.io7m.polaris.parser.api.PParsed.parsed;
 import static com.io7m.polaris.parser.implementation.PValidation.invalid;
@@ -113,8 +116,8 @@ public final class PParsingNames
    * @return An unqualified constructor name, or a list of parse errors
    */
 
-  public static Validation<Seq<PParseError>, PConstructorName<PParsed>>
-  parseConstructorName(
+  public static Validation<Seq<PParseError>, PTermConstructorName<PParsed>>
+  parseTermConstructorName(
     final PParseErrorMessagesType m,
     final SExpressionType e)
   {
@@ -123,9 +126,9 @@ public final class PParsingNames
 
     if (e instanceof SExpressionSymbolType) {
       final SExpressionSymbolType es = (SExpressionSymbolType) e;
-      return parseConstructorNameRaw(m, es.lexical(), es.text());
+      return parseTermConstructorNameRaw(m, es.lexical(), es.text());
     }
-    return invalid(m.errorExpression(INVALID_CONSTRUCTOR_NAME, e));
+    return invalid(m.errorExpression(INVALID_TERM_CONSTRUCTOR_NAME, e));
   }
 
   /**
@@ -138,16 +141,19 @@ public final class PParsingNames
    * @return An unqualified constructor name, or a list of parse errors
    */
 
-  public static Validation<Seq<PParseError>, PConstructorName<PParsed>>
-  parseConstructorNameRaw(
+  public static Validation<Seq<PParseError>, PTermConstructorName<PParsed>>
+  parseTermConstructorNameRaw(
     final PParseErrorMessagesType m,
     final LexicalPosition<URI> lexical,
     final String text)
   {
-    if (PConstructorNames.isValid(text)) {
-      return Validation.valid(PConstructorName.of(lexical, parsed(), text));
+    if (PTermConstructorNames.isValid(text)) {
+      return Validation.valid(PTermConstructorName.of(lexical, parsed(), text));
     }
-    return invalid(m.errorLexical(INVALID_CONSTRUCTOR_NAME, lexical, text));
+    return invalid(m.errorLexical(
+      INVALID_TERM_CONSTRUCTOR_NAME,
+      lexical,
+      text));
   }
 
   /**
@@ -194,52 +200,6 @@ public final class PParsingNames
       return Validation.valid(PUnitName.of(lexical, parsed(), text));
     }
     return invalid(m.errorLexical(INVALID_UNIT_NAME, lexical, text));
-  }
-
-  /**
-   * Parse the given expression as an unqualified type name.
-   *
-   * @param m An error message provider
-   * @param e The input expression
-   *
-   * @return An unqualified type name, or a list of parse errors
-   */
-
-  public static Validation<Seq<PParseError>, PTypeName<PParsed>>
-  parseTypeName(
-    final PParseErrorMessagesType m,
-    final SExpressionType e)
-  {
-    Objects.requireNonNull(m, "Messages");
-    Objects.requireNonNull(e, "Expression");
-
-    if (e instanceof SExpressionSymbolType) {
-      final SExpressionSymbolType es = (SExpressionSymbolType) e;
-      return parseTypeNameRaw(m, es.lexical(), es.text());
-    }
-    return invalid(m.errorExpression(INVALID_TYPE_NAME, e));
-  }
-
-  /**
-   * Parse the given string as an unqualified type name.
-   *
-   * @param m       An error message provider
-   * @param lexical Lexical information
-   * @param text    The input text
-   *
-   * @return An unqualified type name, or a list of parse errors
-   */
-
-  public static Validation<Seq<PParseError>, PTypeName<PParsed>>
-  parseTypeNameRaw(
-    final PParseErrorMessagesType m,
-    final LexicalPosition<URI> lexical,
-    final String text)
-  {
-    if (PTypeNames.isValid(text)) {
-      return Validation.valid(PTypeName.of(lexical, parsed(), text));
-    }
-    return invalid(m.errorLexical(INVALID_TYPE_NAME, lexical, text));
   }
 
   /**
@@ -303,4 +263,100 @@ public final class PParsingNames
     return Validation.invalid(on_error.apply(duplicates.keySet().toVector()));
   }
 
+
+  /**
+   * Parse the given expression as an unqualified constructor name.
+   *
+   * @param m An error message provider
+   * @param e The input expression
+   *
+   * @return An unqualified constructor name, or a list of parse errors
+   */
+
+  public static Validation<Seq<PParseError>, PTypeConstructorName<PParsed>>
+  parseTypeConstructorName(
+    final PParseErrorMessagesType m,
+    final SExpressionType e)
+  {
+    Objects.requireNonNull(m, "Messages");
+    Objects.requireNonNull(e, "Expression");
+
+    if (e instanceof SExpressionSymbolType) {
+      final SExpressionSymbolType es = (SExpressionSymbolType) e;
+      return parseTypeConstructorNameRaw(m, es.lexical(), es.text());
+    }
+    return invalid(m.errorExpression(INVALID_TYPE_CONSTRUCTOR_NAME, e));
+  }
+
+  /**
+   * Parse the given string as an unqualified constructor name.
+   *
+   * @param m       An error message provider
+   * @param lexical Lexical information
+   * @param text    The input text
+   *
+   * @return An unqualified constructor name, or a list of parse errors
+   */
+
+  public static Validation<Seq<PParseError>, PTypeConstructorName<PParsed>>
+  parseTypeConstructorNameRaw(
+    final PParseErrorMessagesType m,
+    final LexicalPosition<URI> lexical,
+    final String text)
+  {
+    if (PTypeConstructorNames.isValid(text)) {
+      return Validation.valid(PTypeConstructorName.of(lexical, parsed(), text));
+    }
+    return invalid(m.errorLexical(
+      INVALID_TYPE_CONSTRUCTOR_NAME,
+      lexical,
+      text));
+  }
+
+
+  /**
+   * Parse the given expression as an unqualified variable name.
+   *
+   * @param m An error message provider
+   * @param e The input expression
+   *
+   * @return An unqualified variable name, or a list of parse errors
+   */
+
+  public static Validation<Seq<PParseError>, PTypeVariableName<PParsed>>
+  parseTypeVariableName(
+    final PParseErrorMessagesType m,
+    final SExpressionType e)
+  {
+    Objects.requireNonNull(m, "Messages");
+    Objects.requireNonNull(e, "Expression");
+
+    if (e instanceof SExpressionSymbolType) {
+      final SExpressionSymbolType es = (SExpressionSymbolType) e;
+      return parseTypeVariableNameRaw(m, es.lexical(), es.text());
+    }
+    return invalid(m.errorExpression(INVALID_TYPE_VARIABLE_NAME, e));
+  }
+
+  /**
+   * Parse the given string as an unqualified variable name.
+   *
+   * @param m       An error message provider
+   * @param lexical Lexical information
+   * @param text    The input text
+   *
+   * @return An unqualified variable name, or a list of parse errors
+   */
+
+  public static Validation<Seq<PParseError>, PTypeVariableName<PParsed>>
+  parseTypeVariableNameRaw(
+    final PParseErrorMessagesType m,
+    final LexicalPosition<URI> lexical,
+    final String text)
+  {
+    if (PTypeVariableNames.isValid(text)) {
+      return Validation.valid(PTypeVariableName.of(lexical, parsed(), text));
+    }
+    return invalid(m.errorLexical(INVALID_TYPE_VARIABLE_NAME, lexical, text));
+  }
 }

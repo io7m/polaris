@@ -22,9 +22,10 @@ import com.io7m.jsx.SExpressionType;
 import com.io7m.jsx.prettyprint.JSXPrettyPrinterCodeStyle;
 import com.io7m.jsx.prettyprint.JSXPrettyPrinterType;
 import com.io7m.junreachable.UnreachableCodeException;
-import com.io7m.polaris.model.PConstructorNames;
+import com.io7m.polaris.model.PTermConstructorNames;
 import com.io7m.polaris.model.PTermNames;
-import com.io7m.polaris.model.PTypeNames;
+import com.io7m.polaris.model.PTypeConstructorNames;
+import com.io7m.polaris.model.PTypeVariableNames;
 import com.io7m.polaris.model.PUnitNames;
 import com.io7m.polaris.parser.api.PParseError;
 import com.io7m.polaris.parser.api.PParseErrorCode;
@@ -232,12 +233,14 @@ public final class PParseErrorMessages implements PParseErrorMessagesType
         return base;
       case INVALID_TERM_NAME:
         return base + " " + PTermNames.PATTERN.pattern();
-      case INVALID_TYPE_NAME:
-        return base + " " + PTypeNames.PATTERN.pattern();
       case INVALID_UNIT_NAME:
         return base + " " + PUnitNames.PATTERN.pattern();
-      case INVALID_CONSTRUCTOR_NAME:
-        return base + " " + PConstructorNames.PATTERN.pattern();
+      case INVALID_TERM_CONSTRUCTOR_NAME:
+        return base + " " + PTermConstructorNames.PATTERN.pattern();
+      case INVALID_TYPE_CONSTRUCTOR_NAME:
+        return base + " " + PTypeConstructorNames.PATTERN.pattern();
+      case INVALID_TYPE_VARIABLE_NAME:
+        return base + " " + PTypeVariableNames.PATTERN.pattern();
       case INVALID_RECORD:
         return base;
       case INVALID_RECORD_DUPLICATE_FIELD:

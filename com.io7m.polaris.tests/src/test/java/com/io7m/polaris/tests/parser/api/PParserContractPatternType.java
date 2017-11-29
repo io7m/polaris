@@ -197,7 +197,7 @@ public interface PParserContractPatternType
 
     dump(this.log(), r);
     Assertions.assertTrue(r.isInvalid());
-    Assertions.assertTrue(r.getError().exists(c -> c.code() == PParseErrorCode.INVALID_CONSTRUCTOR_NAME));
+    Assertions.assertTrue(r.getError().exists(c -> c.code() == PParseErrorCode.INVALID_TERM_CONSTRUCTOR_NAME));
   }
 
   @Test
@@ -210,6 +210,6 @@ public interface PParserContractPatternType
 
     dump(this.log(), r);
     Assertions.assertTrue(r.isInvalid());
-    Assertions.assertTrue(r.getError().exists(c -> c.code() == PParseErrorCode.INVALID_CONSTRUCTOR_NAME));
+    Assertions.assertTrue(r.getError().exists(c -> c.code() == PParseErrorCode.INVALID_TERM_CONSTRUCTOR_NAME));
   }
 }

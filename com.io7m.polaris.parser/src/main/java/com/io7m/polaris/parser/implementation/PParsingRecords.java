@@ -24,8 +24,9 @@ import com.io7m.junreachable.UnreachableCodeException;
 import com.io7m.polaris.model.PDeclarationRecord;
 import com.io7m.polaris.model.PRecordField;
 import com.io7m.polaris.model.PTermName;
+import com.io7m.polaris.model.PTypeConstructorName;
 import com.io7m.polaris.model.PTypeExpressionType;
-import com.io7m.polaris.model.PTypeName;
+import com.io7m.polaris.model.PTypeVariableName;
 import com.io7m.polaris.parser.api.PParseError;
 import com.io7m.polaris.parser.api.PParseErrorMessagesType;
 import com.io7m.polaris.parser.api.PParsed;
@@ -84,8 +85,8 @@ public final class PParsingRecords
       c -> "Record declaration must begin with record keyword");
 
     if (e.size() >= 3) {
-      final Validation<Seq<PParseError>, PTypeName<PParsed>> r_name =
-        PParsingNames.parseTypeName(m, e.get(1));
+      final Validation<Seq<PParseError>, PTypeConstructorName<PParsed>> r_name =
+        PParsingNames.parseTypeConstructorName(m, e.get(1));
       final Validation<Seq<PParseError>, RecordParameters> r_rest =
         parseForAllAndFields(m, Vector.ofAll(e).tail().tail());
 
@@ -110,7 +111,7 @@ public final class PParsingRecords
     final Vector<SExpressionType> exprs)
   {
     if (hasForAll(exprs)) {
-      final Validation<Seq<PParseError>, Vector<PTypeName<PParsed>>> r_forall =
+      final Validation<Seq<PParseError>, Vector<PTypeVariableName<PParsed>>> r_forall =
         parseForAll(messages, exprs.get(0));
       final Validation<Seq<PParseError>, Vector<PRecordField<PParsed>>> r_fields =
         parseFields(messages, exprs.tail());
@@ -166,7 +167,7 @@ public final class PParsingRecords
     return invalid(m.errorExpression(INVALID_RECORD_FIELD, ex));
   }
 
-  private static Validation<Seq<PParseError>, Vector<PTypeName<PParsed>>> parseForAll(
+  private static Validation<Seq<PParseError>, Vector<PTypeVariableName<PParsed>>> parseForAll(
     final PParseErrorMessagesType m,
     final SExpressionType e)
   {
@@ -182,7 +183,7 @@ public final class PParsingRecords
 
       return sequence(
         Vector.ofAll(es).tail(),
-        name -> PParsingNames.parseTypeName(m, name));
+        name -> PParsingNames.parseTypeVariableName(m, name));
     }
 
     return invalid(m.errorExpression(INVALID_RECORD_TYPE_PARAMETERS, e));
@@ -214,11 +215,11 @@ public final class PParsingRecords
 
   private static final class RecordParameters
   {
-    private final Vector<PTypeName<PParsed>> parameters;
+    private final Vector<PTypeVariableName<PParsed>> parameters;
     private final Vector<PRecordField<PParsed>> fields;
 
     RecordParameters(
-      final Vector<PTypeName<PParsed>> in_parameters,
+      final Vector<PTypeVariableName<PParsed>> in_parameters,
       final Vector<PRecordField<PParsed>> in_fields)
     {
       this.parameters =

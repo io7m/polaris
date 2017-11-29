@@ -103,14 +103,14 @@ public interface PTypeDeclarationType<T> extends PDeclarationType<T>
      */
 
     @Value.Parameter
-    PTypeNameType<T> name();
+    PTypeConstructorNameType<T> name();
 
     /**
      * @return The type parameters
      */
 
     @Value.Parameter
-    Vector<PTypeNameType<T>> parameters();
+    Vector<PTypeVariableNameType<T>> parameters();
 
     /**
      * @return The fields in declaration order
@@ -215,14 +215,14 @@ public interface PTypeDeclarationType<T> extends PDeclarationType<T>
      */
 
     @Value.Parameter
-    PTypeNameType<T> name();
+    PTypeConstructorNameType<T> name();
 
     /**
      * @return The type parameters
      */
 
     @Value.Parameter
-    Vector<PTypeNameType<T>> parameters();
+    Vector<PTypeVariableNameType<T>> parameters();
 
     /**
      * @return The cases in declaration order
@@ -280,7 +280,7 @@ public interface PTypeDeclarationType<T> extends PDeclarationType<T>
      */
 
     @Value.Parameter
-    PConstructorNameType<T> name();
+    PTermConstructorNameType<T> name();
 
     /**
      * @return The case parameter, if any
