@@ -16,16 +16,16 @@
 
 module com.io7m.polaris.parser
 {
+  requires com.io7m.jaffirm.core;
+  requires com.io7m.jlexing.core;
   requires com.io7m.jsx.core;
   requires com.io7m.jsx.parser.api;
+  requires com.io7m.jsx.prettyprint;
   requires com.io7m.junreachable.core;
-  requires com.io7m.polaris.model;
+  requires com.io7m.polaris.ast;
   requires com.io7m.polaris.parser.api;
   requires io.vavr;
   requires org.slf4j;
-  requires com.io7m.jlexing.core;
-  requires com.io7m.jaffirm.core;
-  requires com.io7m.jsx.prettyprint;
 
   exports com.io7m.polaris.parser;
 

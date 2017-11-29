@@ -19,11 +19,11 @@ module com.io7m.polaris.parser.api
   requires static org.immutables.value;
 
   requires com.io7m.jlexing.core;
-  requires com.io7m.jsx.parser.api;
-  requires com.io7m.polaris.core;
-  requires com.io7m.polaris.model;
-  requires io.vavr;
   requires com.io7m.jsx.core;
+  requires com.io7m.jsx.parser.api;
+  requires com.io7m.polaris.ast;
+  requires com.io7m.polaris.core;
+  requires io.vavr;
 
   exports com.io7m.polaris.parser.api;
 }

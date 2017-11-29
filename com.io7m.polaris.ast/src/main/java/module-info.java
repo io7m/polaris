@@ -14,7 +14,7 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-module com.io7m.polaris.model
+module com.io7m.polaris.ast
 {
   requires static org.immutables.value;
 
