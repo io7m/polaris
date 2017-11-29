@@ -232,9 +232,10 @@ public interface PExpressionType<T> extends PExpressionOrDeclarationType<T>
     }
 
     @Override
-    @Value.Parameter
-    @Value.Auxiliary
-    LexicalPosition<URI> lexical();
+    default LexicalPosition<URI> lexical()
+    {
+      return this.function().lexical();
+    }
 
     @Override
     @Value.Parameter

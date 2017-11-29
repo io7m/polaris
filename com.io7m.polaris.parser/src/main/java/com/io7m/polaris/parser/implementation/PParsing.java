@@ -272,8 +272,7 @@ public final class PParsing
       c -> "Expression size must be > 0");
 
     return sequence(e, se -> parseExpression(m, se))
-      .flatMap(es -> Validation.valid(
-        PExprApplication.of(e.lexical(), parsed(), es.head(), es.tail())));
+      .map(es -> PExprApplication.of(parsed(), es.head(), es.tail()));
   }
 
   private static Validation<Seq<PParseError>, PExpressionType<PParsed>>
