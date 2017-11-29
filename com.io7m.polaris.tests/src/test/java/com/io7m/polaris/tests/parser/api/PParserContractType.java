@@ -46,7 +46,8 @@ public interface PParserContractType extends
   PParserContractDeclarationFunctionType,
   PParserContractDeclarationValueType,
   PParserContractDeclarationRecordType,
-  PParserContractPatternType
+  PParserContractPatternType,
+  PParserContractTypeExpressionType
 {
   @Test
   default void testEOF_0()

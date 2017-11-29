@@ -145,6 +145,36 @@ public enum PParseErrorCode
   INVALID_TYPE_EXPRESSION,
 
   /**
+   * The given type arrow expression is invalid.
+   */
+
+  INVALID_TYPE_EXPRESSION_ARROW,
+
+  /**
+   * Only the last parameter of an arrow type is allowed to be variadic.
+   */
+
+  INVALID_TYPE_EXPRESSION_UNEXPECTED_VARIADIC,
+
+  /**
+   * The given variadic type expression is invalid.
+   */
+
+  INVALID_TYPE_EXPRESSION_VARIADIC,
+
+  /**
+   * The given type forall expression is invalid.
+   */
+
+  INVALID_TYPE_EXPRESSION_FORALL,
+
+  /**
+   * The given type forall expression is invalid due to a duplicate parameter name.
+   */
+
+  INVALID_TYPE_EXPRESSION_FORALL_DUPLICATE_NAME,
+
+  /**
    * The given text could not be parsed as an S-expression.
    */
 

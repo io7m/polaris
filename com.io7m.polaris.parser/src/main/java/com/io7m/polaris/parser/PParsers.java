@@ -26,6 +26,7 @@ import com.io7m.jsx.api.parser.JSXParserSupplierType;
 import com.io7m.jsx.api.parser.JSXParserType;
 import com.io7m.polaris.model.PExpressionOrDeclarationType;
 import com.io7m.polaris.model.PPatternType;
+import com.io7m.polaris.model.PTypeExpressionType;
 import com.io7m.polaris.parser.api.PParseError;
 import com.io7m.polaris.parser.api.PParseErrorCode;
 import com.io7m.polaris.parser.api.PParseErrorMessagesType;
@@ -35,6 +36,7 @@ import com.io7m.polaris.parser.api.PParserProviderType;
 import com.io7m.polaris.parser.api.PParserType;
 import com.io7m.polaris.parser.implementation.PParseErrorMessagesProvider;
 import com.io7m.polaris.parser.implementation.PParsing;
+import com.io7m.polaris.parser.implementation.PParsingTypeExpressions;
 import io.vavr.collection.Seq;
 import io.vavr.collection.Vector;
 import io.vavr.control.Validation;
@@ -209,14 +211,7 @@ public final class PParsers implements PParserProviderType
         }
         return Validation.valid(Optional.empty());
       } catch (final JSXParserException e) {
-        return Validation.invalid(
-          Vector.of(PParseError.builder()
-                      .setException(e)
-                      .setCode(PParseErrorCode.INVALID_S_EXPRESSION)
-                      .setLexical(e.getLexicalInformation())
-                      .setMessage(e.getMessage())
-                      .setSeverity(PParseErrorType.Severity.ERROR)
-                      .build()));
+        return parseException(e);
       }
     }
 
@@ -228,19 +223,43 @@ public final class PParsers implements PParserProviderType
         final Optional<SExpressionType> opt = this.parser.parseExpressionOrEOF();
         if (opt.isPresent()) {
           final SExpressionType expr = opt.get();
-          return PParsing.parsePattern(this.errors, expr).map(Optional::of);
+          return PParsing.parsePattern(this.errors, expr)
+            .map(Optional::of);
         }
         return Validation.valid(Optional.empty());
       } catch (final JSXParserException e) {
-        return Validation.invalid(
-          Vector.of(PParseError.builder()
-                      .setException(e)
-                      .setCode(PParseErrorCode.INVALID_S_EXPRESSION)
-                      .setLexical(e.getLexicalInformation())
-                      .setMessage(e.getMessage())
-                      .setSeverity(PParseErrorType.Severity.ERROR)
-                      .build()));
+        return parseException(e);
       }
     }
+
+    @Override
+    public Validation<Seq<PParseError>, Optional<PTypeExpressionType<PParsed>>> parseTypeExpression()
+      throws IOException
+    {
+      try {
+        final Optional<SExpressionType> opt = this.parser.parseExpressionOrEOF();
+        if (opt.isPresent()) {
+          final SExpressionType expr = opt.get();
+          return PParsingTypeExpressions.parseTypeExpression(this.errors, expr)
+            .map(Optional::of);
+        }
+        return Validation.valid(Optional.empty());
+      } catch (final JSXParserException e) {
+        return parseException(e);
+      }
+    }
+  }
+
+  private static <T> Validation<Seq<PParseError>, T> parseException(
+    final JSXParserException e)
+  {
+    return Validation.invalid(
+      Vector.of(PParseError.builder()
+                  .setException(e)
+                  .setCode(PParseErrorCode.INVALID_S_EXPRESSION)
+                  .setLexical(e.getLexicalInformation())
+                  .setMessage(e.getMessage())
+                  .setSeverity(PParseErrorType.Severity.ERROR)
+                  .build()));
   }
 }

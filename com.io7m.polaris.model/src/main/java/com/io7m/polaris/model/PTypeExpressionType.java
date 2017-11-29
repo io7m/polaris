@@ -16,6 +16,7 @@
 
 package com.io7m.polaris.model;
 
+import com.io7m.jaffirm.core.Preconditions;
 import com.io7m.jlexing.core.LexicalPosition;
 import com.io7m.polaris.core.PImmutableStyleType;
 import io.vavr.collection.Vector;
@@ -67,6 +68,12 @@ public interface PTypeExpressionType<T> extends PModelElementType<T>
      */
 
     TYPE_EXPR_REFERENCE,
+
+    /**
+     * @see PTypeExprApplicationType
+     */
+
+    TYPE_EXPR_APPLICATION,
   }
 
   /**
@@ -103,11 +110,11 @@ public interface PTypeExpressionType<T> extends PModelElementType<T>
     Vector<PTypeExpressionType<T>> parameters();
 
     /**
-     * @return The final variadic function parameter
+     * @return {@code true} iff the last function parameter is variadic
      */
 
     @Value.Parameter
-    Optional<PTypeExpressionType<T>> variadic();
+    boolean isVariadic();
 
     /**
      * @return The function return type
@@ -144,11 +151,11 @@ public interface PTypeExpressionType<T> extends PModelElementType<T>
     T data();
 
     /**
-     * @return The function parameters
+     * @return The quantified parameters
      */
 
     @Value.Parameter
-    Vector<PTypeNameType<T>> arguments();
+    Vector<PTypeNameType<T>> parameters();
 
     /**
      * @return The quantified expression
@@ -156,6 +163,24 @@ public interface PTypeExpressionType<T> extends PModelElementType<T>
 
     @Value.Parameter
     PTypeExpressionType<T> expression();
+
+    /**
+     * Check preconditions for the type.
+     */
+
+    @Value.Check
+    default void checkPreconditions()
+    {
+      Preconditions.checkPrecondition(
+        this.parameters(),
+        !this.parameters().isEmpty(),
+      p -> "Must specify at least one type parameter");
+
+      Preconditions.checkPrecondition(
+        this.parameters(),
+        this.parameters().size() == this.parameters().toSet().size(),
+        p -> "Type parameters must be uniquely named");
+    }
   }
 
   /**
@@ -197,5 +222,46 @@ public interface PTypeExpressionType<T> extends PModelElementType<T>
 
     @Value.Parameter
     PTypeNameType<T> name();
+  }
+
+  /**
+   * A type constructor application.
+   *
+   * @param <T> The type of associated data
+   */
+
+  @PImmutableStyleType
+  @Value.Immutable
+  interface PTypeExprApplicationType<T> extends PTypeExpressionType<T>
+  {
+    @Override
+    default PTypeExpressionKind typeExpressionKind()
+    {
+      return PTypeExpressionKind.TYPE_EXPR_APPLICATION;
+    }
+
+    @Override
+    @Value.Parameter
+    @Value.Auxiliary
+    LexicalPosition<URI> lexical();
+
+    @Override
+    @Value.Parameter
+    @Value.Auxiliary
+    T data();
+
+    /**
+     * @return The constructor
+     */
+
+    @Value.Parameter
+    PTypeExpressionType<T> constructor();
+
+    /**
+     * @return The constructor arguments
+     */
+
+    @Value.Parameter
+    Vector<PTypeExpressionType<T>> arguments();
   }
 }

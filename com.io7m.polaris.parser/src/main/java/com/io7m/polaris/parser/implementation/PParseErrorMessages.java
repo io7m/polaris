@@ -243,6 +243,16 @@ public final class PParseErrorMessages implements PParseErrorMessagesType
         return base;
       case INVALID_TYPE_EXPRESSION:
         return base;
+      case INVALID_TYPE_EXPRESSION_ARROW:
+        return base;
+      case INVALID_TYPE_EXPRESSION_UNEXPECTED_VARIADIC:
+        return base;
+      case INVALID_TYPE_EXPRESSION_VARIADIC:
+        return base;
+      case INVALID_TYPE_EXPRESSION_FORALL:
+        return base;
+      case INVALID_TYPE_EXPRESSION_FORALL_DUPLICATE_NAME:
+        return base;
       case INVALID_S_EXPRESSION:
         return base;
       case EXPECTED_TERM_NAME_UNQUALIFIED_GOT_EXPRESSION:
