@@ -22,7 +22,6 @@ import com.io7m.polaris.core.PImmutableStyleType;
 import org.immutables.value.Value;
 
 import java.net.URI;
-import java.util.Optional;
 
 /**
  * The type of type names.

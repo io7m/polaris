@@ -89,9 +89,9 @@ public final class PParsingFunctions
           (SExpressionListType) e_params;
 
         final Validation<Seq<PParseError>, PTermName<PParsed>> r_name =
-          PParsingNames.parseTermNameUnqualified(m, e_name);
+          PParsingNames.parseTermName(m, e_name);
         final Validation<Seq<PParseError>, Vector<PTermNameType<PParsed>>> r_params =
-          sequence(el_params, x -> PParsingNames.parseTermNameUnqualified(m, x))
+          sequence(el_params, x -> PParsingNames.parseTermName(m, x))
             .map(PVectors::vectorCast);
 
         final Validation<Seq<PParseError>, PExpressionType<PParsed>> r_body =

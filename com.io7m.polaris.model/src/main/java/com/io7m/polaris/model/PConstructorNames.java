@@ -16,48 +16,41 @@
 
 package com.io7m.polaris.model;
 
-import com.io7m.jaffirm.core.Preconditions;
-import com.io7m.jlexing.core.LexicalPosition;
-import com.io7m.polaris.core.PImmutableStyleType;
-import org.immutables.value.Value;
+import com.io7m.junreachable.UnreachableCodeException;
 
-import java.net.URI;
+import java.util.Objects;
+import java.util.regex.Pattern;
 
 /**
- * The type of unit names.
- *
- * @param <T> The type of associated data
+ * The type of constructor names.
  */
 
-@PImmutableStyleType
-@Value.Immutable(builder = false)
-public interface PUnitNameType<T> extends PModelElementType<T>
+public final class PConstructorNames
 {
-  @Override
-  @Value.Parameter
-  @Value.Auxiliary
-  LexicalPosition<URI> lexical();
-
-  @Override
-  @Value.Parameter
-  @Value.Auxiliary
-  T data();
-
   /**
-   * @return The actual name value
+   * A pattern describing valid names.
    */
 
-  @Value.Parameter
-  String value();
+  public static final Pattern PATTERN =
+    Pattern.compile(
+      "\\p{Lu}[\\p{Ll}\\p{Lu}\\p{Digit}_]{0,127}",
+      Pattern.UNICODE_CHARACTER_CLASS);
 
-  /**
-   * Check preconditions for the type.
-   */
-
-  @Value.Check
-  default void checkPreconditions()
+  private PConstructorNames()
   {
-    Preconditions.checkPrecondition(
-      PUnitNames.isValid(this.value()), "Name must be valid");
+    throw new UnreachableCodeException();
+  }
+
+  /**
+   * @param name The {@code name}
+   *
+   * @return {@code true} iff {@code name} is valid
+   */
+
+  public static boolean isValid(
+    final String name)
+  {
+    Objects.requireNonNull(name, "Name");
+    return PATTERN.matcher(name).matches();
   }
 }

@@ -19,7 +19,6 @@ package com.io7m.polaris.model;
 import com.io7m.jaffirm.core.Preconditions;
 import com.io7m.jlexing.core.LexicalPosition;
 import com.io7m.polaris.core.PImmutableStyleType;
-import io.vavr.collection.LinkedHashMap;
 import io.vavr.collection.Map;
 import io.vavr.collection.Vector;
 import org.immutables.value.Value;

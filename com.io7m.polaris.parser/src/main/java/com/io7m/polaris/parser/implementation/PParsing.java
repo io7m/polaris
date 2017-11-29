@@ -185,18 +185,8 @@ public final class PParsing
           pair._1));
     }
 
-    return PParsingNames.parseTermReference(m, e)
-      .map(PParsing::transformPathToReference);
-  }
-
-  private static PExpressionType<PParsed> transformPathToReference(
-    final PParsingNames.PTermReference path)
-  {
-    return PExprReference.of(
-      parsed(),
-      path.unit(),
-      path.base(),
-      PVectors.vectorCast(path.path()));
+    return PParsingTermReferences.parseTermReference(m, e)
+      .map(pt -> PExprReference.of(parsed(), pt));
   }
 
   private static Validation<Seq<PParseError>, PExpressionType<PParsed>> onQuotedString(
@@ -420,7 +410,7 @@ public final class PParsing
         final Validation<Seq<PParseError>, Vector<PTermName<PParsed>>> r_params =
           sequence(
             (SExpressionListType) e_param_list,
-            ex -> PParsingNames.parseTermNameUnqualified(m, ex));
+            ex -> PParsingNames.parseTermName(m, ex));
 
         final Validation<Seq<PParseError>, PExpressionType<PParsed>> r_body =
           parseExpression(m, e_body);

@@ -16,23 +16,22 @@
 
 package com.io7m.polaris.model;
 
-import com.io7m.jaffirm.core.Preconditions;
 import com.io7m.jlexing.core.LexicalPosition;
 import com.io7m.polaris.core.PImmutableStyleType;
-import io.vavr.collection.Vector;
 import org.immutables.value.Value;
 
 import java.net.URI;
+import java.util.Optional;
 
 /**
- * The type of package names.
+ * The type of type references.
  *
  * @param <T> The type of associated data
  */
 
 @PImmutableStyleType
-@Value.Immutable(builder = false)
-public interface PPackageNameType<T> extends PModelElementType<T>
+@Value.Immutable
+public interface PTypeReferenceType<T> extends PModelElementType<T>
 {
   @Override
   @Value.Parameter
@@ -45,30 +44,16 @@ public interface PPackageNameType<T> extends PModelElementType<T>
   T data();
 
   /**
-   * @return The actual name value
+   * @return The qualifying unit name, if any
    */
 
   @Value.Parameter
-  String value();
+  Optional<PUnitNameType<T>> unit();
 
   /**
-   * Check preconditions for the type.
+   * @return The type name
    */
 
-  @Value.Check
-  default void checkPreconditions()
-  {
-    Preconditions.checkPrecondition(
-      PPackageNames.isValid(this.value()), "Name must be valid");
-  }
-
-  /**
-   * @return The components that make up the package name in declaration order
-   */
-
-  @Value.Derived
-  default Vector<String> nameComponents()
-  {
-    return Vector.of(this.value().split("\\."));
-  }
+  @Value.Parameter
+  PTypeNameType<T> type();
 }

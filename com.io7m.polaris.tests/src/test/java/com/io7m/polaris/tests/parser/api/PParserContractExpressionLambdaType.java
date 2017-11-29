@@ -20,6 +20,7 @@ import com.io7m.polaris.model.PExprApplication;
 import com.io7m.polaris.model.PExprLambda;
 import com.io7m.polaris.model.PExprReference;
 import com.io7m.polaris.model.PExpressionOrDeclarationType;
+import com.io7m.polaris.model.PTermReferenceVariable;
 import com.io7m.polaris.parser.api.PParseError;
 import com.io7m.polaris.parser.api.PParseErrorCode;
 import com.io7m.polaris.parser.api.PParsed;
@@ -59,15 +60,23 @@ public interface PParserContractExpressionLambdaType
     final PExprApplication<PParsed> app =
       (PExprApplication<PParsed>) e.expression();
 
-    Assertions.assertEquals(
-      "+",
-      ((PExprReference<PParsed>) app.function()).name().value());
-    Assertions.assertEquals(
-      "x",
-      ((PExprReference<PParsed>) app.arguments().get(0)).name().value());
-    Assertions.assertEquals(
-      "y",
-      ((PExprReference<PParsed>) app.arguments().get(1)).name().value());
+    final PExprReference<PParsed> plus_func =
+      (PExprReference<PParsed>) app.function();
+    final PExprReference<PParsed> x_arg =
+      (PExprReference<PParsed>) app.arguments().get(0);
+    final PExprReference<PParsed> y_arg =
+      (PExprReference<PParsed>) app.arguments().get(1);
+
+    final PTermReferenceVariable<PParsed> plus_func_ref =
+      (PTermReferenceVariable<PParsed>) plus_func.reference();
+    final PTermReferenceVariable<PParsed> x_ref =
+      (PTermReferenceVariable<PParsed>) x_arg.reference();
+    final PTermReferenceVariable<PParsed> y_ref =
+      (PTermReferenceVariable<PParsed>) y_arg.reference();
+
+    Assertions.assertEquals("+", plus_func_ref.term().value());
+    Assertions.assertEquals("x", x_ref.term().value());
+    Assertions.assertEquals("y", y_ref.term().value());
   }
 
   @Test
@@ -93,15 +102,23 @@ public interface PParserContractExpressionLambdaType
     final PExprApplication<PParsed> app =
       (PExprApplication<PParsed>) e.expression();
 
-    Assertions.assertEquals(
-      "+",
-      ((PExprReference<PParsed>) app.function()).name().value());
-    Assertions.assertEquals(
-      "x",
-      ((PExprReference<PParsed>) app.arguments().get(0)).name().value());
-    Assertions.assertEquals(
-      "y",
-      ((PExprReference<PParsed>) app.arguments().get(1)).name().value());
+    final PExprReference<PParsed> plus_func =
+      (PExprReference<PParsed>) app.function();
+    final PExprReference<PParsed> x_arg =
+      (PExprReference<PParsed>) app.arguments().get(0);
+    final PExprReference<PParsed> y_arg =
+      (PExprReference<PParsed>) app.arguments().get(1);
+
+    final PTermReferenceVariable<PParsed> plus_func_ref =
+      (PTermReferenceVariable<PParsed>) plus_func.reference();
+    final PTermReferenceVariable<PParsed> x_ref =
+      (PTermReferenceVariable<PParsed>) x_arg.reference();
+    final PTermReferenceVariable<PParsed> y_ref =
+      (PTermReferenceVariable<PParsed>) y_arg.reference();
+
+    Assertions.assertEquals("+", plus_func_ref.term().value());
+    Assertions.assertEquals("x", x_ref.term().value());
+    Assertions.assertEquals("y", y_ref.term().value());
   }
 
   @Test
@@ -140,7 +157,7 @@ public interface PParserContractExpressionLambdaType
 
     dump(this.log(), r);
     Assertions.assertTrue(r.isInvalid());
-    Assertions.assertTrue(r.getError().exists(e -> e.code() == PParseErrorCode.EXPECTED_TERM_NAME_UNQUALIFIED_GOT_EXPRESSION));
+    Assertions.assertTrue(r.getError().exists(e -> e.code() == PParseErrorCode.INVALID_TERM_NAME));
   }
 
   @Test

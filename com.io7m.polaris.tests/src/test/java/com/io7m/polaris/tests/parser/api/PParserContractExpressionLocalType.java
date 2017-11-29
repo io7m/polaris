@@ -20,6 +20,7 @@ import com.io7m.polaris.model.PExprApplication;
 import com.io7m.polaris.model.PExprLocal;
 import com.io7m.polaris.model.PExprReference;
 import com.io7m.polaris.model.PExpressionOrDeclarationType;
+import com.io7m.polaris.model.PTermReferenceVariable;
 import com.io7m.polaris.parser.api.PParseError;
 import com.io7m.polaris.parser.api.PParseErrorCode;
 import com.io7m.polaris.parser.api.PParsed;
@@ -50,7 +51,8 @@ public interface PParserContractExpressionLocalType
 
     final PExprLocal<PParsed> e = (PExprLocal<PParsed>) r.get().get();
     final PExprReference<PParsed> x = (PExprReference<PParsed>) e.body();
-    Assertions.assertEquals("x", x.name().value());
+    final PTermReferenceVariable<PParsed> ref = (PTermReferenceVariable<PParsed>) x.reference();
+    Assertions.assertEquals("x", ref.term().value());
     Assertions.assertEquals(0, e.locals().size());
   }
 
@@ -68,19 +70,27 @@ public interface PParserContractExpressionLocalType
 
     final PExprLocal<PParsed> e = (PExprLocal<PParsed>) r.get().get();
     final PExprReference<PParsed> x = (PExprReference<PParsed>) e.body();
-    Assertions.assertEquals("x", x.name().value());
+    final PTermReferenceVariable<PParsed> ref = (PTermReferenceVariable<PParsed>) x.reference();
+    Assertions.assertEquals("x", ref.term().value());
     Assertions.assertEquals(2, e.locals().size());
 
     final PExprApplication<PParsed> y =
       (PExprApplication<PParsed>) e.locals().get(0);
-    Assertions.assertEquals(
-      "y",
-      ((PExprReference<PParsed>) y.function()).name().value());
+    final PExprReference<PParsed> yy =
+      (PExprReference<PParsed>) y.function();
+    final PTermReferenceVariable<PParsed> y_ref =
+      (PTermReferenceVariable<PParsed>) yy.reference();
+
+    Assertions.assertEquals("y", y_ref.term().value());
+
     final PExprApplication<PParsed> z =
       (PExprApplication<PParsed>) e.locals().get(1);
-    Assertions.assertEquals(
-      "z",
-      ((PExprReference<PParsed>) z.function()).name().value());
+    final PExprReference<PParsed> zz =
+      (PExprReference<PParsed>) z.function();
+    final PTermReferenceVariable<PParsed> z_ref =
+      (PTermReferenceVariable<PParsed>) zz.reference();
+
+    Assertions.assertEquals("z", z_ref.term().value());
   }
 
   @Test

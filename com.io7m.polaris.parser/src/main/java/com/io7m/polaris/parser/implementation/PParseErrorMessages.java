@@ -22,6 +22,7 @@ import com.io7m.jsx.SExpressionType;
 import com.io7m.jsx.prettyprint.JSXPrettyPrinterCodeStyle;
 import com.io7m.jsx.prettyprint.JSXPrettyPrinterType;
 import com.io7m.junreachable.UnreachableCodeException;
+import com.io7m.polaris.model.PConstructorNames;
 import com.io7m.polaris.model.PTermNames;
 import com.io7m.polaris.model.PTypeNames;
 import com.io7m.polaris.model.PUnitNames;
@@ -231,6 +232,8 @@ public final class PParseErrorMessages implements PParseErrorMessagesType
         return base + " " + PTypeNames.PATTERN.pattern();
       case INVALID_UNIT_NAME:
         return base + " " + PUnitNames.PATTERN.pattern();
+      case INVALID_CONSTRUCTOR_NAME:
+        return base + " " + PConstructorNames.PATTERN.pattern();
       case INVALID_RECORD:
         return base;
       case INVALID_RECORD_DUPLICATE_FIELD:
@@ -254,6 +257,12 @@ public final class PParseErrorMessages implements PParseErrorMessagesType
       case INVALID_TYPE_EXPRESSION_FORALL_DUPLICATE_NAME:
         return base;
       case INVALID_S_EXPRESSION:
+        return base;
+      case INVALID_TERM_REFERENCE:
+        return base;
+      case INVALID_TYPE_REFERENCE:
+        return base;
+      case INVALID_CONSTRUCTOR_REFERENCE:
         return base;
       case EXPECTED_TERM_NAME_UNQUALIFIED_GOT_EXPRESSION:
         return base;

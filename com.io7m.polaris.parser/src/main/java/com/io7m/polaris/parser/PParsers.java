@@ -116,6 +116,19 @@ public final class PParsers implements PParserProviderType
     return new PParsers(in_sexpr_parsers, in_sexpr_lexers);
   }
 
+  private static <T> Validation<Seq<PParseError>, T> parseException(
+    final JSXParserException e)
+  {
+    return Validation.invalid(
+      Vector.of(PParseError.builder()
+                  .setException(e)
+                  .setCode(PParseErrorCode.INVALID_S_EXPRESSION)
+                  .setLexical(e.getLexicalInformation())
+                  .setMessage(e.getMessage())
+                  .setSeverity(PParseErrorType.Severity.ERROR)
+                  .build()));
+  }
+
   @Override
   public PParserType create(
     final URI uri,
@@ -248,18 +261,5 @@ public final class PParsers implements PParserProviderType
         return parseException(e);
       }
     }
-  }
-
-  private static <T> Validation<Seq<PParseError>, T> parseException(
-    final JSXParserException e)
-  {
-    return Validation.invalid(
-      Vector.of(PParseError.builder()
-                  .setException(e)
-                  .setCode(PParseErrorCode.INVALID_S_EXPRESSION)
-                  .setLexical(e.getLexicalInformation())
-                  .setMessage(e.getMessage())
-                  .setSeverity(PParseErrorType.Severity.ERROR)
-                  .build()));
   }
 }

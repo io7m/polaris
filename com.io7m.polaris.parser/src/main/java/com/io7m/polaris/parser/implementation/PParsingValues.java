@@ -80,7 +80,7 @@ public final class PParsingValues
       final SExpressionType e_body = e.get(2);
 
       final Validation<Seq<PParseError>, PTermName<PParsed>> r_name =
-        PParsingNames.parseTermNameUnqualified(m, e_name);
+        PParsingNames.parseTermName(m, e_name);
       final Validation<Seq<PParseError>, PExpressionType<PParsed>> r_body =
         PParsing.parseExpression(m, e_body);
       final Validation<Seq<Seq<PParseError>>, PDeclarationValue<PParsed>> r_result =

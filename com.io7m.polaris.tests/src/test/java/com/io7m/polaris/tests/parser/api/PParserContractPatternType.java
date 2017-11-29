@@ -23,6 +23,7 @@ import com.io7m.polaris.model.PPatternConstructor;
 import com.io7m.polaris.model.PPatternType;
 import com.io7m.polaris.model.PPatternWildcard;
 import com.io7m.polaris.parser.api.PParseError;
+import com.io7m.polaris.parser.api.PParseErrorCode;
 import com.io7m.polaris.parser.api.PParsed;
 import com.io7m.polaris.parser.api.PParserType;
 import io.vavr.collection.Seq;
@@ -117,7 +118,8 @@ public interface PParserContractPatternType
     Assertions.assertTrue(r.isValid());
 
     final PPatternConstructor<PParsed> e = (PPatternConstructor<PParsed>) r.get().get();
-    Assertions.assertEquals("Cons", e.constructor().value());
+    Assertions.assertEquals(Optional.empty(), e.constructor().unit());
+    Assertions.assertEquals("Cons", e.constructor().constructor().value());
     Assertions.assertEquals("xs", e.argument().get().value());
   }
 
@@ -133,7 +135,8 @@ public interface PParserContractPatternType
     Assertions.assertTrue(r.isValid());
 
     final PPatternConstructor<PParsed> e = (PPatternConstructor<PParsed>) r.get().get();
-    Assertions.assertEquals("Cons", e.constructor().value());
+    Assertions.assertEquals(Optional.empty(), e.constructor().unit());
+    Assertions.assertEquals("Cons", e.constructor().constructor().value());
     Assertions.assertEquals(Optional.empty(), e.argument());
   }
 
@@ -149,8 +152,8 @@ public interface PParserContractPatternType
     Assertions.assertTrue(r.isValid());
 
     final PPatternConstructor<PParsed> e = (PPatternConstructor<PParsed>) r.get().get();
-    Assertions.assertEquals("Q", e.unit().get().value());
-    Assertions.assertEquals("Cons", e.constructor().value());
+    Assertions.assertEquals("Q", e.constructor().unit().get().value());
+    Assertions.assertEquals("Cons", e.constructor().constructor().value());
     Assertions.assertEquals("xs", e.argument().get().value());
   }
 
@@ -166,8 +169,8 @@ public interface PParserContractPatternType
     Assertions.assertTrue(r.isValid());
 
     final PPatternConstructor<PParsed> e = (PPatternConstructor<PParsed>) r.get().get();
-    Assertions.assertEquals("Q", e.unit().get().value());
-    Assertions.assertEquals("Cons", e.constructor().value());
+    Assertions.assertEquals("Q", e.constructor().unit().get().value());
+    Assertions.assertEquals("Cons", e.constructor().constructor().value());
     Assertions.assertEquals(Optional.empty(), e.argument());
   }
 
@@ -181,6 +184,7 @@ public interface PParserContractPatternType
 
     dump(this.log(), r);
     Assertions.assertTrue(r.isInvalid());
+    Assertions.assertTrue(r.getError().exists(c -> c.code() == PParseErrorCode.INVALID_TERM_NAME));
   }
 
   @Test
@@ -193,6 +197,7 @@ public interface PParserContractPatternType
 
     dump(this.log(), r);
     Assertions.assertTrue(r.isInvalid());
+    Assertions.assertTrue(r.getError().exists(c -> c.code() == PParseErrorCode.INVALID_CONSTRUCTOR_NAME));
   }
 
   @Test
@@ -205,5 +210,6 @@ public interface PParserContractPatternType
 
     dump(this.log(), r);
     Assertions.assertTrue(r.isInvalid());
+    Assertions.assertTrue(r.getError().exists(c -> c.code() == PParseErrorCode.INVALID_CONSTRUCTOR_NAME));
   }
 }

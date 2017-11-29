@@ -22,6 +22,7 @@ import com.io7m.polaris.model.PExprReference;
 import com.io7m.polaris.model.PExpressionOrDeclarationType;
 import com.io7m.polaris.model.PExpressionType;
 import com.io7m.polaris.model.PPatternConstantInteger;
+import com.io7m.polaris.model.PTermReferenceVariable;
 import com.io7m.polaris.parser.api.PParseError;
 import com.io7m.polaris.parser.api.PParseErrorCode;
 import com.io7m.polaris.parser.api.PParsed;
@@ -53,7 +54,8 @@ public interface PParserContractExpressionMatchType
 
     final PExprMatch<PParsed> e = (PExprMatch<PParsed>) r.get().get();
     final PExprReference<PParsed> x = (PExprReference<PParsed>) e.target();
-    Assertions.assertEquals("x", x.name().value());
+    final PTermReferenceVariable<PParsed> ref = (PTermReferenceVariable<PParsed>) x.reference();
+    Assertions.assertEquals("x", ref.term().value());
 
     Assertions.assertEquals(1, e.cases().size());
 
@@ -82,9 +84,9 @@ public interface PParserContractExpressionMatchType
     final PExprMatch<PParsed> e = (PExprMatch<PParsed>) r.get().get();
     ;
     final PExprReference<PParsed> x = (PExprReference<PParsed>) e.target();
-    Assertions.assertEquals("A", x.unit().get().value());
-    Assertions.assertEquals("x", x.name().value());
-
+    final PTermReferenceVariable<PParsed> ref = (PTermReferenceVariable<PParsed>) x.reference();
+    Assertions.assertEquals("A", ref.unit().get().value());
+    Assertions.assertEquals("x", ref.term().value());
     Assertions.assertEquals(1, e.cases().size());
 
     final PExpressionType.PMatchCaseType<PParsed> c0 = e.cases().get(0);

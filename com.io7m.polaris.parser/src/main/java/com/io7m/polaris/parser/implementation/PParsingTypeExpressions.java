@@ -107,9 +107,8 @@ public final class PParsingTypeExpressions
     final PParseErrorMessagesType m,
     final SExpressionSymbolType es)
   {
-    return PParsingNames.parseTypeReference(m, es)
-      .map(ref -> PTypeExprReference.of(
-        es.lexical(), parsed(), ref.unit(), ref.base()));
+    return PParsingTypeReferences.parseTypeReference(m, es)
+      .map(ref -> PTypeExprReference.of(parsed(), ref));
   }
 
   private static Validation<Seq<PParseError>, PTypeExpressionType<PParsed>> parseTypeExpressionQuotedString(
@@ -174,8 +173,7 @@ public final class PParsingTypeExpressions
       c -> "Expression size must be > 0");
 
     return sequence(el, se -> parseTypeExpression(m, se))
-      .flatMap(es -> Validation.valid(
-        PTypeExprApplication.of(el.lexical(), parsed(), es.head(), es.tail())));
+      .map(es -> PTypeExprApplication.of(parsed(), es.head(), es.tail()));
   }
 
   private static Validation<Seq<PParseError>, PTypeExpressionType<PParsed>> parseTypeExpressionArrow(
@@ -321,7 +319,7 @@ public final class PParsingTypeExpressions
       final SExpressionType e_last = es.last();
 
       final Validation<Seq<PParseError>, Vector<PTypeName<PParsed>>> r_params =
-        sequence(e_params, n -> PParsingNames.parseTypeNameUnqualified(m, n));
+        sequence(e_params, n -> PParsingNames.parseTypeName(m, n));
       final Validation<Seq<PParseError>, Vector<PTypeName<PParsed>>> r_params_unique =
         r_params.flatMap(params -> requireUnique(m, params));
       final Validation<Seq<PParseError>, PTypeExpressionType<PParsed>> r_last =

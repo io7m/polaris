@@ -179,7 +179,7 @@ public interface PParserContractDeclarationRecordType
 
     dump(this.log(), r);
     Assertions.assertTrue(r.isInvalid());
-    Assertions.assertTrue(r.getError().exists(e -> e.code() == PParseErrorCode.EXPECTED_TYPE_NAME_UNQUALIFIED_GOT_EXPRESSION));
+    Assertions.assertTrue(r.getError().exists(e -> e.code() == PParseErrorCode.INVALID_TYPE_NAME));
   }
 
   @Test

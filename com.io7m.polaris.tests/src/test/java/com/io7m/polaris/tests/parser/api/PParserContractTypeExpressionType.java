@@ -63,7 +63,9 @@ public interface PParserContractTypeExpressionType
 
     final PTypeExprArrow<PParsed> e = (PTypeExprArrow<PParsed>) r.get().get();
     Assertions.assertEquals(0, e.parameters().size());
-    Assertions.assertEquals("a", ((PTypeExprReference<PParsed>) e.returnType()).name().value());
+    final PTypeExprReference<PParsed> ref = (PTypeExprReference<PParsed>) e.returnType();
+    Assertions.assertEquals(Optional.empty(), ref.reference().unit());
+    Assertions.assertEquals("a", ref.reference().type().value());
     Assertions.assertFalse(e.isVariadic());
   }
 
@@ -80,8 +82,14 @@ public interface PParserContractTypeExpressionType
 
     final PTypeExprArrow<PParsed> e = (PTypeExprArrow<PParsed>) r.get().get();
     Assertions.assertEquals(1, e.parameters().size());
-    Assertions.assertEquals("a", ((PTypeExprReference<PParsed>) e.parameters().get(0)).name().value());
-    Assertions.assertEquals("b", ((PTypeExprReference<PParsed>) e.returnType()).name().value());
+
+    final PTypeExprReference<PParsed> a_ref = (PTypeExprReference<PParsed>) e.parameters().get(0);
+    Assertions.assertEquals(Optional.empty(), a_ref.reference().unit());
+    Assertions.assertEquals("a", a_ref.reference().type().value());
+
+    final PTypeExprReference<PParsed> r_ref = (PTypeExprReference<PParsed>) e.returnType();
+    Assertions.assertEquals(Optional.empty(), r_ref.reference().unit());
+    Assertions.assertEquals("b", r_ref.reference().type().value());
     Assertions.assertFalse(e.isVariadic());
   }
 
@@ -98,8 +106,15 @@ public interface PParserContractTypeExpressionType
 
     final PTypeExprArrow<PParsed> e = (PTypeExprArrow<PParsed>) r.get().get();
     Assertions.assertEquals(1, e.parameters().size());
-    Assertions.assertEquals("a", ((PTypeExprReference<PParsed>) e.parameters().get(0)).name().value());
-    Assertions.assertEquals("b", ((PTypeExprReference<PParsed>) e.returnType()).name().value());
+
+    final PTypeExprReference<PParsed> a_ref = (PTypeExprReference<PParsed>) e.parameters().get(0);
+    Assertions.assertEquals(Optional.empty(), a_ref.reference().unit());
+    Assertions.assertEquals("a", a_ref.reference().type().value());
+
+    final PTypeExprReference<PParsed> r_ref = (PTypeExprReference<PParsed>) e.returnType();
+    Assertions.assertEquals(Optional.empty(), r_ref.reference().unit());
+    Assertions.assertEquals("b", r_ref.reference().type().value());
+
     Assertions.assertTrue(e.isVariadic());
   }
 
@@ -116,7 +131,11 @@ public interface PParserContractTypeExpressionType
 
     final PTypeExprArrow<PParsed> e = (PTypeExprArrow<PParsed>) r.get().get();
     Assertions.assertEquals(0, e.parameters().size());
-    Assertions.assertEquals("a", ((PTypeExprReference<PParsed>) e.returnType()).name().value());
+
+    final PTypeExprReference<PParsed> r_ref = (PTypeExprReference<PParsed>) e.returnType();
+    Assertions.assertEquals(Optional.empty(), r_ref.reference().unit());
+    Assertions.assertEquals("a", r_ref.reference().type().value());
+
     Assertions.assertFalse(e.isVariadic());
   }
 
@@ -133,8 +152,15 @@ public interface PParserContractTypeExpressionType
 
     final PTypeExprArrow<PParsed> e = (PTypeExprArrow<PParsed>) r.get().get();
     Assertions.assertEquals(1, e.parameters().size());
-    Assertions.assertEquals("a", ((PTypeExprReference<PParsed>) e.parameters().get(0)).name().value());
-    Assertions.assertEquals("b", ((PTypeExprReference<PParsed>) e.returnType()).name().value());
+
+    final PTypeExprReference<PParsed> a_ref = (PTypeExprReference<PParsed>) e.parameters().get(0);
+    Assertions.assertEquals(Optional.empty(), a_ref.reference().unit());
+    Assertions.assertEquals("a", a_ref.reference().type().value());
+
+    final PTypeExprReference<PParsed> r_ref = (PTypeExprReference<PParsed>) e.returnType();
+    Assertions.assertEquals(Optional.empty(), r_ref.reference().unit());
+    Assertions.assertEquals("b", r_ref.reference().type().value());
+
     Assertions.assertFalse(e.isVariadic());
   }
 
@@ -151,8 +177,15 @@ public interface PParserContractTypeExpressionType
 
     final PTypeExprArrow<PParsed> e = (PTypeExprArrow<PParsed>) r.get().get();
     Assertions.assertEquals(1, e.parameters().size());
-    Assertions.assertEquals("a", ((PTypeExprReference<PParsed>) e.parameters().get(0)).name().value());
-    Assertions.assertEquals("b", ((PTypeExprReference<PParsed>) e.returnType()).name().value());
+
+    final PTypeExprReference<PParsed> a_ref = (PTypeExprReference<PParsed>) e.parameters().get(0);
+    Assertions.assertEquals(Optional.empty(), a_ref.reference().unit());
+    Assertions.assertEquals("a", a_ref.reference().type().value());
+
+    final PTypeExprReference<PParsed> r_ref = (PTypeExprReference<PParsed>) e.returnType();
+    Assertions.assertEquals(Optional.empty(), r_ref.reference().unit());
+    Assertions.assertEquals("b", r_ref.reference().type().value());
+
     Assertions.assertTrue(e.isVariadic());
   }
 

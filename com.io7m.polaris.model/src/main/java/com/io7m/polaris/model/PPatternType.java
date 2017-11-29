@@ -39,12 +39,6 @@ public interface PPatternType<T> extends PModelElementType<T>
 
   Kind kind();
 
-  @Override
-  LexicalPosition<URI> lexical();
-
-  @Override
-  T data();
-
   /**
    * The kind of patterns.
    */
@@ -245,18 +239,11 @@ public interface PPatternType<T> extends PModelElementType<T>
     T data();
 
     /**
-     * @return The qualifying unit name, if any
-     */
-
-    @Value.Parameter
-    Optional<PUnitNameType<T>> unit();
-
-    /**
      * @return The constructor name
      */
 
     @Value.Parameter
-    PTermNameType<T> constructor();
+    PTermReferenceType.PTermReferenceConstructorType<T> constructor();
 
     /**
      * @return The constructor argument

@@ -19,20 +19,19 @@ package com.io7m.polaris.model;
 import com.io7m.jaffirm.core.Preconditions;
 import com.io7m.jlexing.core.LexicalPosition;
 import com.io7m.polaris.core.PImmutableStyleType;
-import io.vavr.collection.Vector;
 import org.immutables.value.Value;
 
 import java.net.URI;
 
 /**
- * The type of package names.
+ * The type of constructor names.
  *
  * @param <T> The type of associated data
  */
 
 @PImmutableStyleType
 @Value.Immutable(builder = false)
-public interface PPackageNameType<T> extends PModelElementType<T>
+public interface PConstructorNameType<T> extends PModelElementType<T>
 {
   @Override
   @Value.Parameter
@@ -59,16 +58,6 @@ public interface PPackageNameType<T> extends PModelElementType<T>
   default void checkPreconditions()
   {
     Preconditions.checkPrecondition(
-      PPackageNames.isValid(this.value()), "Name must be valid");
-  }
-
-  /**
-   * @return The components that make up the package name in declaration order
-   */
-
-  @Value.Derived
-  default Vector<String> nameComponents()
-  {
-    return Vector.of(this.value().split("\\."));
+      PConstructorNames.isValid(this.value()), "Name must be valid");
   }
 }

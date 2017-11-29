@@ -19,6 +19,7 @@ package com.io7m.polaris.tests.parser.api;
 import com.io7m.polaris.model.PDeclarationFunction;
 import com.io7m.polaris.model.PExprReference;
 import com.io7m.polaris.model.PExpressionOrDeclarationType;
+import com.io7m.polaris.model.PTermReferenceVariable;
 import com.io7m.polaris.parser.api.PParseError;
 import com.io7m.polaris.parser.api.PParseErrorCode;
 import com.io7m.polaris.parser.api.PParsed;
@@ -51,9 +52,10 @@ public interface PParserContractDeclarationFunctionType
     Assertions.assertEquals("id", e.name().value());
     Assertions.assertEquals(1, e.parameters().size());
     Assertions.assertEquals("x", e.parameters().get(0).value());
-    Assertions.assertEquals(
-      "x",
-      ((PExprReference<PParsed>) e.expression()).name().value());
+
+    final PExprReference<PParsed> x_ref = (PExprReference<PParsed>) e.expression();
+    final PTermReferenceVariable<PParsed> ref = (PTermReferenceVariable<PParsed>) x_ref.reference();
+    Assertions.assertEquals("x", ref.term().value());
   }
 
   @Test

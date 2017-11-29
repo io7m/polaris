@@ -18,6 +18,7 @@ package com.io7m.polaris.tests.parser.api;
 
 import com.io7m.polaris.model.PExprReference;
 import com.io7m.polaris.model.PExpressionOrDeclarationType;
+import com.io7m.polaris.model.PTermReferenceVariable;
 import com.io7m.polaris.parser.api.PParseError;
 import com.io7m.polaris.parser.api.PParseErrorCode;
 import com.io7m.polaris.parser.api.PParsed;
@@ -56,9 +57,13 @@ public interface PParserContractExpressionTermReferenceType
           dump(this.log(), r);
           Assertions.assertTrue(r.isValid());
 
-          final PExprReference<PParsed> e = (PExprReference<PParsed>) r.get().get();
-          Assertions.assertEquals(Optional.empty(), e.unit());
-          Assertions.assertEquals(s._1, e.name().value());
+          final PExprReference<PParsed> e =
+            (PExprReference<PParsed>) r.get().get();
+
+          final PTermReferenceVariable<PParsed> ref =
+            (PTermReferenceVariable<PParsed>) e.reference();
+          Assertions.assertEquals(Optional.empty(), ref.unit());
+          Assertions.assertEquals(s._1, ref.term().value());
         });
 
     Assertions.assertAll(execs);
@@ -117,8 +122,12 @@ public interface PParserContractExpressionTermReferenceType
           Assertions.assertTrue(r.isValid());
 
           final PExprReference<PParsed> e = (PExprReference<PParsed>) r.get().get();
-          Assertions.assertEquals(s._1, e.unit().get().value());
-          Assertions.assertEquals(s._2, e.name().value());
+
+          final PTermReferenceVariable<PParsed> ref =
+            (PTermReferenceVariable<PParsed>) e.reference();
+
+          Assertions.assertEquals(s._1, ref.unit().get().value());
+          Assertions.assertEquals(s._2, ref.term().value());
         });
 
     Assertions.assertAll(execs);
@@ -144,7 +153,8 @@ public interface PParserContractExpressionTermReferenceType
           Assertions.assertTrue(r.isInvalid());
           Assertions.assertTrue(r.getError().exists(
             e -> e.code() == PParseErrorCode.INVALID_TERM_NAME
-              || e.code() == PParseErrorCode.INVALID_UNIT_NAME));
+              || e.code() == PParseErrorCode.INVALID_UNIT_NAME
+              || e.code() == PParseErrorCode.INVALID_CONSTRUCTOR_NAME));
         });
 
     Assertions.assertAll(execs);

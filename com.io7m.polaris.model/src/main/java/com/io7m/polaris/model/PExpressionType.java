@@ -24,7 +24,6 @@ import org.immutables.value.Value;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.net.URI;
-import java.util.Optional;
 
 /**
  * The type of term-level expressions.
@@ -317,7 +316,7 @@ public interface PExpressionType<T> extends PExpressionOrDeclarationType<T>
     @Override
     default LexicalPosition<URI> lexical()
     {
-      return this.name().lexical();
+      return this.reference().lexical();
     }
 
     @Override
@@ -326,25 +325,11 @@ public interface PExpressionType<T> extends PExpressionOrDeclarationType<T>
     T data();
 
     /**
-     * @return The qualifying unit name, if any
+     * @return The term reference
      */
 
     @Value.Parameter
-    Optional<PUnitNameType<T>> unit();
-
-    /**
-     * @return The base name
-     */
-
-    @Value.Parameter
-    PTermNameType<T> name();
-
-    /**
-     * @return A sequence of record accesses
-     */
-
-    @Value.Parameter
-    Vector<PTermNameType<T>> recordPath();
+    PTermReferenceType<T> reference();
   }
 
   /**

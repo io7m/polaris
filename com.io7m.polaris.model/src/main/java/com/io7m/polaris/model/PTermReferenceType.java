@@ -22,66 +22,55 @@ import io.vavr.collection.Vector;
 import org.immutables.value.Value;
 
 import java.net.URI;
+import java.util.Optional;
 
 /**
- * The type of term declarations.
+ * The type of term references.
  *
  * @param <T> The type of associated data
  */
 
-public interface PTermDeclarationType<T> extends PDeclarationType<T>
+public interface PTermReferenceType<T> extends PModelElementType<T>
 {
-  @Override
-  default TermTypeDeclarationKind termTypeDeclarationKind()
+  /**
+   * @return The kind of reference
+   */
+
+  ReferenceKind referenceKind();
+
+  /**
+   * The kind of reference.
+   */
+
+  enum ReferenceKind
   {
-    return TermTypeDeclarationKind.TERM_DECLARATION;
+    /**
+     * @see PTermReferenceConstructorType
+     */
+
+    REFERENCE_CONSTRUCTOR,
+
+    /**
+     * @see PTermReferenceVariableType
+     */
+
+    REFERENCE_VARIABLE
   }
 
   /**
-   * @return The kind of declaration
-   */
-
-  TermDeclarationKind termDeclarationKind();
-
-  /**
-   * The kind of declaration
-   */
-
-  enum TermDeclarationKind
-  {
-    /**
-     * @see PDeclarationFunctionType
-     */
-
-    FUNCTION_DECLARATION,
-
-    /**
-     * @see PDeclarationValueType
-     */
-
-    VALUE_DECLARATION
-  }
-
-  /**
-   * A value declaration.
+   * A reference to a constructor.
    *
    * @param <T> The type of associated data
    */
 
   @PImmutableStyleType
   @Value.Immutable
-  interface PDeclarationValueType<T> extends PTermDeclarationType<T>
+  interface PTermReferenceConstructorType<T> extends PTermReferenceType<T>
   {
     @Override
-    default TermTypeDeclarationKind termTypeDeclarationKind()
+    default ReferenceKind referenceKind()
     {
-      return TermTypeDeclarationKind.TERM_DECLARATION;
-    }
-
-    @Override
-    default TermDeclarationKind termDeclarationKind()
-    {
-      return TermDeclarationKind.VALUE_DECLARATION;
+      return ReferenceKind.REFERENCE_CONSTRUCTOR;
     }
 
     @Override
@@ -95,40 +84,34 @@ public interface PTermDeclarationType<T> extends PDeclarationType<T>
     T data();
 
     /**
-     * @return The name of the value
+     * @return The qualifying unit name, if any
      */
 
     @Value.Parameter
-    PTermNameType<T> name();
+    Optional<PUnitNameType<T>> unit();
 
     /**
-     * @return The expression
+     * @return The constructor name
      */
 
     @Value.Parameter
-    PExpressionType<T> expression();
+    PConstructorNameType<T> constructor();
   }
 
   /**
-   * A function declaration.
+   * A reference to a variable.
    *
    * @param <T> The type of associated data
    */
 
   @PImmutableStyleType
   @Value.Immutable
-  interface PDeclarationFunctionType<T> extends PTermDeclarationType<T>
+  interface PTermReferenceVariableType<T> extends PTermReferenceType<T>
   {
     @Override
-    default TermTypeDeclarationKind termTypeDeclarationKind()
+    default ReferenceKind referenceKind()
     {
-      return TermTypeDeclarationKind.TERM_DECLARATION;
-    }
-
-    @Override
-    default TermDeclarationKind termDeclarationKind()
-    {
-      return TermDeclarationKind.FUNCTION_DECLARATION;
+      return ReferenceKind.REFERENCE_VARIABLE;
     }
 
     @Override
@@ -142,24 +125,24 @@ public interface PTermDeclarationType<T> extends PDeclarationType<T>
     T data();
 
     /**
-     * @return The name of the function
+     * @return The qualifying unit name, if any
      */
 
     @Value.Parameter
-    PTermNameType<T> name();
+    Optional<PUnitNameType<T>> unit();
 
     /**
-     * @return The function parameters
+     * @return The term name
      */
 
     @Value.Parameter
-    Vector<PTermNameType<T>> parameters();
+    PTermNameType<T> term();
 
     /**
-     * @return The expression
+     * @return A sequence of record accesses
      */
 
     @Value.Parameter
-    PExpressionType<T> expression();
+    Vector<PTermNameType<T>> recordPath();
   }
 }

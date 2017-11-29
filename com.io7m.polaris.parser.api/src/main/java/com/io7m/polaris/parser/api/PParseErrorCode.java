@@ -108,6 +108,12 @@ public enum PParseErrorCode
   INVALID_UNIT_NAME,
 
   /**
+   * The given constructor name is invalid.
+   */
+
+  INVALID_CONSTRUCTOR_NAME,
+
+  /**
    * The given record declaration is invalid.
    */
 
@@ -179,6 +185,24 @@ public enum PParseErrorCode
    */
 
   INVALID_S_EXPRESSION,
+
+  /**
+   * The given term reference is invalid.
+   */
+
+  INVALID_TERM_REFERENCE,
+
+  /**
+   * The given type reference is invalid.
+   */
+
+  INVALID_TYPE_REFERENCE,
+
+  /**
+   * The given constructor reference is invalid.
+   */
+
+  INVALID_CONSTRUCTOR_REFERENCE,
 
   /**
    * Expected a term name but got some other kind of expression.

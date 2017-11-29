@@ -87,7 +87,7 @@ public final class PParsingRecords
 
     if (e.size() >= 3) {
       final Validation<Seq<PParseError>, PTypeName<PParsed>> r_name =
-        PParsingNames.parseTypeNameUnqualified(m, e.get(1));
+        PParsingNames.parseTypeName(m, e.get(1));
       final Validation<Seq<PParseError>, RecordParameters> r_rest =
         parseForAllAndFields(m, Vector.ofAll(e).tail().tail());
 
@@ -168,7 +168,7 @@ public final class PParsingRecords
         final Validation<Seq<PParseError>, String> r_keyword =
           PParsingNames.parseKeyword(m, exs.get(0), "field");
         final Validation<Seq<PParseError>, PTermName<PParsed>> r_name =
-          PParsingNames.parseTermNameUnqualified(m, exs.get(1));
+          PParsingNames.parseTermName(m, exs.get(1));
         final Validation<Seq<PParseError>, PTypeExpressionType<PParsed>> r_expr =
           PParsingTypeExpressions.parseTypeExpression(m, exs.get(2));
         final Validation<Seq<Seq<PParseError>>, PRecordField<PParsed>> r_result =
@@ -198,7 +198,7 @@ public final class PParsingRecords
 
       return sequence(
         Vector.ofAll(es).tail(),
-        name -> PParsingNames.parseTypeNameUnqualified(m, name));
+        name -> PParsingNames.parseTypeName(m, name));
     }
 
     return invalid(m.errorExpression(INVALID_RECORD_TYPE_PARAMETERS, e));

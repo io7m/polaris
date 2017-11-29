@@ -23,7 +23,6 @@ import io.vavr.collection.Vector;
 import org.immutables.value.Value;
 
 import java.net.URI;
-import java.util.Optional;
 
 /**
  * The type of type-level expressions.
@@ -174,7 +173,7 @@ public interface PTypeExpressionType<T> extends PModelElementType<T>
       Preconditions.checkPrecondition(
         this.parameters(),
         !this.parameters().isEmpty(),
-      p -> "Must specify at least one type parameter");
+        p -> "Must specify at least one type parameter");
 
       Preconditions.checkPrecondition(
         this.parameters(),
@@ -200,9 +199,10 @@ public interface PTypeExpressionType<T> extends PModelElementType<T>
     }
 
     @Override
-    @Value.Parameter
-    @Value.Auxiliary
-    LexicalPosition<URI> lexical();
+    default LexicalPosition<URI> lexical()
+    {
+      return this.reference().lexical();
+    }
 
     @Override
     @Value.Parameter
@@ -210,18 +210,11 @@ public interface PTypeExpressionType<T> extends PModelElementType<T>
     T data();
 
     /**
-     * @return The qualifying unit name, if any
+     * @return The type reference
      */
 
     @Value.Parameter
-    Optional<PUnitNameType<T>> unit();
-
-    /**
-     * @return The type name
-     */
-
-    @Value.Parameter
-    PTypeNameType<T> name();
+    PTypeReferenceType<T> reference();
   }
 
   /**
@@ -241,9 +234,10 @@ public interface PTypeExpressionType<T> extends PModelElementType<T>
     }
 
     @Override
-    @Value.Parameter
-    @Value.Auxiliary
-    LexicalPosition<URI> lexical();
+    default LexicalPosition<URI> lexical()
+    {
+      return this.constructor().lexical();
+    }
 
     @Override
     @Value.Parameter
