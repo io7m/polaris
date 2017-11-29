@@ -280,13 +280,13 @@ public interface PTypeDeclarationType<T> extends PDeclarationType<T>
      */
 
     @Value.Parameter
-    PTermNameType<T> name();
+    PConstructorNameType<T> name();
 
     /**
      * @return The case parameter, if any
      */
 
     @Value.Parameter
-    Optional<PTypeNameType<T>> parameter();
+    Optional<PTypeExpressionType<T>> parameter();
   }
 }

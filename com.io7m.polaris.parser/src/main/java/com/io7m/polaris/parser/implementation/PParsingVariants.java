@@ -21,13 +21,14 @@ import com.io7m.jsx.SExpressionListType;
 import com.io7m.jsx.SExpressionSymbolType;
 import com.io7m.jsx.SExpressionType;
 import com.io7m.junreachable.UnreachableCodeException;
-import com.io7m.polaris.model.PDeclarationRecord;
-import com.io7m.polaris.model.PRecordField;
-import com.io7m.polaris.model.PTermName;
-import com.io7m.polaris.model.PTermNameType;
+import com.io7m.polaris.model.PConstructorName;
+import com.io7m.polaris.model.PConstructorNameType;
+import com.io7m.polaris.model.PDeclarationVariant;
 import com.io7m.polaris.model.PTypeExpressionType;
 import com.io7m.polaris.model.PTypeName;
+import com.io7m.polaris.model.PVariantCase;
 import com.io7m.polaris.parser.api.PParseError;
+import com.io7m.polaris.parser.api.PParseErrorCode;
 import com.io7m.polaris.parser.api.PParseErrorMessagesType;
 import com.io7m.polaris.parser.api.PParsed;
 import io.vavr.collection.HashMap;
@@ -36,37 +37,34 @@ import io.vavr.collection.Vector;
 import io.vavr.control.Validation;
 
 import java.util.Objects;
+import java.util.Optional;
 
-import static com.io7m.polaris.parser.api.PParseErrorCode.INVALID_RECORD;
-import static com.io7m.polaris.parser.api.PParseErrorCode.INVALID_RECORD_DUPLICATE_FIELD;
-import static com.io7m.polaris.parser.api.PParseErrorCode.INVALID_RECORD_FIELD;
-import static com.io7m.polaris.parser.api.PParseErrorCode.INVALID_RECORD_TYPE_PARAMETERS;
 import static com.io7m.polaris.parser.api.PParsed.parsed;
 import static com.io7m.polaris.parser.implementation.PValidation.errorsFlatten;
 import static com.io7m.polaris.parser.implementation.PValidation.invalid;
 import static com.io7m.polaris.parser.implementation.PValidation.sequence;
 
 /**
- * Functions to parse record declarations.
+ * Functions to parse variant declarations.
  */
 
-public final class PParsingRecords
+public final class PParsingVariants
 {
-  private PParsingRecords()
+  private PParsingVariants()
   {
     throw new UnreachableCodeException();
   }
 
   /**
-   * Parse the given expression as a record declaration.
+   * Parse the given expression as a variant declaration.
    *
    * @param m An error message provider
    * @param e The expression
    *
-   * @return A record declaration, or a sequence of parse errors
+   * @return A variant declaration, or a sequence of parse errors
    */
 
-  public static Validation<Seq<PParseError>, PDeclarationRecord<PParsed>> parseRecord(
+  public static Validation<Seq<PParseError>, PDeclarationVariant<PParsed>> parseVariant(
     final PParseErrorMessagesType m,
     final SExpressionListType e)
   {
@@ -83,103 +81,117 @@ public final class PParsingRecords
     Preconditions.checkPrecondition(
       e_keyword,
       e_keyword instanceof SExpressionSymbolType,
-      c -> "Record declaration must begin with record keyword");
+      c -> "Variant declaration must begin with variant keyword");
 
     if (e.size() >= 3) {
       final Validation<Seq<PParseError>, PTypeName<PParsed>> r_name =
         PParsingNames.parseTypeName(m, e.get(1));
-      final Validation<Seq<PParseError>, RecordParameters> r_rest =
-        parseForAllAndFields(m, Vector.ofAll(e).tail().tail());
+      final Validation<Seq<PParseError>, VariantParameters> r_rest =
+        parseForAllAndCases(m, Vector.ofAll(e).tail().tail());
 
-      final Validation<Seq<Seq<PParseError>>, PDeclarationRecord<PParsed>> r_result =
+      final Validation<Seq<Seq<PParseError>>, PDeclarationVariant<PParsed>> r_result =
         Validation.combine(r_name, r_rest)
           .ap((name, params) ->
-                PDeclarationRecord.of(
+                PDeclarationVariant.of(
                   e.lexical(),
                   parsed(),
                   name,
                   PVectors.vectorCast(params.parameters),
-                  PVectors.vectorCast(params.fields)));
+                  PVectors.vectorCast(params.cases)));
 
       return errorsFlatten(r_result);
     }
 
-    return invalid(m.errorExpression(INVALID_RECORD, e));
+    return invalid(m.errorExpression(PParseErrorCode.INVALID_VARIANT, e));
   }
 
-  private static Validation<Seq<PParseError>, RecordParameters> parseForAllAndFields(
+  private static Validation<Seq<PParseError>, VariantParameters> parseForAllAndCases(
     final PParseErrorMessagesType messages,
     final Vector<SExpressionType> exprs)
   {
     if (hasForAll(exprs)) {
       final Validation<Seq<PParseError>, Vector<PTypeName<PParsed>>> r_forall =
         parseForAll(messages, exprs.get(0));
-      final Validation<Seq<PParseError>, Vector<PRecordField<PParsed>>> r_fields =
-        parseFields(messages, exprs.tail());
-      final Validation<Seq<Seq<PParseError>>, RecordParameters> r_result =
-        Validation.combine(r_forall, r_fields).ap(RecordParameters::new);
+      final Validation<Seq<PParseError>, Vector<PVariantCase<PParsed>>> r_cases =
+        parseCases(messages, exprs.tail());
+      final Validation<Seq<Seq<PParseError>>, VariantParameters> r_result =
+        Validation.combine(r_forall, r_cases).ap(VariantParameters::new);
       return errorsFlatten(r_result);
     }
 
-    return parseFields(messages, exprs)
-      .map(fields -> new RecordParameters(Vector.empty(), fields));
+    return parseCases(messages, exprs)
+      .map(cases -> new VariantParameters(Vector.empty(), cases));
   }
 
-  private static Validation<Seq<PParseError>, Vector<PRecordField<PParsed>>> parseFields(
+  private static Validation<Seq<PParseError>, Vector<PVariantCase<PParsed>>> parseCases(
     final PParseErrorMessagesType m,
     final Vector<SExpressionType> exprs)
   {
-    return sequence(exprs, f -> parseField(m, f))
-      .flatMap(fields -> requireFieldsUnique(m, fields));
+    return sequence(exprs, f -> parseCase(m, f))
+      .flatMap(cases -> requireCasesUnique(m, cases));
   }
 
-  private static Validation<Seq<PParseError>, Vector<PRecordField<PParsed>>> requireFieldsUnique(
+  private static Validation<Seq<PParseError>, Vector<PVariantCase<PParsed>>> requireCasesUnique(
     final PParseErrorMessagesType messages,
-    final Vector<PRecordField<PParsed>> fields)
+    final Vector<PVariantCase<PParsed>> cases)
   {
-    HashMap<PTermNameType<PParsed>, Integer> m = HashMap.empty();
-    for (int index = 0; index < fields.size(); ++index) {
-      final PRecordField<PParsed> field = fields.get(index);
-      final PTermNameType<PParsed> name = field.name();
+    HashMap<PConstructorNameType<PParsed>, Integer> m = HashMap.empty();
+    for (int index = 0; index < cases.size(); ++index) {
+      final PVariantCase<PParsed> t_case = cases.get(index);
+      final PConstructorNameType<PParsed> name = t_case.name();
       final Integer next =
         Integer.valueOf(m.getOrElse(name, Integer.valueOf(0)).intValue() + 1);
       m = m.put(name, next);
     }
 
-    final HashMap<PTermNameType<PParsed>, Integer> duplicates =
+    final HashMap<PConstructorNameType<PParsed>, Integer> duplicates =
       m.filter((name, count) -> count.intValue() > 1);
 
     if (duplicates.isEmpty()) {
-      return Validation.valid(fields);
+      return Validation.valid(cases);
     }
 
     return Validation.invalid(duplicates.map(
       pair -> messages.errorLexical(
-        INVALID_RECORD_DUPLICATE_FIELD, pair._1.lexical(), pair._1.value())));
+        PParseErrorCode.INVALID_VARIANT_DUPLICATE_CASE,
+        pair._1.lexical(),
+        pair._1.value())));
   }
 
-  private static Validation<Seq<PParseError>, PRecordField<PParsed>> parseField(
+  private static Validation<Seq<PParseError>, PVariantCase<PParsed>> parseCase(
     final PParseErrorMessagesType m,
     final SExpressionType ex)
   {
     if (ex instanceof SExpressionListType) {
       final SExpressionListType exs = (SExpressionListType) ex;
-      if (exs.size() == 3) {
+
+      if (exs.size() >= 2) {
         final Validation<Seq<PParseError>, String> r_keyword =
-          PParsingNames.parseKeyword(m, exs.get(0), "field");
-        final Validation<Seq<PParseError>, PTermName<PParsed>> r_name =
-          PParsingNames.parseTermName(m, exs.get(1));
-        final Validation<Seq<PParseError>, PTypeExpressionType<PParsed>> r_expr =
-          PParsingTypeExpressions.parseTypeExpression(m, exs.get(2));
-        final Validation<Seq<Seq<PParseError>>, PRecordField<PParsed>> r_result =
-          Validation.combine(r_keyword, r_name, r_expr)
-            .ap((keyword, name, expr) ->
-                  PRecordField.of(exs.lexical(), parsed(), name, expr));
-        return errorsFlatten(r_result);
+          PParsingNames.parseKeyword(m, exs.get(0), "case");
+        final Validation<Seq<PParseError>, PConstructorName<PParsed>> r_name =
+          PParsingNames.parseConstructorName(m, exs.get(1));
+
+        final Validation<Seq<Seq<PParseError>>, PVariantCase<PParsed>> r_result;
+        if (exs.size() == 2) {
+          r_result =
+            Validation.combine(r_keyword, r_name)
+              .ap((keyword, name) -> PVariantCase.of(
+                exs.lexical(), parsed(), name, Optional.empty()));
+          return errorsFlatten(r_result);
+        }
+
+        if (exs.size() == 3) {
+          final Validation<Seq<PParseError>, PTypeExpressionType<PParsed>> r_expr =
+            PParsingTypeExpressions.parseTypeExpression(m, exs.get(2));
+          r_result = Validation.combine(r_keyword, r_name, r_expr)
+            .ap((keyword, name, expr) -> PVariantCase.of(
+              exs.lexical(), parsed(), name, Optional.of(expr)));
+          return errorsFlatten(r_result);
+        }
       }
     }
 
-    return invalid(m.errorExpression(INVALID_RECORD_FIELD, ex));
+    return invalid(m.errorExpression(PParseErrorCode.INVALID_VARIANT_CASE, ex));
   }
 
   private static Validation<Seq<PParseError>, Vector<PTypeName<PParsed>>> parseForAll(
@@ -201,7 +213,9 @@ public final class PParsingRecords
         name -> PParsingNames.parseTypeName(m, name));
     }
 
-    return invalid(m.errorExpression(INVALID_RECORD_TYPE_PARAMETERS, e));
+    return invalid(m.errorExpression(
+      PParseErrorCode.INVALID_VARIANT_TYPE_PARAMETERS,
+      e));
   }
 
   private static boolean hasForAll(
@@ -228,19 +242,19 @@ public final class PParsingRecords
     return false;
   }
 
-  private static final class RecordParameters
+  private static final class VariantParameters
   {
     private final Vector<PTypeName<PParsed>> parameters;
-    private final Vector<PRecordField<PParsed>> fields;
+    private final Vector<PVariantCase<PParsed>> cases;
 
-    RecordParameters(
+    VariantParameters(
       final Vector<PTypeName<PParsed>> in_parameters,
-      final Vector<PRecordField<PParsed>> in_fields)
+      final Vector<PVariantCase<PParsed>> in_cases)
     {
       this.parameters =
         Objects.requireNonNull(in_parameters, "Parameters");
-      this.fields =
-        Objects.requireNonNull(in_fields, "Fields");
+      this.cases =
+        Objects.requireNonNull(in_cases, "Cases");
     }
   }
 }

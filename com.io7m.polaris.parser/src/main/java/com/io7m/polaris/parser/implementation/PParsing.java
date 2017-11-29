@@ -260,6 +260,10 @@ public final class PParsing
           return cast(PParsingRecords.parseRecord(m, e));
         }
 
+        case "variant": {
+          return cast(PParsingVariants.parseVariant(m, e));
+        }
+
         default: {
           break;
         }

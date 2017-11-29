@@ -24,6 +24,11 @@ public final class PParsed
 {
   private static final PParsed INSTANCE = new PParsed();
 
+  private PParsed()
+  {
+
+  }
+
   /**
    * @return The parsed tag
    */
@@ -31,10 +36,5 @@ public final class PParsed
   public static PParsed parsed()
   {
     return INSTANCE;
-  }
-
-  private PParsed()
-  {
-
   }
 }

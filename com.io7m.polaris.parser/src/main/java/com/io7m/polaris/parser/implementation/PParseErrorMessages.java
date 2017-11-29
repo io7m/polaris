@@ -242,6 +242,14 @@ public final class PParseErrorMessages implements PParseErrorMessagesType
         return base;
       case INVALID_RECORD_TYPE_PARAMETERS:
         return base;
+      case INVALID_VARIANT:
+        return base;
+      case INVALID_VARIANT_DUPLICATE_CASE:
+        return base;
+      case INVALID_VARIANT_CASE:
+        return base;
+      case INVALID_VARIANT_TYPE_PARAMETERS:
+        return base;
       case INVALID_APPLICATION:
         return base;
       case INVALID_TYPE_EXPRESSION:

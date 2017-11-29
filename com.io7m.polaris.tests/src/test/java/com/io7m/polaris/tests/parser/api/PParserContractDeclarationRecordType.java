@@ -56,7 +56,8 @@ public interface PParserContractDeclarationRecordType
   default void testDeclarationRecord1()
     throws Exception
   {
-    final PParserType p = this.parserForString("(record t [for-all a] [field a integer])");
+    final PParserType p = this.parserForString(
+      "(record t [for-all a] [field a integer])");
     final Validation<Seq<PParseError>, Optional<PExpressionOrDeclarationType<PParsed>>> r =
       p.parseExpressionOrDeclaration();
 
@@ -76,7 +77,8 @@ public interface PParserContractDeclarationRecordType
   default void testDeclarationRecord2()
     throws Exception
   {
-    final PParserType p = this.parserForString("(record t [∀ a] [field a integer])");
+    final PParserType p = this.parserForString(
+      "(record t [∀ a] [field a integer])");
     final Validation<Seq<PParseError>, Optional<PExpressionOrDeclarationType<PParsed>>> r =
       p.parseExpressionOrDeclaration();
 
@@ -96,7 +98,8 @@ public interface PParserContractDeclarationRecordType
   default void testDeclarationRecord3()
     throws Exception
   {
-    final PParserType p = this.parserForString("(record t [field a integer] [field b integer])");
+    final PParserType p = this.parserForString(
+      "(record t [field a integer] [field b integer])");
     final Validation<Seq<PParseError>, Optional<PExpressionOrDeclarationType<PParsed>>> r =
       p.parseExpressionOrDeclaration();
 

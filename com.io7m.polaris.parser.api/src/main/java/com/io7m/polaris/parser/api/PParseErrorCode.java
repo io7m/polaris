@@ -139,6 +139,31 @@ public enum PParseErrorCode
   INVALID_RECORD_TYPE_PARAMETERS,
 
   /**
+   * The given variant declaration is invalid.
+   */
+
+  INVALID_VARIANT,
+
+  /**
+   * The given variant declaration is invalid due to having duplicate field
+   * names.
+   */
+
+  INVALID_VARIANT_DUPLICATE_CASE,
+
+  /**
+   * The given variant declaration is invalid due to having an invalid case.
+   */
+
+  INVALID_VARIANT_CASE,
+
+  /**
+   * The given variant type parameter declaration is invalid.
+   */
+
+  INVALID_VARIANT_TYPE_PARAMETERS,
+
+  /**
    * The given function application is invalid.
    */
 
@@ -175,7 +200,8 @@ public enum PParseErrorCode
   INVALID_TYPE_EXPRESSION_FORALL,
 
   /**
-   * The given type forall expression is invalid due to a duplicate parameter name.
+   * The given type forall expression is invalid due to a duplicate parameter
+   * name.
    */
 
   INVALID_TYPE_EXPRESSION_FORALL_DUPLICATE_NAME,

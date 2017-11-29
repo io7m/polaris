@@ -83,7 +83,8 @@ public interface PParserContractTypeExpressionType
     final PTypeExprArrow<PParsed> e = (PTypeExprArrow<PParsed>) r.get().get();
     Assertions.assertEquals(1, e.parameters().size());
 
-    final PTypeExprReference<PParsed> a_ref = (PTypeExprReference<PParsed>) e.parameters().get(0);
+    final PTypeExprReference<PParsed> a_ref = (PTypeExprReference<PParsed>) e.parameters().get(
+      0);
     Assertions.assertEquals(Optional.empty(), a_ref.reference().unit());
     Assertions.assertEquals("a", a_ref.reference().type().value());
 
@@ -107,7 +108,8 @@ public interface PParserContractTypeExpressionType
     final PTypeExprArrow<PParsed> e = (PTypeExprArrow<PParsed>) r.get().get();
     Assertions.assertEquals(1, e.parameters().size());
 
-    final PTypeExprReference<PParsed> a_ref = (PTypeExprReference<PParsed>) e.parameters().get(0);
+    final PTypeExprReference<PParsed> a_ref = (PTypeExprReference<PParsed>) e.parameters().get(
+      0);
     Assertions.assertEquals(Optional.empty(), a_ref.reference().unit());
     Assertions.assertEquals("a", a_ref.reference().type().value());
 
@@ -153,7 +155,8 @@ public interface PParserContractTypeExpressionType
     final PTypeExprArrow<PParsed> e = (PTypeExprArrow<PParsed>) r.get().get();
     Assertions.assertEquals(1, e.parameters().size());
 
-    final PTypeExprReference<PParsed> a_ref = (PTypeExprReference<PParsed>) e.parameters().get(0);
+    final PTypeExprReference<PParsed> a_ref = (PTypeExprReference<PParsed>) e.parameters().get(
+      0);
     Assertions.assertEquals(Optional.empty(), a_ref.reference().unit());
     Assertions.assertEquals("a", a_ref.reference().type().value());
 
@@ -178,7 +181,8 @@ public interface PParserContractTypeExpressionType
     final PTypeExprArrow<PParsed> e = (PTypeExprArrow<PParsed>) r.get().get();
     Assertions.assertEquals(1, e.parameters().size());
 
-    final PTypeExprReference<PParsed> a_ref = (PTypeExprReference<PParsed>) e.parameters().get(0);
+    final PTypeExprReference<PParsed> a_ref = (PTypeExprReference<PParsed>) e.parameters().get(
+      0);
     Assertions.assertEquals(Optional.empty(), a_ref.reference().unit());
     Assertions.assertEquals("a", a_ref.reference().type().value());
 
