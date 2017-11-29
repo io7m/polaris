@@ -18,6 +18,7 @@ package com.io7m.polaris.tests.parser.api;
 
 import com.io7m.polaris.model.PExpressionOrDeclarationType;
 import com.io7m.polaris.model.PPatternType;
+import com.io7m.polaris.model.PTypeExpressionType;
 import com.io7m.polaris.parser.api.PParseError;
 import com.io7m.polaris.parser.api.PParseErrorCode;
 import com.io7m.polaris.parser.api.PParsed;
@@ -79,6 +80,20 @@ public interface PParserContractType extends
   }
 
   @Test
+  default void testEOF_2()
+    throws Exception
+  {
+    final PParserType p = this.parserForString("");
+    final Validation<Seq<PParseError>, Optional<PTypeExpressionType<PParsed>>> r =
+      p.parseTypeExpression();
+
+    dump(this.log(), r);
+
+    Assertions.assertTrue(r.isValid());
+    Assertions.assertEquals(Optional.empty(), r.get());
+  }
+
+  @Test
   default void testMalformedExpression()
     throws Exception
   {
@@ -99,6 +114,20 @@ public interface PParserContractType extends
     final PParserType p = this.parserForString("(");
     final Validation<Seq<PParseError>, Optional<PPatternType<PParsed>>> r =
       p.parsePattern();
+
+    dump(this.log(), r);
+
+    Assertions.assertTrue(r.isInvalid());
+    Assertions.assertTrue(r.getError().exists(c -> c.code() == PParseErrorCode.INVALID_S_EXPRESSION));
+  }
+
+  @Test
+  default void testMalformedTypeExpression()
+    throws Exception
+  {
+    final PParserType p = this.parserForString("(");
+    final Validation<Seq<PParseError>, Optional<PTypeExpressionType<PParsed>>> r =
+      p.parseTypeExpression();
 
     dump(this.log(), r);
 
