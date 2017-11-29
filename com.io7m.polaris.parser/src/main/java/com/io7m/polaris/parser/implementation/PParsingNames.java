@@ -151,9 +151,7 @@ public final class PParsingNames
       return Validation.valid(PTermConstructorName.of(lexical, parsed(), text));
     }
     return invalid(m.errorLexical(
-      INVALID_TERM_CONSTRUCTOR_NAME,
-      lexical,
-      text));
+      INVALID_TERM_CONSTRUCTOR_NAME, lexical, text));
   }
 
   /**
@@ -308,9 +306,7 @@ public final class PParsingNames
       return Validation.valid(PTypeConstructorName.of(lexical, parsed(), text));
     }
     return invalid(m.errorLexical(
-      INVALID_TYPE_CONSTRUCTOR_NAME,
-      lexical,
-      text));
+      INVALID_TYPE_CONSTRUCTOR_NAME, lexical, text));
   }
 
 

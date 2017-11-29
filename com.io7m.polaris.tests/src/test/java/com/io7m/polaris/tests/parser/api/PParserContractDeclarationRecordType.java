@@ -223,4 +223,18 @@ public interface PParserContractDeclarationRecordType
     Assertions.assertTrue(r.isInvalid());
     Assertions.assertTrue(r.getError().exists(e -> e.code() == PParseErrorCode.INVALID_TYPE_EXPRESSION));
   }
+
+  @Test
+  default void testDeclarationRecordInvalid8()
+    throws Exception
+  {
+    final PParserType p = this.parserForString(
+      "(record T [∀ X] [field a Integer])");
+    final Validation<Seq<PParseError>, Optional<PExpressionOrDeclarationType<PParsed>>> r =
+      p.parseExpressionOrDeclaration();
+
+    dump(this.log(), r);
+    Assertions.assertTrue(r.isInvalid());
+    Assertions.assertTrue(r.getError().exists(e -> e.code() == PParseErrorCode.INVALID_TYPE_VARIABLE_NAME));
+  }
 }
