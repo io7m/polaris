@@ -19,12 +19,14 @@ package com.io7m.polaris.ast;
 import com.io7m.jaffirm.core.Preconditions;
 import com.io7m.jlexing.core.LexicalPosition;
 import com.io7m.polaris.core.PImmutableStyleType;
+import io.vavr.collection.Map;
 import io.vavr.collection.Vector;
 import org.immutables.value.Value;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.net.URI;
+import java.util.function.Function;
 
 /**
  * The type of term-level expressions.
@@ -104,7 +106,19 @@ public interface PExpressionType<T> extends PExpressionOrDeclarationType<T>
      * @see PExprMatchType
      */
 
-    EXPR_MATCH
+    EXPR_MATCH,
+
+    /**
+     * @see PExprRecordType
+     */
+
+    EXPR_RECORD,
+
+    /**
+     * @see PExprRecordUpdateType
+     */
+
+    EXPR_RECORD_UPDATE,
   }
 
   /**
@@ -458,6 +472,169 @@ public interface PExpressionType<T> extends PExpressionOrDeclarationType<T>
 
     /**
      * @return The case expression
+     */
+
+    @Value.Parameter
+    PExpressionType<T> expression();
+  }
+
+  /**
+   * A record expression.
+   *
+   * @param <T> The type of associated data
+   */
+
+  @PImmutableStyleType
+  @Value.Immutable
+  interface PExprRecordType<T> extends PExpressionType<T>
+  {
+    @Override
+    default PTermExpressionKind termExpressionKind()
+    {
+      return PTermExpressionKind.EXPR_RECORD;
+    }
+
+    @Override
+    @Value.Parameter
+    @Value.Auxiliary
+    LexicalPosition<URI> lexical();
+
+    @Override
+    @Value.Parameter
+    @Value.Auxiliary
+    T data();
+
+    /**
+     * @return The target of the match expression
+     */
+
+    @Value.Parameter
+    PTypeReferenceType<T> target();
+
+    /**
+     * @return The list of cases
+     */
+
+    @Value.Parameter
+    Vector<PExprRecordFieldType<T>> fields();
+
+    /**
+     * @return The fields by name
+     */
+
+    @Value.Derived
+    default Map<String, PExprRecordFieldType<T>> fieldsByName()
+    {
+      return this.fields().toMap(c -> c.field().value(), Function.identity());
+    }
+
+    /**
+     * Check preconditions for the type.
+     */
+
+    @Value.Check
+    default void checkPrecondition()
+    {
+      Preconditions.checkPrecondition(
+        this.fields(),
+        this.fields().size() == this.fields().toSet().size(),
+        n -> "Field names must be unique");
+    }
+  }
+
+  /**
+   * A record update expression.
+   *
+   * @param <T> The type of associated data
+   */
+
+  @PImmutableStyleType
+  @Value.Immutable
+  interface PExprRecordUpdateType<T> extends PExpressionType<T>
+  {
+    @Override
+    default PTermExpressionKind termExpressionKind()
+    {
+      return PTermExpressionKind.EXPR_RECORD_UPDATE;
+    }
+
+    @Override
+    @Value.Parameter
+    @Value.Auxiliary
+    LexicalPosition<URI> lexical();
+
+    @Override
+    @Value.Parameter
+    @Value.Auxiliary
+    T data();
+
+    /**
+     * @return The source expression
+     */
+
+    @Value.Parameter
+    PExpressionType<T> source();
+
+    /**
+     * @return The list of fields
+     */
+
+    @Value.Parameter
+    Vector<PExprRecordFieldType<T>> fields();
+
+    /**
+     * @return The fields by name
+     */
+
+    @Value.Derived
+    default Map<String, PExprRecordFieldType<T>> fieldsByName()
+    {
+      return this.fields().toMap(c -> c.field().value(), Function.identity());
+    }
+
+    /**
+     * Check preconditions for the type.
+     */
+
+    @Value.Check
+    default void checkPrecondition()
+    {
+      Preconditions.checkPrecondition(
+        this.fields(),
+        this.fields().size() == this.fields().toSet().size(),
+        n -> "Field names must be unique");
+    }
+  }
+
+  /**
+   * A record expression.
+   *
+   * @param <T> The type of associated data
+   */
+
+  @PImmutableStyleType
+  @Value.Immutable
+  interface PExprRecordFieldType<T> extends PASTElementType<T>
+  {
+    @Override
+    @Value.Parameter
+    @Value.Auxiliary
+    LexicalPosition<URI> lexical();
+
+    @Override
+    @Value.Parameter
+    @Value.Auxiliary
+    T data();
+
+    /**
+     * @return The target field
+     */
+
+    @Value.Parameter
+    PTermVariableNameType<T> field();
+
+    /**
+     * @return The expression
      */
 
     @Value.Parameter

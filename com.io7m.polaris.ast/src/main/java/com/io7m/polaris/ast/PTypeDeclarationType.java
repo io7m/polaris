@@ -114,7 +114,7 @@ public interface PTypeDeclarationType<T> extends PDeclarationType<T>
     Vector<PRecordFieldType<T>> fields();
 
     /**
-     * @return The cases by name
+     * @return The fields by name
      */
 
     @Value.Derived

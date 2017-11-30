@@ -30,6 +30,9 @@ import com.io7m.polaris.ast.PExprConstantString;
 import com.io7m.polaris.ast.PExprLambda;
 import com.io7m.polaris.ast.PExprLocal;
 import com.io7m.polaris.ast.PExprMatch;
+import com.io7m.polaris.ast.PExprRecord;
+import com.io7m.polaris.ast.PExprRecordField;
+import com.io7m.polaris.ast.PExprRecordUpdate;
 import com.io7m.polaris.ast.PExprReference;
 import com.io7m.polaris.ast.PExpressionOrDeclarationType;
 import com.io7m.polaris.ast.PExpressionType;
@@ -37,6 +40,7 @@ import com.io7m.polaris.ast.PExpressionType.PMatchCaseType;
 import com.io7m.polaris.ast.PMatchCase;
 import com.io7m.polaris.ast.PPatternType;
 import com.io7m.polaris.ast.PTermVariableName;
+import com.io7m.polaris.ast.PTypeReferenceType;
 import com.io7m.polaris.parser.api.PParseError;
 import com.io7m.polaris.parser.api.PParseErrorMessagesType;
 import com.io7m.polaris.parser.api.PParsed;
@@ -54,6 +58,10 @@ import static com.io7m.polaris.parser.api.PParseErrorCode.INVALID_LAMBDA_DUPLICA
 import static com.io7m.polaris.parser.api.PParseErrorCode.INVALID_LOCAL;
 import static com.io7m.polaris.parser.api.PParseErrorCode.INVALID_MATCH;
 import static com.io7m.polaris.parser.api.PParseErrorCode.INVALID_MATCH_CASE;
+import static com.io7m.polaris.parser.api.PParseErrorCode.INVALID_RECORD_EXPRESSION;
+import static com.io7m.polaris.parser.api.PParseErrorCode.INVALID_RECORD_EXPRESSION_DUPLICATE_FIELD;
+import static com.io7m.polaris.parser.api.PParseErrorCode.INVALID_RECORD_EXPRESSION_FIELD;
+import static com.io7m.polaris.parser.api.PParseErrorCode.INVALID_RECORD_UPDATE_EXPRESSION;
 import static com.io7m.polaris.parser.api.PParsed.parsed;
 import static com.io7m.polaris.parser.implementation.PValidation.cast;
 import static com.io7m.polaris.parser.implementation.PValidation.errorsFlatten;
@@ -237,55 +245,49 @@ public final class PParsing
         case "lambda": {
           return cast(parseExpressionLambda(m, e));
         }
-
         case "λ": {
           return cast(parseExpressionLambda(m, e));
         }
-
         case "match": {
           return cast(parseExpressionMatch(m, e));
         }
-
         case "local": {
           return cast(parseExpressionLocal(m, e));
+        }
+        case "record": {
+          return cast(parseExpressionRecord(m, e));
+        }
+        case "record-update": {
+          return cast(parseExpressionRecordUpdate(m, e));
         }
 
         case "define-value": {
           return cast(PParsingValues.parseValue(m, e));
         }
-
         case "define-function": {
           return cast(PParsingFunctions.parseFunction(m, e));
         }
-
         case "define-record": {
           return cast(PParsingRecords.parseRecord(m, e));
         }
-
         case "define-variant": {
           return cast(PParsingVariants.parseVariant(m, e));
         }
-
         case "define-unit": {
           return cast(PParsingUnits.parseUnit(m, e));
         }
-
         case "import": {
           return cast(PParsingUnits.parseImport(m, e));
         }
-
         case "import-qualified": {
           return cast(PParsingUnits.parseImportQualified(m, e));
         }
-
         case "export-terms": {
           return cast(PParsingUnits.parseExportTerms(m, e));
         }
-
         case "export-types": {
           return cast(PParsingUnits.parseExportTypes(m, e));
         }
-
         case ":": {
           return cast(PParsingSignatures.parseSignature(m, e));
         }
@@ -446,10 +448,13 @@ public final class PParsing
           parseExpression(m, e_body);
 
         final Validation<Seq<Seq<PParseError>>, PExpressionType<PParsed>> rr =
-          Validation
-            .combine(r_params, r_body)
-            .ap((names, body) -> parseExpressionLambdaMake(e, names, body));
-
+          Validation.combine(r_params, r_body)
+            .ap((names, body) ->
+                  PExprLambda.of(
+                    e.lexical(),
+                    parsed(),
+                    PVectors.vectorCast(names),
+                    body));
         return errorsFlatten(rr);
       }
     }
@@ -469,12 +474,116 @@ public final class PParsing
         INVALID_LAMBDA_DUPLICATE_PARAMETER, dup.lexical(), dup.value())));
   }
 
-  private static PExprLambda<PParsed> parseExpressionLambdaMake(
-    final SExpressionListType e,
-    final Vector<PTermVariableName<PParsed>> names,
-    final PExpressionType<PParsed> body)
+  private static Validation<Seq<PParseError>, PExprRecord<PParsed>>
+  parseExpressionRecord(
+    final PParseErrorMessagesType m,
+    final SExpressionListType e)
   {
-    return PExprLambda.of(
-      e.lexical(), parsed(), PVectors.vectorCast(names), body);
+    Preconditions.checkPreconditionI(
+      e.size(),
+      e.size() > 0,
+      c -> "Expression size must be > 0");
+
+    final SExpressionType e_keyword = e.get(0);
+
+    Preconditions.checkPrecondition(
+      e_keyword,
+      e_keyword instanceof SExpressionSymbolType,
+      c -> "Record expression must begin with record keyword");
+
+    if (e.size() >= 3) {
+      final SExpressionType e_type = e.get(1);
+      final Vector<SExpressionType> e_rest = Vector.ofAll(e).tail().tail();
+
+      final Validation<Seq<PParseError>, PTypeReferenceType<PParsed>> r_type =
+        PParsingTypeReferences.parseTypeReference(m, e_type);
+      final Validation<Seq<PParseError>, Vector<PExprRecordField<PParsed>>> r_fields =
+        sequence(e_rest, ee -> parseRecordField(m, ee));
+      final Validation<Seq<PParseError>, Vector<PExprRecordField<PParsed>>> r_unique =
+        r_fields.flatMap(names -> requireUniqueRecordFieldNames(m, names));
+      final Validation<Seq<Seq<PParseError>>, PExprRecord<PParsed>> r_result =
+        Validation.combine(r_type, r_unique)
+          .ap((t_type, t_fields) -> PExprRecord.of(
+            e.lexical(), parsed(), t_type, PVectors.vectorCast(t_fields)));
+      return errorsFlatten(r_result);
+    }
+
+    return invalid(m.errorExpression(INVALID_RECORD_EXPRESSION, e));
+  }
+
+  private static Validation<Seq<PParseError>, PExprRecordUpdate<PParsed>>
+  parseExpressionRecordUpdate(
+    final PParseErrorMessagesType m,
+    final SExpressionListType e)
+  {
+    Preconditions.checkPreconditionI(
+      e.size(),
+      e.size() > 0,
+      c -> "Expression size must be > 0");
+
+    final SExpressionType e_keyword = e.get(0);
+
+    Preconditions.checkPrecondition(
+      e_keyword,
+      e_keyword instanceof SExpressionSymbolType,
+      c -> "Record update expression must begin with record-update keyword");
+
+    if (e.size() >= 3) {
+      final SExpressionType e_source = e.get(1);
+      final Vector<SExpressionType> e_rest = Vector.ofAll(e).tail().tail();
+      final Validation<Seq<PParseError>, PExpressionType<PParsed>> r_source =
+        parseExpression(m, e_source);
+      final Validation<Seq<PParseError>, Vector<PExprRecordField<PParsed>>> r_fields =
+        sequence(e_rest, ee -> parseRecordField(m, ee));
+      final Validation<Seq<PParseError>, Vector<PExprRecordField<PParsed>>> r_unique =
+        r_fields.flatMap(names -> requireUniqueRecordFieldNames(m, names));
+      final Validation<Seq<Seq<PParseError>>, PExprRecordUpdate<PParsed>> r_result =
+        Validation.combine(r_source, r_unique)
+          .ap((t_source, t_fields) -> PExprRecordUpdate.of(
+            e.lexical(), parsed(), t_source, PVectors.vectorCast(t_fields)));
+      return errorsFlatten(r_result);
+    }
+
+    return invalid(m.errorExpression(INVALID_RECORD_UPDATE_EXPRESSION, e));
+  }
+
+  private static Validation<Seq<PParseError>, Vector<PExprRecordField<PParsed>>>
+  requireUniqueRecordFieldNames(
+    final PParseErrorMessagesType m,
+    final Vector<PExprRecordField<PParsed>> names)
+  {
+    return PParsingNames.requireUniqueNames(
+      names,
+      PExprRecordField::field,
+      dups -> dups.map(
+        dup -> m.errorLexical(
+          INVALID_RECORD_EXPRESSION_DUPLICATE_FIELD,
+          dup.lexical(),
+          dup.value())));
+  }
+
+  private static Validation<Seq<PParseError>, PExprRecordField<PParsed>>
+  parseRecordField(
+    final PParseErrorMessagesType m,
+    final SExpressionType e)
+  {
+    if (e instanceof SExpressionListType) {
+      final SExpressionListType es = (SExpressionListType) e;
+      if (es.size() == 3) {
+        final Validation<Seq<PParseError>, String> r_key =
+          PParsingNames.parseKeyword(m, es.get(0), "field");
+        final Validation<Seq<PParseError>, PTermVariableName<PParsed>> r_name =
+          PParsingNames.parseTermVariableName(m, es.get(1));
+        final Validation<Seq<PParseError>, PExpressionType<PParsed>> r_expr =
+          parseExpression(m, es.get(2));
+        final Validation<Seq<Seq<PParseError>>, PExprRecordField<PParsed>> r_result =
+          Validation.combine(r_key, r_name, r_expr)
+            .ap((kw, name, expr) -> PExprRecordField.of(
+              e.lexical(), parsed(), name, expr));
+        return errorsFlatten(r_result);
+      }
+    }
+
+    return invalid(m.errorExpression(INVALID_RECORD_EXPRESSION_FIELD, e));
   }
 }

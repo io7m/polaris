@@ -298,6 +298,14 @@ public final class PParseErrorMessages implements PParseErrorMessagesType
         return base;
       case INVALID_TYPE_SIGNATURE:
         return base;
+      case INVALID_RECORD_EXPRESSION_FIELD:
+        return base;
+      case INVALID_RECORD_EXPRESSION_DUPLICATE_FIELD:
+        return base;
+      case INVALID_RECORD_EXPRESSION:
+        return base;
+      case INVALID_RECORD_UPDATE_EXPRESSION:
+        return base;
       case EXPECTED_TERM_NAME_UNQUALIFIED_GOT_EXPRESSION:
         return base;
       case EXPECTED_TYPE_NAME_UNQUALIFIED_GOT_EXPRESSION:

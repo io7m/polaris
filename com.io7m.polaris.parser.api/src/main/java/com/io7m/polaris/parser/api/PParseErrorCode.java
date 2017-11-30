@@ -303,6 +303,30 @@ public enum PParseErrorCode
   INVALID_PACKAGE_NAME,
 
   /**
+   * The given record expression field is invalid.
+   */
+
+  INVALID_RECORD_EXPRESSION_FIELD,
+
+  /**
+   * The given record expression is invalid due to a duplicate field.
+   */
+
+  INVALID_RECORD_EXPRESSION_DUPLICATE_FIELD,
+
+  /**
+   * The given record expression is invalid.
+   */
+
+  INVALID_RECORD_EXPRESSION,
+
+  /**
+   * The given record update expression is invalid.
+   */
+
+  INVALID_RECORD_UPDATE_EXPRESSION,
+
+  /**
    * Expected a term name but got some other kind of expression.
    */
 

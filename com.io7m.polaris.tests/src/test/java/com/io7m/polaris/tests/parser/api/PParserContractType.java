@@ -44,6 +44,7 @@ public interface PParserContractType extends
   PParserContractExpressionRealType,
   PParserContractExpressionTermReferenceType,
   PParserContractExpressionStringType,
+  PParserContractExpressionRecordType,
   PParserContractDeclarationFunctionType,
   PParserContractDeclarationValueType,
   PParserContractDeclarationRecordType,
