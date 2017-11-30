@@ -14,6 +14,10 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
+/**
+ * The compile-time representation of the language.
+ */
+
 module com.io7m.polaris.ast
 {
   requires static org.immutables.value;
