@@ -28,7 +28,7 @@ import java.util.Optional;
 
 import static java.lang.Boolean.TRUE;
 
-public final class PTermNamesTest
+public final class PTermVariableNamesTest
 {
   private static final LexicalPosition<URI> LEXICAL =
     LexicalPosition.of(1, 0, Optional.empty());
