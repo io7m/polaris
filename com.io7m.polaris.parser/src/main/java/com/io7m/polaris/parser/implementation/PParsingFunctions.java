@@ -79,7 +79,7 @@ public final class PParsingFunctions
     Preconditions.checkPrecondition(
       e_keyword,
       e_keyword instanceof SExpressionSymbolType,
-      c -> "Function declaration must begin with function keyword");
+      c -> "Function declaration must begin with define-function keyword");
 
     if (e.size() == 4) {
       final SExpressionType e_name = e.get(1);

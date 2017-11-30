@@ -41,7 +41,7 @@ public interface PParserContractDeclarationVariantType
   default void testDeclarationVariant0()
     throws Exception
   {
-    final PParserType p = this.parserForString("(variant T [case A Integer])");
+    final PParserType p = this.parserForString("(define-variant T [case A Integer])");
     final Validation<Seq<PParseError>, Optional<PExpressionOrDeclarationType<PParsed>>> r =
       p.parseExpressionOrDeclaration();
 
@@ -67,7 +67,7 @@ public interface PParserContractDeclarationVariantType
     throws Exception
   {
     final PParserType p = this.parserForString(
-      "(variant T [for-all a] [case A Integer])");
+      "(define-variant T [for-all a] [case A Integer])");
     final Validation<Seq<PParseError>, Optional<PExpressionOrDeclarationType<PParsed>>> r =
       p.parseExpressionOrDeclaration();
 
@@ -95,7 +95,7 @@ public interface PParserContractDeclarationVariantType
     throws Exception
   {
     final PParserType p = this.parserForString(
-      "(variant T [∀ a] [case A Integer])");
+      "(define-variant T [∀ a] [case A Integer])");
     final Validation<Seq<PParseError>, Optional<PExpressionOrDeclarationType<PParsed>>> r =
       p.parseExpressionOrDeclaration();
 
@@ -123,7 +123,7 @@ public interface PParserContractDeclarationVariantType
     throws Exception
   {
     final PParserType p = this.parserForString(
-      "(variant T [case A Integer] [case B Integer])");
+      "(define-variant T [case A Integer] [case B Integer])");
     final Validation<Seq<PParseError>, Optional<PExpressionOrDeclarationType<PParsed>>> r =
       p.parseExpressionOrDeclaration();
 
@@ -157,7 +157,7 @@ public interface PParserContractDeclarationVariantType
   default void testDeclarationVariant4()
     throws Exception
   {
-    final PParserType p = this.parserForString("(variant T [case A])");
+    final PParserType p = this.parserForString("(define-variant T [case A])");
     final Validation<Seq<PParseError>, Optional<PExpressionOrDeclarationType<PParsed>>> r =
       p.parseExpressionOrDeclaration();
 
@@ -180,7 +180,7 @@ public interface PParserContractDeclarationVariantType
     throws Exception
   {
     final PParserType p = this.parserForString(
-      "(variant T [for-all a] [case A])");
+      "(define-variant T [for-all a] [case A])");
     final Validation<Seq<PParseError>, Optional<PExpressionOrDeclarationType<PParsed>>> r =
       p.parseExpressionOrDeclaration();
 
@@ -204,7 +204,7 @@ public interface PParserContractDeclarationVariantType
   default void testDeclarationVariant6()
     throws Exception
   {
-    final PParserType p = this.parserForString("(variant T [∀ a] [case A])");
+    final PParserType p = this.parserForString("(define-variant T [∀ a] [case A])");
     final Validation<Seq<PParseError>, Optional<PExpressionOrDeclarationType<PParsed>>> r =
       p.parseExpressionOrDeclaration();
 
@@ -228,7 +228,7 @@ public interface PParserContractDeclarationVariantType
   default void testDeclarationVariant7()
     throws Exception
   {
-    final PParserType p = this.parserForString("(variant T [case A] [case B])");
+    final PParserType p = this.parserForString("(define-variant T [case A] [case B])");
     final Validation<Seq<PParseError>, Optional<PExpressionOrDeclarationType<PParsed>>> r =
       p.parseExpressionOrDeclaration();
 
@@ -256,7 +256,7 @@ public interface PParserContractDeclarationVariantType
     throws Exception
   {
     final PParserType p = this.parserForString(
-      "(variant T [case A Integer] [case A Integer])");
+      "(define-variant T [case A Integer] [case A Integer])");
     final Validation<Seq<PParseError>, Optional<PExpressionOrDeclarationType<PParsed>>> r =
       p.parseExpressionOrDeclaration();
 
@@ -270,7 +270,7 @@ public interface PParserContractDeclarationVariantType
     throws Exception
   {
     final PParserType p = this.parserForString(
-      "(variant T [case A T:x.a])");
+      "(define-variant T [case A T:x.a])");
     final Validation<Seq<PParseError>, Optional<PExpressionOrDeclarationType<PParsed>>> r =
       p.parseExpressionOrDeclaration();
 
@@ -284,7 +284,7 @@ public interface PParserContractDeclarationVariantType
     throws Exception
   {
     final PParserType p = this.parserForString(
-      "(variant t)");
+      "(define-variant t)");
     final Validation<Seq<PParseError>, Optional<PExpressionOrDeclarationType<PParsed>>> r =
       p.parseExpressionOrDeclaration();
 
@@ -298,7 +298,7 @@ public interface PParserContractDeclarationVariantType
     throws Exception
   {
     final PParserType p = this.parserForString(
-      "(variant T [for a b] [case A Integer])");
+      "(define-variant T [for a b] [case A Integer])");
     final Validation<Seq<PParseError>, Optional<PExpressionOrDeclarationType<PParsed>>> r =
       p.parseExpressionOrDeclaration();
 
@@ -312,7 +312,7 @@ public interface PParserContractDeclarationVariantType
     throws Exception
   {
     final PParserType p = this.parserForString(
-      "(variant [] [case A Integer])");
+      "(define-variant [] [case A Integer])");
     final Validation<Seq<PParseError>, Optional<PExpressionOrDeclarationType<PParsed>>> r =
       p.parseExpressionOrDeclaration();
 
@@ -326,7 +326,7 @@ public interface PParserContractDeclarationVariantType
     throws Exception
   {
     final PParserType p = this.parserForString(
-      "(variant T [case A Integer] [bad])");
+      "(define-variant T [case A Integer] [bad])");
     final Validation<Seq<PParseError>, Optional<PExpressionOrDeclarationType<PParsed>>> r =
       p.parseExpressionOrDeclaration();
 
@@ -340,7 +340,7 @@ public interface PParserContractDeclarationVariantType
     throws Exception
   {
     final PParserType p = this.parserForString(
-      "(variant T [] [case A Integer])");
+      "(define-variant T [] [case A Integer])");
     final Validation<Seq<PParseError>, Optional<PExpressionOrDeclarationType<PParsed>>> r =
       p.parseExpressionOrDeclaration();
 
@@ -354,7 +354,7 @@ public interface PParserContractDeclarationVariantType
     throws Exception
   {
     final PParserType p = this.parserForString(
-      "(variant T [case A \"a\"])");
+      "(define-variant T [case A \"a\"])");
     final Validation<Seq<PParseError>, Optional<PExpressionOrDeclarationType<PParsed>>> r =
       p.parseExpressionOrDeclaration();
 

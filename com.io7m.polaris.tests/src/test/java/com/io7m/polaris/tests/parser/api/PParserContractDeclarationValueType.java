@@ -40,7 +40,7 @@ public interface PParserContractDeclarationValueType
   default void testDeclarationValue0()
     throws Exception
   {
-    final PParserType p = this.parserForString("(value pi 3.14)");
+    final PParserType p = this.parserForString("(define-value pi 3.14)");
     final Validation<Seq<PParseError>, Optional<PExpressionOrDeclarationType<PParsed>>> r =
       p.parseExpressionOrDeclaration();
 
@@ -59,7 +59,7 @@ public interface PParserContractDeclarationValueType
   default void testDeclarationValueInvalid0()
     throws Exception
   {
-    final PParserType p = this.parserForString("(value)");
+    final PParserType p = this.parserForString("(define-value)");
     final Validation<Seq<PParseError>, Optional<PExpressionOrDeclarationType<PParsed>>> r =
       p.parseExpressionOrDeclaration();
 
@@ -73,7 +73,7 @@ public interface PParserContractDeclarationValueType
   default void testDeclarationValueInvalid1()
     throws Exception
   {
-    final PParserType p = this.parserForString("(value x y z)");
+    final PParserType p = this.parserForString("(define-value x y z)");
     final Validation<Seq<PParseError>, Optional<PExpressionOrDeclarationType<PParsed>>> r =
       p.parseExpressionOrDeclaration();
 

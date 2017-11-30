@@ -82,7 +82,7 @@ public final class PParsingRecords
     Preconditions.checkPrecondition(
       e_keyword,
       e_keyword instanceof SExpressionSymbolType,
-      c -> "Record declaration must begin with record keyword");
+      c -> "Record declaration must begin with define-record keyword");
 
     if (e.size() >= 3) {
       final Validation<Seq<PParseError>, PTypeConstructorName<PParsed>> r_name =

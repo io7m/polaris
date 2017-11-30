@@ -190,7 +190,7 @@ public interface PParserContractExpressionLambdaType
   default void testLambdaInvalid_5()
     throws Exception
   {
-    final PParserType p = this.parserForString("(λ (x) (value x y))");
+    final PParserType p = this.parserForString("(λ (x) (define-value x y))");
     final Validation<Seq<PParseError>, Optional<PExpressionOrDeclarationType<PParsed>>> r =
       p.parseExpressionOrDeclaration();
 

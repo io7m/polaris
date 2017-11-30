@@ -40,7 +40,7 @@ public interface PParserContractDeclarationFunctionType
   default void testDeclarationFunction0()
     throws Exception
   {
-    final PParserType p = this.parserForString("(function id (x) x)");
+    final PParserType p = this.parserForString("(define-function id (x) x)");
     final Validation<Seq<PParseError>, Optional<PExpressionOrDeclarationType<PParsed>>> r =
       p.parseExpressionOrDeclaration();
 
@@ -62,7 +62,7 @@ public interface PParserContractDeclarationFunctionType
   default void testDeclarationFunctionInvalid0()
     throws Exception
   {
-    final PParserType p = this.parserForString("(function id (x) x z)");
+    final PParserType p = this.parserForString("(define-function id (x) x z)");
     final Validation<Seq<PParseError>, Optional<PExpressionOrDeclarationType<PParsed>>> r =
       p.parseExpressionOrDeclaration();
 
@@ -76,7 +76,7 @@ public interface PParserContractDeclarationFunctionType
   default void testDeclarationFunctionInvalid1()
     throws Exception
   {
-    final PParserType p = this.parserForString("(function id (x x) y)");
+    final PParserType p = this.parserForString("(define-function id (x x) y)");
     final Validation<Seq<PParseError>, Optional<PExpressionOrDeclarationType<PParsed>>> r =
       p.parseExpressionOrDeclaration();
 

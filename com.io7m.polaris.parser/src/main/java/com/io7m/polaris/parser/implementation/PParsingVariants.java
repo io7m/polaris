@@ -83,7 +83,7 @@ public final class PParsingVariants
     Preconditions.checkPrecondition(
       e_keyword,
       e_keyword instanceof SExpressionSymbolType,
-      c -> "Variant declaration must begin with variant keyword");
+      c -> "Variant declaration must begin with define-variant keyword");
 
     if (e.size() >= 3) {
       final Validation<Seq<PParseError>, PTypeConstructorName<PParsed>> r_name =

@@ -250,19 +250,19 @@ public final class PParsing
           return cast(parseExpressionLocal(m, e));
         }
 
-        case "value": {
+        case "define-value": {
           return cast(PParsingValues.parseValue(m, e));
         }
 
-        case "function": {
+        case "define-function": {
           return cast(PParsingFunctions.parseFunction(m, e));
         }
 
-        case "record": {
+        case "define-record": {
           return cast(PParsingRecords.parseRecord(m, e));
         }
 
-        case "variant": {
+        case "define-variant": {
           return cast(PParsingVariants.parseVariant(m, e));
         }
 

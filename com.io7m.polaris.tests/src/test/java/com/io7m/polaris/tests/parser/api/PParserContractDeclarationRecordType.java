@@ -38,7 +38,7 @@ public interface PParserContractDeclarationRecordType
   default void testDeclarationRecord0()
     throws Exception
   {
-    final PParserType p = this.parserForString("(record T [field a Integer])");
+    final PParserType p = this.parserForString("(define-record T [field a Integer])");
     final Validation<Seq<PParseError>, Optional<PExpressionOrDeclarationType<PParsed>>> r =
       p.parseExpressionOrDeclaration();
 
@@ -57,7 +57,7 @@ public interface PParserContractDeclarationRecordType
     throws Exception
   {
     final PParserType p = this.parserForString(
-      "(record T [for-all a] [field a Integer])");
+      "(define-record T [for-all a] [field a Integer])");
     final Validation<Seq<PParseError>, Optional<PExpressionOrDeclarationType<PParsed>>> r =
       p.parseExpressionOrDeclaration();
 
@@ -77,7 +77,7 @@ public interface PParserContractDeclarationRecordType
     throws Exception
   {
     final PParserType p = this.parserForString(
-      "(record T [∀ a] [field a Integer])");
+      "(define-record T [∀ a] [field a Integer])");
     final Validation<Seq<PParseError>, Optional<PExpressionOrDeclarationType<PParsed>>> r =
       p.parseExpressionOrDeclaration();
 
@@ -97,7 +97,7 @@ public interface PParserContractDeclarationRecordType
     throws Exception
   {
     final PParserType p = this.parserForString(
-      "(record T [field a Integer] [field b Integer])");
+      "(define-record T [field a Integer] [field b Integer])");
     final Validation<Seq<PParseError>, Optional<PExpressionOrDeclarationType<PParsed>>> r =
       p.parseExpressionOrDeclaration();
 
@@ -117,7 +117,7 @@ public interface PParserContractDeclarationRecordType
     throws Exception
   {
     final PParserType p = this.parserForString(
-      "(record T [field a Integer] [field a Integer])");
+      "(define-record T [field a Integer] [field a Integer])");
     final Validation<Seq<PParseError>, Optional<PExpressionOrDeclarationType<PParsed>>> r =
       p.parseExpressionOrDeclaration();
 
@@ -131,7 +131,7 @@ public interface PParserContractDeclarationRecordType
     throws Exception
   {
     final PParserType p = this.parserForString(
-      "(record T [field a T:x.a])");
+      "(define-record T [field a T:x.a])");
     final Validation<Seq<PParseError>, Optional<PExpressionOrDeclarationType<PParsed>>> r =
       p.parseExpressionOrDeclaration();
 
@@ -145,7 +145,7 @@ public interface PParserContractDeclarationRecordType
     throws Exception
   {
     final PParserType p = this.parserForString(
-      "(record T)");
+      "(define-record T)");
     final Validation<Seq<PParseError>, Optional<PExpressionOrDeclarationType<PParsed>>> r =
       p.parseExpressionOrDeclaration();
 
@@ -159,7 +159,7 @@ public interface PParserContractDeclarationRecordType
     throws Exception
   {
     final PParserType p = this.parserForString(
-      "(record T [for a b] [field a Integer])");
+      "(define-record T [for a b] [field a Integer])");
     final Validation<Seq<PParseError>, Optional<PExpressionOrDeclarationType<PParsed>>> r =
       p.parseExpressionOrDeclaration();
 
@@ -173,7 +173,7 @@ public interface PParserContractDeclarationRecordType
     throws Exception
   {
     final PParserType p = this.parserForString(
-      "(record [] [field a Integer])");
+      "(define-record [] [field a Integer])");
     final Validation<Seq<PParseError>, Optional<PExpressionOrDeclarationType<PParsed>>> r =
       p.parseExpressionOrDeclaration();
 
@@ -187,7 +187,7 @@ public interface PParserContractDeclarationRecordType
     throws Exception
   {
     final PParserType p = this.parserForString(
-      "(record T [field a Integer] [bad])");
+      "(define-record T [field a Integer] [bad])");
     final Validation<Seq<PParseError>, Optional<PExpressionOrDeclarationType<PParsed>>> r =
       p.parseExpressionOrDeclaration();
 
@@ -201,7 +201,7 @@ public interface PParserContractDeclarationRecordType
     throws Exception
   {
     final PParserType p = this.parserForString(
-      "(record T [] [field a Integer])");
+      "(define-record T [] [field a Integer])");
     final Validation<Seq<PParseError>, Optional<PExpressionOrDeclarationType<PParsed>>> r =
       p.parseExpressionOrDeclaration();
 
@@ -215,7 +215,7 @@ public interface PParserContractDeclarationRecordType
     throws Exception
   {
     final PParserType p = this.parserForString(
-      "(record T [field a \"a\"])");
+      "(define-record T [field a \"a\"])");
     final Validation<Seq<PParseError>, Optional<PExpressionOrDeclarationType<PParsed>>> r =
       p.parseExpressionOrDeclaration();
 
@@ -229,7 +229,7 @@ public interface PParserContractDeclarationRecordType
     throws Exception
   {
     final PParserType p = this.parserForString(
-      "(record T [∀ X] [field a Integer])");
+      "(define-record T [∀ X] [field a Integer])");
     final Validation<Seq<PParseError>, Optional<PExpressionOrDeclarationType<PParsed>>> r =
       p.parseExpressionOrDeclaration();
 

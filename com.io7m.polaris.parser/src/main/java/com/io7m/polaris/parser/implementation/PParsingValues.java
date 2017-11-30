@@ -73,7 +73,7 @@ public final class PParsingValues
     Preconditions.checkPrecondition(
       e_keyword,
       e_keyword instanceof SExpressionSymbolType,
-      c -> "Value declaration must begin with value keyword");
+      c -> "Value declaration must begin with define-value keyword");
 
     if (e.size() == 3) {
       final SExpressionType e_name = e.get(1);
