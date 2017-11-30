@@ -22,7 +22,7 @@ import com.io7m.jsx.SExpressionSymbolType;
 import com.io7m.jsx.SExpressionType;
 import com.io7m.junreachable.UnreachableCodeException;
 import com.io7m.polaris.ast.PDeclarationSignature;
-import com.io7m.polaris.ast.PTermName;
+import com.io7m.polaris.ast.PTermVariableName;
 import com.io7m.polaris.ast.PTypeExpressionType;
 import com.io7m.polaris.parser.api.PParseError;
 import com.io7m.polaris.parser.api.PParseErrorMessagesType;
@@ -79,8 +79,8 @@ public final class PParsingSignatures
       final SExpressionType e_name = e.get(1);
       final SExpressionType e_type = e.get(2);
 
-      final Validation<Seq<PParseError>, PTermName<PParsed>> r_name =
-        PParsingNames.parseTermName(m, e_name);
+      final Validation<Seq<PParseError>, PTermVariableName<PParsed>> r_name =
+        PParsingNames.parseTermVariableName(m, e_name);
       final Validation<Seq<PParseError>, PTypeExpressionType<PParsed>> r_type =
         PParsingTypeExpressions.parseTypeExpression(m, e_type);
       final Validation<Seq<Seq<PParseError>>, PDeclarationSignature<PParsed>> r_result =

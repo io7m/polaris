@@ -36,7 +36,7 @@ import com.io7m.polaris.ast.PExpressionType;
 import com.io7m.polaris.ast.PExpressionType.PMatchCaseType;
 import com.io7m.polaris.ast.PMatchCase;
 import com.io7m.polaris.ast.PPatternType;
-import com.io7m.polaris.ast.PTermName;
+import com.io7m.polaris.ast.PTermVariableName;
 import com.io7m.polaris.parser.api.PParseError;
 import com.io7m.polaris.parser.api.PParseErrorMessagesType;
 import com.io7m.polaris.parser.api.PParsed;
@@ -436,10 +436,10 @@ public final class PParsing
       final SExpressionType e_body = e.get(2);
       if (e_param_list instanceof SExpressionListType) {
 
-        final Validation<Seq<PParseError>, Vector<PTermName<PParsed>>> r_params =
+        final Validation<Seq<PParseError>, Vector<PTermVariableName<PParsed>>> r_params =
           sequence(
             (SExpressionListType) e_param_list,
-            ex -> PParsingNames.parseTermName(m, ex))
+            ex -> PParsingNames.parseTermVariableName(m, ex))
             .flatMap(params -> requireUniqueNames(m, params));
 
         final Validation<Seq<PParseError>, PExpressionType<PParsed>> r_body =
@@ -457,10 +457,10 @@ public final class PParsing
     return invalid(m.errorExpression(INVALID_LAMBDA, e));
   }
 
-  private static Validation<Seq<PParseError>, Vector<PTermName<PParsed>>>
+  private static Validation<Seq<PParseError>, Vector<PTermVariableName<PParsed>>>
   requireUniqueNames(
     final PParseErrorMessagesType m,
-    final Vector<PTermName<PParsed>> names)
+    final Vector<PTermVariableName<PParsed>> names)
   {
     return PParsingNames.requireUniqueNames(
       names,
@@ -471,7 +471,7 @@ public final class PParsing
 
   private static PExprLambda<PParsed> parseExpressionLambdaMake(
     final SExpressionListType e,
-    final Vector<PTermName<PParsed>> names,
+    final Vector<PTermVariableName<PParsed>> names,
     final PExpressionType<PParsed> body)
   {
     return PExprLambda.of(

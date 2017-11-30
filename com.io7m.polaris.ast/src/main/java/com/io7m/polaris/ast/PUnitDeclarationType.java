@@ -18,6 +18,7 @@ package com.io7m.polaris.ast;
 
 import com.io7m.jaffirm.core.Preconditions;
 import com.io7m.jlexing.core.LexicalPosition;
+import com.io7m.junreachable.UnreachableCodeException;
 import com.io7m.polaris.core.PImmutableStyleType;
 import io.vavr.collection.Vector;
 import org.immutables.value.Value;
@@ -192,7 +193,7 @@ public interface PUnitDeclarationType<T> extends PDeclarationType<T>
     T data();
 
     /**
-     * @return The term names to be exported
+     * @return The terms to be exported
      */
 
     @Value.Parameter

@@ -18,7 +18,6 @@ package com.io7m.polaris.parser.implementation;
 
 import com.io7m.jaffirm.core.Preconditions;
 import com.io7m.jsx.SExpressionListType;
-import com.io7m.jsx.SExpressionQuotedStringType;
 import com.io7m.jsx.SExpressionSymbolType;
 import com.io7m.jsx.SExpressionType;
 import com.io7m.junreachable.UnreachableCodeException;
@@ -27,7 +26,12 @@ import com.io7m.polaris.ast.PDeclarationExportTypes;
 import com.io7m.polaris.ast.PDeclarationImport;
 import com.io7m.polaris.ast.PDeclarationUnit;
 import com.io7m.polaris.ast.PPackageName;
-import com.io7m.polaris.ast.PTermName;
+import com.io7m.polaris.ast.PTermConstructorName;
+import com.io7m.polaris.ast.PTermNameType;
+import com.io7m.polaris.ast.PTermReferenceConstructor;
+import com.io7m.polaris.ast.PTermReferenceType;
+import com.io7m.polaris.ast.PTermReferenceVariable;
+import com.io7m.polaris.ast.PTermVariableName;
 import com.io7m.polaris.ast.PTypeConstructorName;
 import com.io7m.polaris.ast.PUnitName;
 import com.io7m.polaris.parser.api.PParseError;
@@ -236,10 +240,11 @@ public final class PParsingUnits
 
     if (e.size() >= 2) {
       final Vector<SExpressionType> e_terms = Vector.ofAll(e).tail();
-      final Validation<Seq<PParseError>, Vector<PTermName<PParsed>>> r_seq =
+      final Validation<Seq<PParseError>, Vector<PTermNameType<PParsed>>> r_seq =
         PValidation.sequence(e_terms, t -> PParsingNames.parseTermName(m, t));
-      final Validation<Seq<PParseError>, Vector<PTermName<PParsed>>> r_unique =
+      final Validation<Seq<PParseError>, Vector<PTermNameType<PParsed>>> r_unique =
         r_seq.flatMap(xs -> requireUniqueTermNames(m, xs));
+
       return r_unique.map(
         names -> PDeclarationExportTerms.of(
           e.lexical(), parsed(), PVectors.vectorCast(names)));
@@ -292,16 +297,33 @@ public final class PParsingUnits
     return invalid(m.errorExpression(INVALID_UNIT_EXPORT_TYPES, e));
   }
 
-  private static Validation<Seq<PParseError>, Vector<PTermName<PParsed>>>
+  private static Validation<Seq<PParseError>, Vector<PTermNameType<PParsed>>>
   requireUniqueTermNames(
     final PParseErrorMessagesType messages,
-    final Vector<PTermName<PParsed>> terms)
+    final Vector<PTermNameType<PParsed>> terms)
   {
     return PParsingNames.requireUniqueNames(
       terms,
       Function.identity(),
-      dups -> dups.map(dup -> messages.errorLexical(
-        INVALID_UNIT_EXPORT_TERMS_DUPLICATE_NAME, dup.lexical(), dup.value())));
+      dups -> dups.map(dup -> {
+        switch (dup.termNameKind()) {
+          case TERM_NAME_CONSTRUCTOR: {
+            final PTermConstructorName<PParsed> c =
+              (PTermConstructorName<PParsed>) dup;
+            return messages.errorLexical(
+              INVALID_UNIT_EXPORT_TERMS_DUPLICATE_NAME,
+              dup.lexical(), c.value());
+          }
+          case TERM_NAME_VARIABLE: {
+            final PTermVariableName<PParsed> c =
+              (PTermVariableName<PParsed>) dup;
+            return messages.errorLexical(
+              INVALID_UNIT_EXPORT_TERMS_DUPLICATE_NAME,
+              dup.lexical(), c.value());
+          }
+        }
+        throw new UnreachableCodeException();
+      }));
   }
 
   private static Validation<Seq<PParseError>, Vector<PTypeConstructorName<PParsed>>>

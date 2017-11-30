@@ -250,6 +250,6 @@ public interface PPatternType<T> extends PASTElementType<T>
      */
 
     @Value.Parameter
-    Optional<PTermNameType<T>> argument();
+    Optional<PTermVariableNameType<T>> argument();
   }
 }

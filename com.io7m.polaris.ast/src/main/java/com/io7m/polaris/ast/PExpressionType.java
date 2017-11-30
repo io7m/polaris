@@ -289,7 +289,7 @@ public interface PExpressionType<T> extends PExpressionOrDeclarationType<T>
      */
 
     @Value.Parameter
-    Vector<PTermNameType<T>> arguments();
+    Vector<PTermVariableNameType<T>> arguments();
 
     /**
      * @return The body expression

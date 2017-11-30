@@ -22,8 +22,8 @@ import com.io7m.jsx.SExpressionSymbolType;
 import com.io7m.jsx.SExpressionType;
 import com.io7m.junreachable.UnreachableCodeException;
 import com.io7m.polaris.ast.PTermConstructorName;
-import com.io7m.polaris.ast.PTermName;
-import com.io7m.polaris.ast.PTermNameType;
+import com.io7m.polaris.ast.PTermVariableName;
+import com.io7m.polaris.ast.PTermVariableNameType;
 import com.io7m.polaris.ast.PTermReferenceConstructor;
 import com.io7m.polaris.ast.PTermReferenceType;
 import com.io7m.polaris.ast.PTermReferenceVariable;
@@ -40,7 +40,7 @@ import java.util.Objects;
 import java.util.Optional;
 
 import static com.io7m.polaris.parser.api.PParseErrorCode.INVALID_CONSTRUCTOR_REFERENCE;
-import static com.io7m.polaris.parser.api.PParseErrorCode.INVALID_TERM_NAME;
+import static com.io7m.polaris.parser.api.PParseErrorCode.INVALID_TERM_VARIABLE_NAME;
 import static com.io7m.polaris.parser.api.PParseErrorCode.INVALID_TERM_REFERENCE;
 import static com.io7m.polaris.parser.api.PParsed.parsed;
 import static com.io7m.polaris.parser.implementation.PValidation.errorsFlatten;
@@ -88,7 +88,7 @@ public final class PParsingTermReferences
 
         if (text_after.isEmpty()) {
           return invalid(m.errorLexical(
-            INVALID_TERM_NAME,
+            INVALID_TERM_VARIABLE_NAME,
             lex_after,
             text_after));
         }
@@ -167,7 +167,7 @@ public final class PParsingTermReferences
   {
     final Validation<Seq<PParseError>, PUnitName<PParsed>> r_unit =
       PParsingNames.parseUnitNameRaw(m, lexi_before, text_before);
-    final Validation<Seq<PParseError>, Vector<PTermName<PParsed>>> r_term =
+    final Validation<Seq<PParseError>, Vector<PTermVariableName<PParsed>>> r_term =
       parseTermPathRaw(m, lexi_after, text_after);
     final Validation<Seq<Seq<PParseError>>, PTermReferenceType<PParsed>> r_result =
       Validation.combine(r_unit, r_term)
@@ -197,7 +197,7 @@ public final class PParsingTermReferences
       .map(params -> makeReferenceVariable(lexical, Optional.empty(), params));
   }
 
-  private static Validation<Seq<PParseError>, Vector<PTermName<PParsed>>>
+  private static Validation<Seq<PParseError>, Vector<PTermVariableName<PParsed>>>
   parseTermPathRaw(
     final PParseErrorMessagesType m,
     final LexicalPosition<URI> lexical,
@@ -206,15 +206,15 @@ public final class PParsingTermReferences
     final Vector<String> components = Vector.of(text.split("\\."));
 
     if (components.isEmpty()) {
-      return invalid(m.errorLexical(INVALID_TERM_NAME, lexical, text));
+      return invalid(m.errorLexical(INVALID_TERM_VARIABLE_NAME, lexical, text));
     }
 
-    Vector<Validation<Seq<PParseError>, PTermName<PParsed>>> checks = Vector.empty();
+    Vector<Validation<Seq<PParseError>, PTermVariableName<PParsed>>> checks = Vector.empty();
     int offset = lexical.column();
     for (int index = 0; index < components.size(); ++index) {
       final String component = components.get(index);
       final int offset_now = offset;
-      checks = checks.append(PParsingNames.parseTermNameRaw(
+      checks = checks.append(PParsingNames.parseTermVariableNameRaw(
         m, lexical.withColumn(offset_now), component));
       offset += component.length();
     }
@@ -226,14 +226,14 @@ public final class PParsingTermReferences
   makeReferenceVariable(
     final LexicalPosition<URI> lex,
     final Optional<PUnitName<PParsed>> unit,
-    final Vector<PTermName<PParsed>> params)
+    final Vector<PTermVariableName<PParsed>> params)
   {
     Preconditions.checkPrecondition(
       params,
       !params.isEmpty(),
       p -> "Parameters must not be empty");
 
-    final Vector<PTermNameType<PParsed>> path;
+    final Vector<PTermVariableNameType<PParsed>> path;
     if (params.size() > 1) {
       path = PVectors.vectorCast(params.tail());
     } else {

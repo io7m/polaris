@@ -19,7 +19,7 @@ package com.io7m.polaris.tests;
 import com.io7m.junreachable.UnreachableCodeException;
 import com.io7m.polaris.ast.PPackageNames;
 import com.io7m.polaris.ast.PTermConstructorNames;
-import com.io7m.polaris.ast.PTermNames;
+import com.io7m.polaris.ast.PTermVariableNames;
 import com.io7m.polaris.ast.PTypeConstructorNames;
 import com.io7m.polaris.ast.PUnitNames;
 import com.io7m.polaris.parser.implementation.PParsing;
@@ -80,7 +80,7 @@ public final class UnreachableTest
         PPackageNames.class,
         PTypeConstructorNames.class,
         PTermConstructorNames.class,
-        PTermNames.class,
+        PTermVariableNames.class,
         PUnitNames.class)
         .stream()
         .map(c -> (Executable) () -> checkUnreachable(c)));

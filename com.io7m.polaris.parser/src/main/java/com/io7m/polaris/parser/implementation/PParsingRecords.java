@@ -23,7 +23,7 @@ import com.io7m.jsx.SExpressionType;
 import com.io7m.junreachable.UnreachableCodeException;
 import com.io7m.polaris.ast.PDeclarationRecord;
 import com.io7m.polaris.ast.PRecordField;
-import com.io7m.polaris.ast.PTermName;
+import com.io7m.polaris.ast.PTermVariableName;
 import com.io7m.polaris.ast.PTypeConstructorName;
 import com.io7m.polaris.ast.PTypeExpressionType;
 import com.io7m.polaris.ast.PTypeVariableName;
@@ -152,8 +152,8 @@ public final class PParsingRecords
       if (exs.size() == 3) {
         final Validation<Seq<PParseError>, String> r_keyword =
           PParsingNames.parseKeyword(m, exs.get(0), "field");
-        final Validation<Seq<PParseError>, PTermName<PParsed>> r_name =
-          PParsingNames.parseTermName(m, exs.get(1));
+        final Validation<Seq<PParseError>, PTermVariableName<PParsed>> r_name =
+          PParsingNames.parseTermVariableName(m, exs.get(1));
         final Validation<Seq<PParseError>, PTypeExpressionType<PParsed>> r_expr =
           PParsingTypeExpressions.parseTypeExpression(m, exs.get(2));
         final Validation<Seq<Seq<PParseError>>, PRecordField<PParsed>> r_result =

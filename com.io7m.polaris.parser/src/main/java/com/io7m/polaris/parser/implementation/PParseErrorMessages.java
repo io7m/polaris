@@ -22,10 +22,9 @@ import com.io7m.jsx.SExpressionType;
 import com.io7m.jsx.prettyprint.JSXPrettyPrinterCodeStyle;
 import com.io7m.jsx.prettyprint.JSXPrettyPrinterType;
 import com.io7m.junreachable.UnreachableCodeException;
-import com.io7m.polaris.ast.PPackageName;
 import com.io7m.polaris.ast.PPackageNames;
 import com.io7m.polaris.ast.PTermConstructorNames;
-import com.io7m.polaris.ast.PTermNames;
+import com.io7m.polaris.ast.PTermVariableNames;
 import com.io7m.polaris.ast.PTypeConstructorNames;
 import com.io7m.polaris.ast.PTypeVariableNames;
 import com.io7m.polaris.ast.PUnitNames;
@@ -233,8 +232,8 @@ public final class PParseErrorMessages implements PParseErrorMessagesType
         return base;
       case INVALID_INTEGER:
         return base;
-      case INVALID_TERM_NAME:
-        return base + " " + PTermNames.PATTERN.pattern();
+      case INVALID_TERM_VARIABLE_NAME:
+        return base + " " + PTermVariableNames.PATTERN.pattern();
       case INVALID_UNIT_NAME:
         return base + " " + PUnitNames.PATTERN.pattern();
       case INVALID_TERM_CONSTRUCTOR_NAME:

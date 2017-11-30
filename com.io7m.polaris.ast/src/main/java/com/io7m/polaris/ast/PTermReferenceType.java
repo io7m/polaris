@@ -140,13 +140,13 @@ public interface PTermReferenceType<T> extends PASTElementType<T>
      */
 
     @Value.Parameter
-    PTermNameType<T> term();
+    PTermVariableNameType<T> term();
 
     /**
      * @return A sequence of record accesses
      */
 
     @Value.Parameter
-    Vector<PTermNameType<T>> recordPath();
+    Vector<PTermVariableNameType<T>> recordPath();
   }
 }

@@ -105,7 +105,7 @@ public enum PParseErrorCode
    * The given term name is invalid.
    */
 
-  INVALID_TERM_NAME,
+  INVALID_TERM_VARIABLE_NAME,
 
   /**
    * The given unit name is invalid.

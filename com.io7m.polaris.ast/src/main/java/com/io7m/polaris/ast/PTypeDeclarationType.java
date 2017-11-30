@@ -162,7 +162,7 @@ public interface PTypeDeclarationType<T> extends PDeclarationType<T>
      */
 
     @Value.Parameter
-    PTermNameType<T> name();
+    PTermVariableNameType<T> name();
 
     /**
      * @return The field type

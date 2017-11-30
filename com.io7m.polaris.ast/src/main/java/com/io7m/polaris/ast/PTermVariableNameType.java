@@ -16,36 +16,54 @@
 
 package com.io7m.polaris.ast;
 
+import com.io7m.jaffirm.core.Preconditions;
+import com.io7m.jlexing.core.LexicalPosition;
+import com.io7m.polaris.core.PImmutableStyleType;
+import org.immutables.value.Value;
+
+import java.net.URI;
+
 /**
- * The type of unqualified term names.
+ * The type of term names.
  *
  * @param <T> The type of associated data
  */
 
-public interface PTermNameType<T> extends PASTElementType<T>
+@PImmutableStyleType
+@Value.Immutable(builder = false)
+public interface PTermVariableNameType<T> extends PTermNameType<T>
 {
-  /**
-   * The kind of term names.
-   */
+  @Override
+  @Value.Parameter
+  @Value.Auxiliary
+  LexicalPosition<URI> lexical();
 
-  enum TermNameKind
+  @Override
+  @Value.Parameter
+  @Value.Auxiliary
+  T data();
+
+  @Override
+  default TermNameKind termNameKind()
   {
-    /**
-     * @see PTermVariableNameType
-     */
-
-    TERM_NAME_VARIABLE,
-
-    /**
-     * @see PTermConstructorNameType
-     */
-
-    TERM_NAME_CONSTRUCTOR
+    return TermNameKind.TERM_NAME_VARIABLE;
   }
 
   /**
-   * @return The kind of term name
+   * @return The actual name value
    */
 
-  TermNameKind termNameKind();
+  @Value.Parameter
+  String value();
+
+  /**
+   * Check preconditions for the type.
+   */
+
+  @Value.Check
+  default void checkPreconditions()
+  {
+    Preconditions.checkPrecondition(
+      PTermVariableNames.isValid(this.value()), "Name must be valid");
+  }
 }

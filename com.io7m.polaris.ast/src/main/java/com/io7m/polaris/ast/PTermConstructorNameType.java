@@ -31,7 +31,7 @@ import java.net.URI;
 
 @PImmutableStyleType
 @Value.Immutable(builder = false)
-public interface PTermConstructorNameType<T> extends PASTElementType<T>
+public interface PTermConstructorNameType<T> extends PTermNameType<T>
 {
   @Override
   @Value.Parameter
@@ -42,6 +42,12 @@ public interface PTermConstructorNameType<T> extends PASTElementType<T>
   @Value.Parameter
   @Value.Auxiliary
   T data();
+
+  @Override
+  default TermNameKind termNameKind()
+  {
+    return TermNameKind.TERM_NAME_CONSTRUCTOR;
+  }
 
   /**
    * @return The actual name value

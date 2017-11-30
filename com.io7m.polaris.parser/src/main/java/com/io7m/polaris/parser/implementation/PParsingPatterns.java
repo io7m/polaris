@@ -28,7 +28,7 @@ import com.io7m.polaris.ast.PPatternConstantString;
 import com.io7m.polaris.ast.PPatternConstructor;
 import com.io7m.polaris.ast.PPatternType;
 import com.io7m.polaris.ast.PPatternWildcard;
-import com.io7m.polaris.ast.PTermName;
+import com.io7m.polaris.ast.PTermVariableName;
 import com.io7m.polaris.ast.PTermReferenceConstructor;
 import com.io7m.polaris.parser.api.PParseError;
 import com.io7m.polaris.parser.api.PParseErrorMessagesType;
@@ -106,8 +106,8 @@ public final class PParsingPatterns
 
       final Validation<Seq<PParseError>, PTermReferenceConstructor<PParsed>> r_constructor =
         PParsingTermReferences.parseConstructorReference(m, e0);
-      final Validation<Seq<PParseError>, PTermName<PParsed>> r_arg =
-        PParsingNames.parseTermName(m, e1);
+      final Validation<Seq<PParseError>, PTermVariableName<PParsed>> r_arg =
+        PParsingNames.parseTermVariableName(m, e1);
       final Validation<Seq<Seq<PParseError>>, PPatternType<PParsed>> r_result =
         Validation.combine(r_constructor, r_arg)
           .ap((t_cons, t_arg) -> PPatternConstructor.of(

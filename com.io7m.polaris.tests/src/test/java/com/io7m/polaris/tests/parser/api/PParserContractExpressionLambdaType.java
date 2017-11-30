@@ -144,7 +144,7 @@ public interface PParserContractExpressionLambdaType
 
     dump(this.log(), r);
     Assertions.assertTrue(r.isInvalid());
-    Assertions.assertTrue(r.getError().exists(e -> e.code() == PParseErrorCode.INVALID_TERM_NAME));
+    Assertions.assertTrue(r.getError().exists(e -> e.code() == PParseErrorCode.INVALID_TERM_VARIABLE_NAME));
   }
 
   @Test
@@ -157,7 +157,7 @@ public interface PParserContractExpressionLambdaType
 
     dump(this.log(), r);
     Assertions.assertTrue(r.isInvalid());
-    Assertions.assertTrue(r.getError().exists(e -> e.code() == PParseErrorCode.INVALID_TERM_NAME));
+    Assertions.assertTrue(r.getError().exists(e -> e.code() == PParseErrorCode.INVALID_TERM_VARIABLE_NAME));
   }
 
   @Test

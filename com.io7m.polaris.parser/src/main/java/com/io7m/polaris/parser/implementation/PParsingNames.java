@@ -24,8 +24,9 @@ import com.io7m.polaris.ast.PPackageName;
 import com.io7m.polaris.ast.PPackageNames;
 import com.io7m.polaris.ast.PTermConstructorName;
 import com.io7m.polaris.ast.PTermConstructorNames;
-import com.io7m.polaris.ast.PTermName;
-import com.io7m.polaris.ast.PTermNames;
+import com.io7m.polaris.ast.PTermNameType;
+import com.io7m.polaris.ast.PTermVariableName;
+import com.io7m.polaris.ast.PTermVariableNames;
 import com.io7m.polaris.ast.PTypeConstructorName;
 import com.io7m.polaris.ast.PTypeConstructorNames;
 import com.io7m.polaris.ast.PTypeVariableName;
@@ -49,11 +50,13 @@ import java.util.stream.Collectors;
 
 import static com.io7m.polaris.parser.api.PParseErrorCode.INVALID_PACKAGE_NAME;
 import static com.io7m.polaris.parser.api.PParseErrorCode.INVALID_TERM_CONSTRUCTOR_NAME;
-import static com.io7m.polaris.parser.api.PParseErrorCode.INVALID_TERM_NAME;
+import static com.io7m.polaris.parser.api.PParseErrorCode.INVALID_TERM_VARIABLE_NAME;
 import static com.io7m.polaris.parser.api.PParseErrorCode.INVALID_TYPE_CONSTRUCTOR_NAME;
 import static com.io7m.polaris.parser.api.PParseErrorCode.INVALID_TYPE_VARIABLE_NAME;
 import static com.io7m.polaris.parser.api.PParseErrorCode.INVALID_UNIT_NAME;
 import static com.io7m.polaris.parser.api.PParsed.parsed;
+import static com.io7m.polaris.parser.implementation.PValidation.cast;
+import static com.io7m.polaris.parser.implementation.PValidation.errorsFlatten;
 import static com.io7m.polaris.parser.implementation.PValidation.invalid;
 
 /**
@@ -76,8 +79,8 @@ public final class PParsingNames
    * @return An unqualified term name, or a list of parse errors
    */
 
-  public static Validation<Seq<PParseError>, PTermName<PParsed>>
-  parseTermName(
+  public static Validation<Seq<PParseError>, PTermVariableName<PParsed>>
+  parseTermVariableName(
     final PParseErrorMessagesType m,
     final SExpressionType e)
   {
@@ -86,9 +89,9 @@ public final class PParsingNames
 
     if (e instanceof SExpressionSymbolType) {
       final SExpressionSymbolType es = (SExpressionSymbolType) e;
-      return parseTermNameRaw(m, es.lexical(), es.text());
+      return parseTermVariableNameRaw(m, es.lexical(), es.text());
     }
-    return invalid(m.errorExpression(INVALID_TERM_NAME, e));
+    return invalid(m.errorExpression(INVALID_TERM_VARIABLE_NAME, e));
   }
 
   /**
@@ -101,8 +104,8 @@ public final class PParsingNames
    * @return An unqualified term name, or a list of parse errors
    */
 
-  public static Validation<Seq<PParseError>, PTermName<PParsed>>
-  parseTermNameRaw(
+  public static Validation<Seq<PParseError>, PTermVariableName<PParsed>>
+  parseTermVariableNameRaw(
     final PParseErrorMessagesType m,
     final LexicalPosition<URI> lexical,
     final String text)
@@ -111,10 +114,10 @@ public final class PParsingNames
     Objects.requireNonNull(lexical, "Lexical");
     Objects.requireNonNull(text, "Text");
 
-    if (PTermNames.isValid(text)) {
-      return Validation.valid(PTermName.of(lexical, parsed(), text));
+    if (PTermVariableNames.isValid(text)) {
+      return Validation.valid(PTermVariableName.of(lexical, parsed(), text));
     }
-    return invalid(m.errorLexical(INVALID_TERM_NAME, lexical, text));
+    return invalid(m.errorLexical(INVALID_TERM_VARIABLE_NAME, lexical, text));
   }
 
   /**
@@ -402,8 +405,7 @@ public final class PParsingNames
       parseUnitNameRaw(
         m, lexical.withColumn(lexical.column() + p_name.length()), u_name);
 
-    return PValidation.errorsFlatten(
-      Validation.combine(r_pack, r_unit).ap(Tuple::of));
+    return errorsFlatten(Validation.combine(r_pack, r_unit).ap(Tuple::of));
   }
 
   private static Validation<Seq<PParseError>, PPackageName<PParsed>>
@@ -416,5 +418,56 @@ public final class PParsingNames
       return Validation.valid(PPackageName.of(lexical, parsed(), text));
     }
     return invalid(m.errorLexical(INVALID_PACKAGE_NAME, lexical, text));
+  }
+
+  /**
+   * Parse the given string as an unqualified term name.
+   *
+   * @param m       An error message provider
+   * @param lexical Lexical information
+   * @param text    The input text
+   *
+   * @return An unqualified term name, or a list of parse errors
+   */
+
+  public static Validation<Seq<PParseError>, PTermNameType<PParsed>>
+  parseTermNameRaw(
+    final PParseErrorMessagesType m,
+    final LexicalPosition<URI> lexical,
+    final String text)
+  {
+    Objects.requireNonNull(m, "Messages");
+    Objects.requireNonNull(lexical, "Lexical");
+    Objects.requireNonNull(text, "Text");
+
+    if (Character.isUpperCase(text.codePointAt(0))) {
+      return cast(parseTermConstructorNameRaw(m, lexical, text));
+    }
+
+    return cast(parseTermVariableNameRaw(m, lexical, text));
+  }
+
+  /**
+   * Parse the given string as an unqualified term name.
+   *
+   * @param m An error message provider
+   * @param e The expression
+   *
+   * @return An unqualified term name, or a list of parse errors
+   */
+
+  public static Validation<Seq<PParseError>, PTermNameType<PParsed>>
+  parseTermName(
+    final PParseErrorMessagesType m,
+    final SExpressionType e)
+  {
+    Objects.requireNonNull(m, "Messages");
+    Objects.requireNonNull(e, "Expression");
+
+    if (e instanceof SExpressionSymbolType) {
+      final SExpressionSymbolType es = (SExpressionSymbolType) e;
+      return parseTermNameRaw(m, es.lexical(), es.text());
+    }
+    return invalid(m.errorExpression(INVALID_TERM_VARIABLE_NAME, e));
   }
 }

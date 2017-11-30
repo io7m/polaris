@@ -90,7 +90,7 @@ public interface PParserContractExpressionTermReferenceType
           dump(this.log(), r);
           Assertions.assertTrue(r.isInvalid());
           Assertions.assertTrue(r.getError().exists(
-            e -> e.code() == PParseErrorCode.INVALID_TERM_NAME
+            e -> e.code() == PParseErrorCode.INVALID_TERM_VARIABLE_NAME
               || e.code() == PParseErrorCode.INVALID_UNIT_NAME));
         });
 
@@ -153,7 +153,7 @@ public interface PParserContractExpressionTermReferenceType
           dump(this.log(), r);
           Assertions.assertTrue(r.isInvalid());
           Assertions.assertTrue(r.getError().exists(
-            e -> e.code() == PParseErrorCode.INVALID_TERM_NAME
+            e -> e.code() == PParseErrorCode.INVALID_TERM_VARIABLE_NAME
               || e.code() == PParseErrorCode.INVALID_UNIT_NAME
               || e.code() == PParseErrorCode.INVALID_TERM_CONSTRUCTOR_NAME));
         });

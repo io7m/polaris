@@ -23,8 +23,8 @@ import com.io7m.jsx.SExpressionType;
 import com.io7m.junreachable.UnreachableCodeException;
 import com.io7m.polaris.ast.PDeclarationFunction;
 import com.io7m.polaris.ast.PExpressionType;
-import com.io7m.polaris.ast.PTermName;
-import com.io7m.polaris.ast.PTermNameType;
+import com.io7m.polaris.ast.PTermVariableName;
+import com.io7m.polaris.ast.PTermVariableNameType;
 import com.io7m.polaris.parser.api.PParseError;
 import com.io7m.polaris.parser.api.PParseErrorMessagesType;
 import com.io7m.polaris.parser.api.PParsed;
@@ -90,10 +90,10 @@ public final class PParsingFunctions
         final Iterable<SExpressionType> el_params =
           (SExpressionListType) e_params;
 
-        final Validation<Seq<PParseError>, PTermName<PParsed>> r_name =
-          PParsingNames.parseTermName(m, e_name);
-        final Validation<Seq<PParseError>, Vector<PTermNameType<PParsed>>> r_params =
-          sequence(el_params, x -> PParsingNames.parseTermName(m, x))
+        final Validation<Seq<PParseError>, PTermVariableName<PParsed>> r_name =
+          PParsingNames.parseTermVariableName(m, e_name);
+        final Validation<Seq<PParseError>, Vector<PTermVariableNameType<PParsed>>> r_params =
+          sequence(el_params, x -> PParsingNames.parseTermVariableName(m, x))
             .flatMap(names -> requireUniqueNames(m, names))
             .map(PVectors::vectorCast);
 
@@ -113,9 +113,9 @@ public final class PParsingFunctions
     return invalid(m.errorExpression(INVALID_FUNCTION, e));
   }
 
-  private static Validation<Seq<PParseError>, Vector<PTermName<PParsed>>> requireUniqueNames(
+  private static Validation<Seq<PParseError>, Vector<PTermVariableName<PParsed>>> requireUniqueNames(
     final PParseErrorMessagesType m,
-    final Vector<PTermName<PParsed>> names)
+    final Vector<PTermVariableName<PParsed>> names)
   {
     return PParsingNames.requireUniqueNames(
       names,

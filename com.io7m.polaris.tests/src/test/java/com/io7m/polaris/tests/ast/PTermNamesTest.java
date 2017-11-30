@@ -17,8 +17,8 @@
 package com.io7m.polaris.tests.ast;
 
 import com.io7m.jlexing.core.LexicalPosition;
-import com.io7m.polaris.ast.PTermName;
-import com.io7m.polaris.ast.PTermNames;
+import com.io7m.polaris.ast.PTermVariableName;
+import com.io7m.polaris.ast.PTermVariableNames;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -48,7 +48,7 @@ public final class PTermNamesTest
         "X_3")
         .stream()
         .map(name -> () -> Assertions.assertTrue(
-          PTermNames.isValid(name),
+          PTermVariableNames.isValid(name),
           name)));
   }
 
@@ -69,7 +69,7 @@ public final class PTermNamesTest
         ":")
         .stream()
         .map(name -> () -> Assertions.assertFalse(
-          PTermNames.isValid(name),
+          PTermVariableNames.isValid(name),
           name)));
   }
 
@@ -83,66 +83,66 @@ public final class PTermNamesTest
 
     Assertions.assertEquals(
       lex0,
-      PTermName.of(lex0, TRUE, "a").lexical());
+      PTermVariableName.of(lex0, TRUE, "a").lexical());
 
     Assertions.assertNotEquals(
-      PTermName.of(lex1, TRUE, "a").withLexical(lex0),
-      PTermName.of(lex0, TRUE, "a").lexical());
+      PTermVariableName.of(lex1, TRUE, "a").withLexical(lex0),
+      PTermVariableName.of(lex0, TRUE, "a").lexical());
 
     Assertions.assertNotEquals(
-      PTermName.of(lex0, TRUE, "a").lexical(),
-      PTermName.of(lex1, TRUE, "b").lexical());
+      PTermVariableName.of(lex0, TRUE, "a").lexical(),
+      PTermVariableName.of(lex1, TRUE, "b").lexical());
 
     Assertions.assertNotEquals(
-      PTermName.of(lex0, TRUE, "a").withLexical(lex1),
-      PTermName.of(lex0, TRUE, "a").lexical());
+      PTermVariableName.of(lex0, TRUE, "a").withLexical(lex1),
+      PTermVariableName.of(lex0, TRUE, "a").lexical());
   }
 
   @Test
   public void testEquals()
   {
     Assertions.assertEquals(
-      PTermName.of(LEXICAL, TRUE, "a"),
-      PTermName.of(LEXICAL, TRUE, "a"));
+      PTermVariableName.of(LEXICAL, TRUE, "a"),
+      PTermVariableName.of(LEXICAL, TRUE, "a"));
 
     Assertions.assertEquals(
-      PTermName.of(LEXICAL, TRUE, "a").value(),
-      PTermName.of(LEXICAL, TRUE, "a").value());
+      PTermVariableName.of(LEXICAL, TRUE, "a").value(),
+      PTermVariableName.of(LEXICAL, TRUE, "a").value());
 
     Assertions.assertEquals(
-      PTermName.copyOf(PTermName.of(LEXICAL, TRUE, "a")),
-      PTermName.copyOf(PTermName.of(LEXICAL, TRUE, "a")));
+      PTermVariableName.copyOf(PTermVariableName.of(LEXICAL, TRUE, "a")),
+      PTermVariableName.copyOf(PTermVariableName.of(LEXICAL, TRUE, "a")));
 
     Assertions.assertEquals(
-      PTermName.of(LEXICAL, TRUE, "a").withValue("c"),
-      PTermName.of(LEXICAL, TRUE, "c"));
+      PTermVariableName.of(LEXICAL, TRUE, "a").withValue("c"),
+      PTermVariableName.of(LEXICAL, TRUE, "c"));
 
     Assertions.assertNotEquals(
-      PTermName.of(LEXICAL, TRUE, "a"),
-      PTermName.of(LEXICAL, TRUE, "b"));
+      PTermVariableName.of(LEXICAL, TRUE, "a"),
+      PTermVariableName.of(LEXICAL, TRUE, "b"));
 
     Assertions.assertNotEquals(
-      PTermName.of(LEXICAL, TRUE, "a").value(),
-      PTermName.of(LEXICAL, TRUE, "b").value());
+      PTermVariableName.of(LEXICAL, TRUE, "a").value(),
+      PTermVariableName.of(LEXICAL, TRUE, "b").value());
   }
 
   @Test
   public void testToString()
   {
     Assertions.assertEquals(
-      PTermName.of(LEXICAL, TRUE, "a").toString(),
-      PTermName.of(LEXICAL, TRUE, "a").toString());
+      PTermVariableName.of(LEXICAL, TRUE, "a").toString(),
+      PTermVariableName.of(LEXICAL, TRUE, "a").toString());
 
     Assertions.assertNotEquals(
-      PTermName.of(LEXICAL, TRUE, "a").toString(),
-      PTermName.of(LEXICAL, TRUE, "b").toString());
+      PTermVariableName.of(LEXICAL, TRUE, "a").toString(),
+      PTermVariableName.of(LEXICAL, TRUE, "b").toString());
   }
 
   @Test
   public void testHashCode()
   {
     Assertions.assertEquals(
-      PTermName.of(LEXICAL, TRUE, "a").hashCode(),
-      PTermName.of(LEXICAL, TRUE, "a").hashCode());
+      PTermVariableName.of(LEXICAL, TRUE, "a").hashCode(),
+      PTermVariableName.of(LEXICAL, TRUE, "a").hashCode());
   }
 }

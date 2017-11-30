@@ -106,7 +106,7 @@ public interface PTermDeclarationType<T> extends PDeclarationType<T>
      */
 
     @Value.Parameter
-    PTermNameType<T> name();
+    PTermVariableNameType<T> name();
 
     /**
      * @return The expression
@@ -153,14 +153,14 @@ public interface PTermDeclarationType<T> extends PDeclarationType<T>
      */
 
     @Value.Parameter
-    PTermNameType<T> name();
+    PTermVariableNameType<T> name();
 
     /**
      * @return The function parameters
      */
 
     @Value.Parameter
-    Vector<PTermNameType<T>> parameters();
+    Vector<PTermVariableNameType<T>> parameters();
 
     /**
      * @return The expression
@@ -220,7 +220,7 @@ public interface PTermDeclarationType<T> extends PDeclarationType<T>
      */
 
     @Value.Parameter
-    PTermNameType<T> name();
+    PTermVariableNameType<T> name();
 
     /**
      * @return The type

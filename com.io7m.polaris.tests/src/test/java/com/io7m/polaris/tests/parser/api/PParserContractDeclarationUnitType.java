@@ -16,6 +16,7 @@
 
 package com.io7m.polaris.tests.parser.api;
 
+import com.io7m.jlexing.core.LexicalPosition;
 import com.io7m.polaris.ast.PDeclarationExportTerms;
 import com.io7m.polaris.ast.PDeclarationExportTypes;
 import com.io7m.polaris.ast.PDeclarationImport;
@@ -23,7 +24,8 @@ import com.io7m.polaris.ast.PDeclarationUnit;
 import com.io7m.polaris.ast.PExpressionOrDeclarationType;
 import com.io7m.polaris.ast.PPackageName;
 import com.io7m.polaris.ast.PTermConstructorName;
-import com.io7m.polaris.ast.PTermName;
+import com.io7m.polaris.ast.PTermVariableName;
+import com.io7m.polaris.ast.PTermReferenceVariable;
 import com.io7m.polaris.ast.PTypeConstructorName;
 import com.io7m.polaris.ast.PUnitName;
 import com.io7m.polaris.parser.api.PParseError;
@@ -31,10 +33,12 @@ import com.io7m.polaris.parser.api.PParseErrorCode;
 import com.io7m.polaris.parser.api.PParsed;
 import com.io7m.polaris.parser.api.PParserType;
 import io.vavr.collection.Seq;
+import io.vavr.collection.Vector;
 import io.vavr.control.Validation;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import java.net.URI;
 import java.util.Optional;
 
 import static com.io7m.polaris.parser.api.PParsed.parsed;
@@ -255,14 +259,42 @@ public interface PParserContractDeclarationUnitType
     Assertions.assertTrue(r.isValid());
 
     final PDeclarationExportTerms<PParsed> e = (PDeclarationExportTerms<PParsed>) r.get().get();
+    final LexicalPosition<URI> lex = e.lexical();
+
     Assertions.assertEquals(
-      PTermName.of(e.lexical(), parsed(), "a"),
+      PTermVariableName.of(lex, Optional.empty(), "a"),
       e.terms().get(0));
     Assertions.assertEquals(
-      PTermName.of(e.lexical(), parsed(), "b"),
+      PTermVariableName.of(lex, Optional.empty(), "b"),
       e.terms().get(1));
     Assertions.assertEquals(
-      PTermName.of(e.lexical(), parsed(), "c"),
+      PTermVariableName.of(lex, Optional.empty(), "c"),
+      e.terms().get(2));
+  }
+
+  @Test
+  default void testDeclarationUnitExportTerms1()
+    throws Exception
+  {
+    final PParserType p = this.parserForString("(export-terms A B C)");
+    final Validation<Seq<PParseError>, Optional<PExpressionOrDeclarationType<PParsed>>> r =
+      p.parseExpressionOrDeclaration();
+
+    dump(this.log(), r);
+
+    Assertions.assertTrue(r.isValid());
+
+    final PDeclarationExportTerms<PParsed> e = (PDeclarationExportTerms<PParsed>) r.get().get();
+    final LexicalPosition<URI> lex = e.lexical();
+
+    Assertions.assertEquals(
+      PTermConstructorName.of(lex, Optional.empty(), "A"),
+      e.terms().get(0));
+    Assertions.assertEquals(
+      PTermConstructorName.of(lex, Optional.empty(), "B"),
+      e.terms().get(1));
+    Assertions.assertEquals(
+      PTermConstructorName.of(lex, Optional.empty(), "C"),
       e.terms().get(2));
   }
 
@@ -292,6 +324,20 @@ public interface PParserContractDeclarationUnitType
 
     Assertions.assertTrue(r.isInvalid());
     Assertions.assertTrue(r.getError().exists(e -> e.code() == PParseErrorCode.INVALID_UNIT_EXPORT_TERMS));
+  }
+
+  @Test
+  default void testDeclarationUnitExportTermsInvalid2()
+    throws Exception
+  {
+    final PParserType p = this.parserForString("(export-terms A A)");
+    final Validation<Seq<PParseError>, Optional<PExpressionOrDeclarationType<PParsed>>> r =
+      p.parseExpressionOrDeclaration();
+
+    dump(this.log(), r);
+
+    Assertions.assertTrue(r.isInvalid());
+    Assertions.assertTrue(r.getError().exists(e -> e.code() == PParseErrorCode.INVALID_UNIT_EXPORT_TERMS_DUPLICATE_NAME));
   }
 
   @Test

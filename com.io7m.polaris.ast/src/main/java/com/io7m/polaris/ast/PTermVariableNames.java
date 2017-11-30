@@ -25,7 +25,7 @@ import java.util.regex.Pattern;
  * The type of term names.
  */
 
-public final class PTermNames
+public final class PTermVariableNames
 {
   /**
    * A pattern describing valid names.
@@ -36,7 +36,7 @@ public final class PTermNames
       "[^0123456789\\.;\\[/<>:][^\\.;\\[/<>:]{0,127}",
       Pattern.UNICODE_CHARACTER_CLASS);
 
-  private PTermNames()
+  private PTermVariableNames()
   {
     throw new UnreachableCodeException();
   }
