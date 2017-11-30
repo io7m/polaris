@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<s:part
+  xmlns:s="http://schemas.io7m.com/structural/3.0.0"
+  xmlns:xi="http://www.w3.org/2001/XInclude"
+  s:title="Complete Syntax">
+
+  <s:section s:title="Complete Syntax">
+    <s:formal-item s:title="Complete Language Syntax">
+      <s:verbatim><xi:include parse="text" href="syntax.ebnf"/></s:verbatim>
+    </s:formal-item>
+  </s:section>
+
+</s:part>

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<s:part
+  xmlns:s="http://schemas.io7m.com/structural/3.0.0"
+  s:title="Notational Conventions">
+
+  <s:section s:title="Unicode">
+    <s:paragraph>
+      The specification makes reference to the Unicode character set which, at
+      the time of writing, is at version <s:term s:type="constant">
+      10.0.0</s:term>. The specification often references specific Unicode
+      characters, and does so using the standard
+      notation <s:term s:type="constant">U+NNNN</s:term>, where
+      <s:term s:type="variable">N</s:term>
+      represents a hexadecimal digit. For example,
+      <s:term s:type="constant">U+03BB</s:term>
+      corresponds to the lowercase lambda symbol <s:term s:type="constant">
+      λ</s:term>.
+    </s:paragraph>
+  </s:section>
+
+  <s:section s:title="EBNF">
+    <s:paragraph>
+      The specification gives grammar definitions in
+      <s:term s:type="constant">ISO/IEC 14977:1996</s:term>
+      Extended Backus-Naur form.
+    </s:paragraph>
+  </s:section>
+
+</s:part>

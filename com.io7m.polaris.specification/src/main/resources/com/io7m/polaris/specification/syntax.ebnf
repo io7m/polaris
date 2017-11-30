@@ -1,0 +1,278 @@
+(*
+  Copyright © 2017 <code@io7m.com> http://io7m.com
+
+  Permission to use, copy, modify, and/or distribute this software for any
+  purpose with or without fee is hereby granted, provided that the above
+  copyright notice and this permission notice appear in all copies.
+
+  THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+  WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+  MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY
+  SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+  WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+  ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR
+  IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+*)
+
+digit_octal_nonzero =
+  "1" | "2" | "3" | "4" | "5" | "6" | "7" ;
+
+digit_octal =
+  "0" | digit_octal_nonzero ;
+
+digit_octal_or_underscore =
+  digit_octal | "_" ;
+
+constant_integer_octal =
+  "0o0" | "0o" , digit_octal_nonzero , { digit_octal_or_underscore } ;
+
+digit_decimal_nonzero =
+  digit_octal_nonzero | "8" | "9" ;
+
+digit_decimal =
+  digit_octal | "8" | "9" | "_" ;
+
+digit_decimal_or_underscore =
+  digit_decimal | "_" ;
+
+constant_integer_decimal =
+  "0" | digit_decimal_nonzero , { digit_decimal_or_underscore } ;
+
+digit_hex_nonzero =
+  digit_decimal_nonzero | "A" | "a" | "B" | "b" | "C" | "c" | "D" | "d" | "E" | "e" | "F" | "f" ;
+
+digit_hex =
+  "0" | digit_hex_nonzero  ;
+
+digit_hex_or_underscore =
+  digit_hex | "_" ;
+
+constant_integer_hex =
+  "0x0" | "0x" , digit_hex_nonzero , { digit_hex_or_underscore } ;
+
+digit_binary =
+  "0" | "1" ;
+
+digit_binary_or_underscore =
+  digit_binary | "_" ;
+
+constant_integer_binary =
+  "0b0" | "0b" ,  { digit_binary_or_underscore } ;
+
+constant_integer =
+    constant_integer_decimal
+  | constant_integer_hex
+  | constant_integer_octal
+  | constant_integer_binary
+  ;
+
+constant_real =
+  ? ... ? ;
+
+escape =
+    escape_carriage
+  | escape_newline
+  | escape_tab
+  | escape_quote
+  | escape_unicode4
+  | escape_unicode8
+  ;
+
+escape_carriage =
+  "\r" ;
+
+escape_newline =
+  "\n" ;
+
+escape_quote =
+  "\" , U+0022 ;
+
+escape_tab =
+  "\t" ;
+
+escape_unicode4 =
+  "\u" ,
+  digit_hex , digit_hex , digit_hex , digit_hex ;
+
+escape_unicode8 =
+  "\u" ,
+  digit_hex , digit_hex , digit_hex , digit_hex ,
+  digit_hex , digit_hex , digit_hex , digit_hex ;
+
+constant_string_character =
+  ? not U+0022 ? ;
+
+constant_string =
+  (constant_string_character | escape) , { (constant_string_character | escape) } ;
+
+term_name =
+  ? [\p{Ll}\p{Lu}] [\p{Ll}\p{Lu}\p{Digit}_\-]* ? ;
+
+term_constructor_name =
+  ? \p{Lu} [\p{Ll}\p{Lu}\p{Digit}_]* ? ;
+
+package_name_component =
+  ? \p{Ll} [\p{Ll}\p{Digit}_]* ? ;
+
+package_name =
+  package_name_component , { "." , package_name_component } ;
+
+unit_name =
+  ? \p{Lu} [\p{Ll}\p{Lu}\p{Digit}_]* ? ;
+
+unit_qualified =
+  package_name , "." , unit_name ;
+
+type_variable_name =
+  ? \p{Ll} [\p{Ll}\p{Digit}_]* ? ;
+
+type_constructor_name =
+  ? \p{Lu} [\p{Ll}\p{Lu}\p{Digit}_]* ? ;
+
+unit_definition_name =
+  "(" , "unit" , unit_qualified , ")" ;
+
+unit_definition_import =
+    "(" , "import" , unit_qualified , ")"
+  | "(" , "import-qualified" , unit_qualified , unit_name , ")"
+  ;
+
+unit_definition_export_terms =
+  "(" , "export-terms" , term_name , { term_name } , ")" ;
+
+unit_definition_export_types =
+  "(" , "export-types" , type_constructor_name , { type_constructor_name } , ")" ;
+
+unit_definition =
+    unit_definition_name
+  | unit_definition_import
+  | unit_definition_export_terms
+  | unit_definition_export_types
+  ;
+
+type_expr_reference =
+  [ unit_name , ":" ] , type_constructor_name ;
+
+type_expr_arrow_variadic =
+  "(" , "variadic" , type_expr , ")" ;
+
+type_expr_arrow =
+  "(" , "->" , { type_expr } , [ type_expr_arrow_variadic ] , type_expr , ")" ;
+
+type_expr_forall =
+  "(" , "for-all" , type_variable_name , { type_variable_name } , type_expr , ")" ;
+
+type_expr =
+    type_expr_arrow
+  | type_expr_forall
+  | type_expr_reference
+  ;
+
+term_definition_function =
+  "(" , "define-function" , term_name , "(", { term_name } , ")" , expression , ")" ;
+
+term_definition_value =
+  "(" , "define-value" , term_name , expression , ")" ;
+
+term_definition_signature =
+  "(" , ":" , term_name , type_expr , ")" ;
+
+term_definition =
+    term_definition_function
+  | term_definition_signature
+  | term_definition_value
+  ;
+
+type_definition_forall =
+  "(" , "for-all" , type_variable_name , { type_variable_name } , ")" ;
+
+type_definition_record_field =
+  "(" , "field" , type_variable_name , type_expr , ")" ;
+
+type_definition_record =
+  "(" , "define-record" , type_constructor_name , [ type_definition_forall ] , { type_definition_record_field } , ")" ;
+
+type_definition_variant_case =
+  "(" , "case" , term_constructor_name , [ type_expr ] , ")" ;
+
+type_definition_variant =
+  "(" , "define-variant" , type_constructor_name , [ type_definition_forall ] , { type_definition_variant_case } , ")" ;
+
+type_definition =
+    type_definition_record
+  | type_definition_variant
+  ;
+
+term_reference_variable =
+  [ unit_name , ":" ] , term_name , { "." , term_name } ;
+
+term_reference_constructor =
+  [ unit_name , ":" ] , term_constructor_name ;
+
+term_reference =
+    term_reference_variable
+  | term_reference_constructor
+  ;
+
+expr_reference =
+  term_reference ;
+
+expr_application =
+  "(" , expression , { expression } , ")" ;
+
+expr_lambda =
+  "(" , "lambda" , "(" , { term_name } , ")" , expression , ")" ;
+
+expr_match_pattern_constructor =
+    term_constructor_name
+  | "(" , term_constructor_name , term_name , ")"
+  ;
+
+expr_match_pattern_wildcard =
+  "_" ;
+
+expr_match_pattern =
+    expr_match_pattern_constructor
+  | constant_integer
+  | constant_real
+  | constant_string
+  | expr_match_pattern_wildcard
+  ;
+
+expr_match_case =
+  "(" , "case" , expr_match_pattern , expression , ")" ;
+
+expr_match =
+  "(" , "match" , expression , { expr_match_case } , ")" ;
+
+expr_local =
+  "(" , "local" , { term_definition | expression } , expression , ")" ;
+
+expr_record_field =
+  "(" , "field" , type_variable_name , expression , ")" ;
+
+expr_record =
+  "(" , "record" , type_constructor_name , { expr_record_field } , ")" ;
+
+expr_record_update =
+  "(" , "record-update" , expression , { expr_record_field } , ")" ;
+
+expression =
+    constant_integer
+  | constant_real
+  | constant_string
+  | expr_application
+  | expr_lambda
+  | expr_local
+  | expr_match
+  | expr_reference
+  | expr_record
+  | expr_record_update
+  ;
+
+top_level =
+    unit_definition
+  | type_definition
+  | term_definition
+  | expression
+  ;

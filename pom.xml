@@ -29,6 +29,7 @@
     <module>com.io7m.polaris.core</module>
     <module>com.io7m.polaris.parser.api</module>
     <module>com.io7m.polaris.parser</module>
+    <module>com.io7m.polaris.specification</module>
   </modules>
 
   <properties>

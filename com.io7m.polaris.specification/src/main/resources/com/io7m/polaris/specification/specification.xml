@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<s:document
+  xmlns:s="http://schemas.io7m.com/structural/3.0.0"
+  xmlns:xi="http://www.w3.org/2001/XInclude"
+  s:title="Polaris ${project.version} Specification">
+  <xi:include href="conventions.xml" parse="xml"/>
+  <xi:include href="syntax_complete.xml" parse="xml"/>
+</s:document>
