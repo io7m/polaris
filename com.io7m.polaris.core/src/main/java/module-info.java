@@ -14,6 +14,10 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
+/**
+ * Core types, functions, and annotations.
+ */
+
 module com.io7m.polaris.core
 {
   requires static org.immutables.value;

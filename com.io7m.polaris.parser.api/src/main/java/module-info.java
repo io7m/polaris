@@ -14,6 +14,10 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
+/**
+ * The parser API.
+ */
+
 module com.io7m.polaris.parser.api
 {
   requires static org.immutables.value;

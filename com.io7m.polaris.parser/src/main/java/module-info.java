@@ -14,6 +14,10 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
+/**
+ * The primary parser implementation.
+ */
+
 module com.io7m.polaris.parser
 {
   requires com.io7m.jaffirm.core;
