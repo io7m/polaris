@@ -28,7 +28,7 @@ public interface PDeclarationType<T> extends PExpressionOrDeclarationType<T>
    * @return The kind of declaration
    */
 
-  TermTypeDeclarationKind termTypeDeclarationKind();
+  AnyDeclarationKind anyDeclarationKind();
 
   @Override
   default PExpressionOrDeclarationKind expressionOrDeclarationKind()
@@ -40,7 +40,7 @@ public interface PDeclarationType<T> extends PExpressionOrDeclarationType<T>
    * The kind of declaration
    */
 
-  enum TermTypeDeclarationKind
+  enum AnyDeclarationKind
   {
     /**
      * @see PTermDeclarationType
@@ -52,6 +52,12 @@ public interface PDeclarationType<T> extends PExpressionOrDeclarationType<T>
      * @see PTypeDeclarationType
      */
 
-    TYPE_DECLARATION
+    TYPE_DECLARATION,
+
+    /**
+     * @see PUnitDeclarationType
+     */
+
+    UNIT_DECLARATION
   }
 }

@@ -30,7 +30,9 @@ import com.io7m.polaris.parser.implementation.PParsingPatterns;
 import com.io7m.polaris.parser.implementation.PParsingReals;
 import com.io7m.polaris.parser.implementation.PParsingRecords;
 import com.io7m.polaris.parser.implementation.PParsingTypeExpressions;
+import com.io7m.polaris.parser.implementation.PParsingUnits;
 import com.io7m.polaris.parser.implementation.PParsingValues;
+import com.io7m.polaris.parser.implementation.PParsingVariants;
 import com.io7m.polaris.parser.implementation.PValidation;
 import com.io7m.polaris.parser.implementation.PVectors;
 import org.junit.jupiter.api.Assertions;
@@ -70,6 +72,8 @@ public final class UnreachableTest
         PParsingPatterns.class,
         PParsingIntegers.class,
         PParsingReals.class,
+        PParsingVariants.class,
+        PParsingUnits.class,
         PParsing.class,
         PVectors.class,
         PValidation.class,

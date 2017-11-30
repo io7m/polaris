@@ -182,6 +182,48 @@ public enum PParseErrorCode
   INVALID_VARIANT_TYPE_PARAMETERS,
 
   /**
+   * The given unit declaration is invalid.
+   */
+
+  INVALID_UNIT,
+
+  /**
+   * The given unit import declaration is invalid.
+   */
+
+  INVALID_UNIT_IMPORT,
+
+  /**
+   * The given unit import qualified declaration is invalid.
+   */
+
+  INVALID_UNIT_IMPORT_QUALIFIED,
+
+  /**
+   * The given unit export terms declaration is invalid.
+   */
+
+  INVALID_UNIT_EXPORT_TERMS,
+
+  /**
+   * The given unit export types declaration is invalid.
+   */
+
+  INVALID_UNIT_EXPORT_TYPES,
+
+  /**
+   * The given unit export terms declaration is invalid due to having duplicate names.
+   */
+
+  INVALID_UNIT_EXPORT_TERMS_DUPLICATE_NAME,
+
+  /**
+   * The given unit export types declaration is invalid due to having duplicate names.
+   */
+
+  INVALID_UNIT_EXPORT_TYPES_DUPLICATE_NAME,
+
+  /**
    * The given function application is invalid.
    */
 
@@ -253,6 +295,12 @@ public enum PParseErrorCode
    */
 
   INVALID_TYPE_SIGNATURE,
+
+  /**
+   * The given package name is invalid.
+   */
+
+  INVALID_PACKAGE_NAME,
 
   /**
    * Expected a term name but got some other kind of expression.

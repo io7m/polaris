@@ -20,6 +20,8 @@ import com.io7m.jlexing.core.LexicalPosition;
 import com.io7m.jsx.SExpressionSymbolType;
 import com.io7m.jsx.SExpressionType;
 import com.io7m.junreachable.UnreachableCodeException;
+import com.io7m.polaris.ast.PPackageName;
+import com.io7m.polaris.ast.PPackageNames;
 import com.io7m.polaris.ast.PTermConstructorName;
 import com.io7m.polaris.ast.PTermConstructorNames;
 import com.io7m.polaris.ast.PTermName;
@@ -33,6 +35,8 @@ import com.io7m.polaris.ast.PUnitNames;
 import com.io7m.polaris.parser.api.PParseError;
 import com.io7m.polaris.parser.api.PParseErrorMessagesType;
 import com.io7m.polaris.parser.api.PParsed;
+import io.vavr.Tuple;
+import io.vavr.Tuple2;
 import io.vavr.collection.HashMap;
 import io.vavr.collection.Seq;
 import io.vavr.collection.Vector;
@@ -41,7 +45,9 @@ import io.vavr.control.Validation;
 import java.net.URI;
 import java.util.Objects;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
+import static com.io7m.polaris.parser.api.PParseErrorCode.INVALID_PACKAGE_NAME;
 import static com.io7m.polaris.parser.api.PParseErrorCode.INVALID_TERM_CONSTRUCTOR_NAME;
 import static com.io7m.polaris.parser.api.PParseErrorCode.INVALID_TERM_NAME;
 import static com.io7m.polaris.parser.api.PParseErrorCode.INVALID_TYPE_CONSTRUCTOR_NAME;
@@ -101,6 +107,10 @@ public final class PParsingNames
     final LexicalPosition<URI> lexical,
     final String text)
   {
+    Objects.requireNonNull(m, "Messages");
+    Objects.requireNonNull(lexical, "Lexical");
+    Objects.requireNonNull(text, "Text");
+
     if (PTermNames.isValid(text)) {
       return Validation.valid(PTermName.of(lexical, parsed(), text));
     }
@@ -147,6 +157,10 @@ public final class PParsingNames
     final LexicalPosition<URI> lexical,
     final String text)
   {
+    Objects.requireNonNull(m, "Messages");
+    Objects.requireNonNull(lexical, "Lexical");
+    Objects.requireNonNull(text, "Text");
+
     if (PTermConstructorNames.isValid(text)) {
       return Validation.valid(PTermConstructorName.of(lexical, parsed(), text));
     }
@@ -354,5 +368,53 @@ public final class PParsingNames
       return Validation.valid(PTypeVariableName.of(lexical, parsed(), text));
     }
     return invalid(m.errorLexical(INVALID_TYPE_VARIABLE_NAME, lexical, text));
+  }
+
+  /**
+   * Parse the given string as an unqualified variable name.
+   *
+   * @param m       An error message provider
+   * @param lexical Lexical information
+   * @param text    The input text
+   *
+   * @return An unqualified variable name, or a list of parse errors
+   */
+
+  public static Validation<Seq<PParseError>, Tuple2<PPackageName<PParsed>, PUnitName<PParsed>>>
+  parseUnitNameFullyQualifiedNameRaw(
+    final PParseErrorMessagesType m,
+    final LexicalPosition<URI> lexical,
+    final String text)
+  {
+    Objects.requireNonNull(m, "Messages");
+    Objects.requireNonNull(lexical, "Lexical");
+    Objects.requireNonNull(text, "Text");
+
+    final Vector<String> components =
+      Vector.of(text.split("\\."));
+    final String p_name =
+      components.init().collect(Collectors.joining("."));
+    final String u_name =
+      components.last();
+    final Validation<Seq<PParseError>, PPackageName<PParsed>> r_pack =
+      parsePackageNameRaw(m, lexical, p_name);
+    final Validation<Seq<PParseError>, PUnitName<PParsed>> r_unit =
+      parseUnitNameRaw(
+        m, lexical.withColumn(lexical.column() + p_name.length()), u_name);
+
+    return PValidation.errorsFlatten(
+      Validation.combine(r_pack, r_unit).ap(Tuple::of));
+  }
+
+  private static Validation<Seq<PParseError>, PPackageName<PParsed>>
+  parsePackageNameRaw(
+    final PParseErrorMessagesType m,
+    final LexicalPosition<URI> lexical,
+    final String text)
+  {
+    if (PPackageNames.isValid(text)) {
+      return Validation.valid(PPackageName.of(lexical, parsed(), text));
+    }
+    return invalid(m.errorLexical(INVALID_PACKAGE_NAME, lexical, text));
   }
 }

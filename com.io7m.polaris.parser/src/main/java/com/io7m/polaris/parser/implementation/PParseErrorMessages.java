@@ -22,6 +22,8 @@ import com.io7m.jsx.SExpressionType;
 import com.io7m.jsx.prettyprint.JSXPrettyPrinterCodeStyle;
 import com.io7m.jsx.prettyprint.JSXPrettyPrinterType;
 import com.io7m.junreachable.UnreachableCodeException;
+import com.io7m.polaris.ast.PPackageName;
+import com.io7m.polaris.ast.PPackageNames;
 import com.io7m.polaris.ast.PTermConstructorNames;
 import com.io7m.polaris.ast.PTermNames;
 import com.io7m.polaris.ast.PTypeConstructorNames;
@@ -241,6 +243,8 @@ public final class PParseErrorMessages implements PParseErrorMessagesType
         return base + " " + PTypeConstructorNames.PATTERN.pattern();
       case INVALID_TYPE_VARIABLE_NAME:
         return base + " " + PTypeVariableNames.PATTERN.pattern();
+      case INVALID_PACKAGE_NAME:
+        return base + " " + PPackageNames.PATTERN.pattern();
       case INVALID_RECORD:
         return base;
       case INVALID_RECORD_DUPLICATE_FIELD:
@@ -256,6 +260,20 @@ public final class PParseErrorMessages implements PParseErrorMessagesType
       case INVALID_VARIANT_CASE:
         return base;
       case INVALID_VARIANT_TYPE_PARAMETERS:
+        return base;
+      case INVALID_UNIT:
+        return base;
+      case INVALID_UNIT_IMPORT:
+        return base;
+      case INVALID_UNIT_IMPORT_QUALIFIED:
+        return base;
+      case INVALID_UNIT_EXPORT_TERMS:
+        return base;
+      case INVALID_UNIT_EXPORT_TYPES:
+        return base;
+      case INVALID_UNIT_EXPORT_TERMS_DUPLICATE_NAME:
+        return base;
+      case INVALID_UNIT_EXPORT_TYPES_DUPLICATE_NAME:
         return base;
       case INVALID_APPLICATION:
         return base;

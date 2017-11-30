@@ -266,6 +266,26 @@ public final class PParsing
           return cast(PParsingVariants.parseVariant(m, e));
         }
 
+        case "define-unit": {
+          return cast(PParsingUnits.parseUnit(m, e));
+        }
+
+        case "import": {
+          return cast(PParsingUnits.parseImport(m, e));
+        }
+
+        case "import-qualified": {
+          return cast(PParsingUnits.parseImportQualified(m, e));
+        }
+
+        case "export-terms": {
+          return cast(PParsingUnits.parseExportTerms(m, e));
+        }
+
+        case "export-types": {
+          return cast(PParsingUnits.parseExportTypes(m, e));
+        }
+
         case ":": {
           return cast(PParsingSignatures.parseSignature(m, e));
         }

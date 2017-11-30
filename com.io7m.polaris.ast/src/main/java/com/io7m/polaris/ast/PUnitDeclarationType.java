@@ -19,67 +19,77 @@ package com.io7m.polaris.ast;
 import com.io7m.jaffirm.core.Preconditions;
 import com.io7m.jlexing.core.LexicalPosition;
 import com.io7m.polaris.core.PImmutableStyleType;
-import io.vavr.collection.Map;
 import io.vavr.collection.Vector;
 import org.immutables.value.Value;
 
 import java.net.URI;
 import java.util.Optional;
-import java.util.function.Function;
 
 /**
- * The type of type-level declarations.
+ * The type of unit-level declarations.
  *
  * @param <T> The type of associated data
  */
 
-public interface PTypeDeclarationType<T> extends PDeclarationType<T>
+public interface PUnitDeclarationType<T> extends PDeclarationType<T>
 {
   @Override
   default AnyDeclarationKind anyDeclarationKind()
   {
-    return AnyDeclarationKind.TYPE_DECLARATION;
+    return AnyDeclarationKind.UNIT_DECLARATION;
   }
 
   /**
    * @return The kind of declaration
    */
 
-  TypeDeclarationKind typeDeclarationKind();
+  UnitDeclarationKind unitDeclarationKind();
 
   /**
    * The kind of declaration
    */
 
-  enum TypeDeclarationKind
+  enum UnitDeclarationKind
   {
     /**
-     * @see PDeclarationRecordType
+     * @see PDeclarationUnitType
      */
 
-    RECORD_DECLARATION,
+    UNIT_DECLARATION,
 
     /**
-     * @see PDeclarationVariantType
+     * @see PDeclarationImportType
      */
 
-    VARIANT_DECLARATION
+    IMPORT_DECLARATION,
+
+    /**
+     * @see PDeclarationExportTermsType
+     */
+
+    EXPORT_TERMS_DECLARATION,
+
+    /**
+     * @see PDeclarationExportTypesType
+     */
+
+    EXPORT_TYPES_DECLARATION,
   }
 
   /**
-   * A record declaration.
+   * A unit declaration.
    *
    * @param <T> The type of associated data
    */
 
   @PImmutableStyleType
   @Value.Immutable
-  interface PDeclarationRecordType<T> extends PTypeDeclarationType<T>
+  interface PDeclarationUnitType<T> extends PUnitDeclarationType<T>
   {
     @Override
-    default TypeDeclarationKind typeDeclarationKind()
+    default UnitDeclarationKind unitDeclarationKind()
     {
-      return TypeDeclarationKind.RECORD_DECLARATION;
+      return UnitDeclarationKind.UNIT_DECLARATION;
     }
 
     @Override
@@ -93,35 +103,100 @@ public interface PTypeDeclarationType<T> extends PDeclarationType<T>
     T data();
 
     /**
-     * @return The name of the record
+     * @return The package within which the unit is defined
      */
 
     @Value.Parameter
-    PTypeConstructorNameType<T> name();
+    PPackageNameType<T> packageName();
 
     /**
-     * @return The type parameters
+     * @return The name of the unit
      */
 
     @Value.Parameter
-    Vector<PTypeVariableNameType<T>> parameters();
+    PUnitNameType<T> unit();
+  }
 
-    /**
-     * @return The fields in declaration order
-     */
+  /**
+   * An import declaration.
+   *
+   * @param <T> The type of associated data
+   */
 
-    @Value.Parameter
-    Vector<PRecordFieldType<T>> fields();
-
-    /**
-     * @return The cases by name
-     */
-
-    @Value.Derived
-    default Map<String, PRecordFieldType<T>> fieldsByName()
+  @PImmutableStyleType
+  @Value.Immutable
+  interface PDeclarationImportType<T> extends PUnitDeclarationType<T>
+  {
+    @Override
+    default UnitDeclarationKind unitDeclarationKind()
     {
-      return this.fields().toMap(c -> c.name().value(), Function.identity());
+      return UnitDeclarationKind.IMPORT_DECLARATION;
     }
+
+    @Override
+    @Value.Parameter
+    @Value.Auxiliary
+    LexicalPosition<URI> lexical();
+
+    @Override
+    @Value.Parameter
+    @Value.Auxiliary
+    T data();
+
+    /**
+     * @return The package within which the unit is defined
+     */
+
+    @Value.Parameter
+    PPackageNameType<T> packageName();
+
+    /**
+     * @return The name of the unit
+     */
+
+    @Value.Parameter
+    PUnitNameType<T> unit();
+
+    /**
+     * @return The qualifying unit name
+     */
+
+    @Value.Parameter
+    Optional<PUnitNameType<T>> unitQualifier();
+  }
+
+  /**
+   * An export-terms declaration.
+   *
+   * @param <T> The type of associated data
+   */
+
+  @PImmutableStyleType
+  @Value.Immutable
+  interface PDeclarationExportTermsType<T> extends PUnitDeclarationType<T>
+  {
+    @Override
+    default UnitDeclarationKind unitDeclarationKind()
+    {
+      return UnitDeclarationKind.EXPORT_TERMS_DECLARATION;
+    }
+
+    @Override
+    @Value.Parameter
+    @Value.Auxiliary
+    LexicalPosition<URI> lexical();
+
+    @Override
+    @Value.Parameter
+    @Value.Auxiliary
+    T data();
+
+    /**
+     * @return The term names to be exported
+     */
+
+    @Value.Parameter
+    Vector<PTermNameType<T>> terms();
 
     /**
      * Check preconditions for the type.
@@ -131,61 +206,26 @@ public interface PTypeDeclarationType<T> extends PDeclarationType<T>
     default void checkPreconditions()
     {
       Preconditions.checkPrecondition(
-        this.fields(),
-        this.fieldsByName().size() == this.fields().size(),
-        d -> "Field names must be unique");
+        this.terms(),
+        this.terms().size() == this.terms().toSet().size(),
+        t -> "Exported term names must be unique");
     }
   }
 
   /**
-   * A record field.
+   * An export-types declaration.
    *
    * @param <T> The type of associated data
    */
 
   @PImmutableStyleType
   @Value.Immutable
-  interface PRecordFieldType<T> extends PASTElementType<T>
+  interface PDeclarationExportTypesType<T> extends PUnitDeclarationType<T>
   {
     @Override
-    @Value.Parameter
-    @Value.Auxiliary
-    LexicalPosition<URI> lexical();
-
-    @Override
-    @Value.Parameter
-    @Value.Auxiliary
-    T data();
-
-    /**
-     * @return The field name
-     */
-
-    @Value.Parameter
-    PTermNameType<T> name();
-
-    /**
-     * @return The field type
-     */
-
-    @Value.Parameter
-    PTypeExpressionType<T> type();
-  }
-
-  /**
-   * A variant declaration.
-   *
-   * @param <T> The type of associated data
-   */
-
-  @PImmutableStyleType
-  @Value.Immutable
-  interface PDeclarationVariantType<T> extends PTypeDeclarationType<T>
-  {
-    @Override
-    default TypeDeclarationKind typeDeclarationKind()
+    default UnitDeclarationKind unitDeclarationKind()
     {
-      return TypeDeclarationKind.VARIANT_DECLARATION;
+      return UnitDeclarationKind.EXPORT_TYPES_DECLARATION;
     }
 
     @Override
@@ -199,35 +239,11 @@ public interface PTypeDeclarationType<T> extends PDeclarationType<T>
     T data();
 
     /**
-     * @return The name of the variant
+     * @return The type names to be exported
      */
 
     @Value.Parameter
-    PTypeConstructorNameType<T> name();
-
-    /**
-     * @return The type parameters
-     */
-
-    @Value.Parameter
-    Vector<PTypeVariableNameType<T>> parameters();
-
-    /**
-     * @return The cases in declaration order
-     */
-
-    @Value.Parameter
-    Vector<PVariantCaseType<T>> cases();
-
-    /**
-     * @return The cases by name
-     */
-
-    @Value.Derived
-    default Map<String, PVariantCaseType<T>> casesByName()
-    {
-      return this.cases().toMap(c -> c.name().value(), Function.identity());
-    }
+    Vector<PTypeConstructorNameType<T>> types();
 
     /**
      * Check preconditions for the type.
@@ -237,44 +253,9 @@ public interface PTypeDeclarationType<T> extends PDeclarationType<T>
     default void checkPreconditions()
     {
       Preconditions.checkPrecondition(
-        this.cases(),
-        this.casesByName().size() == this.cases().size(),
-        d -> "Variant case names must be unique");
+        this.types(),
+        this.types().size() == this.types().toSet().size(),
+        t -> "Exported type names must be unique");
     }
-  }
-
-  /**
-   * A variant case.
-   *
-   * @param <T> The type of associated data
-   */
-
-  @PImmutableStyleType
-  @Value.Immutable
-  interface PVariantCaseType<T> extends PASTElementType<T>
-  {
-    @Override
-    @Value.Parameter
-    @Value.Auxiliary
-    LexicalPosition<URI> lexical();
-
-    @Override
-    @Value.Parameter
-    @Value.Auxiliary
-    T data();
-
-    /**
-     * @return The case name
-     */
-
-    @Value.Parameter
-    PTermConstructorNameType<T> name();
-
-    /**
-     * @return The case parameter, if any
-     */
-
-    @Value.Parameter
-    Optional<PTypeExpressionType<T>> parameter();
   }
 }

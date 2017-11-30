@@ -33,9 +33,9 @@ import java.net.URI;
 public interface PTermDeclarationType<T> extends PDeclarationType<T>
 {
   @Override
-  default TermTypeDeclarationKind termTypeDeclarationKind()
+  default AnyDeclarationKind anyDeclarationKind()
   {
-    return TermTypeDeclarationKind.TERM_DECLARATION;
+    return AnyDeclarationKind.TERM_DECLARATION;
   }
 
   /**
@@ -80,9 +80,9 @@ public interface PTermDeclarationType<T> extends PDeclarationType<T>
   interface PDeclarationValueType<T> extends PTermDeclarationType<T>
   {
     @Override
-    default TermTypeDeclarationKind termTypeDeclarationKind()
+    default AnyDeclarationKind anyDeclarationKind()
     {
-      return TermTypeDeclarationKind.TERM_DECLARATION;
+      return AnyDeclarationKind.TERM_DECLARATION;
     }
 
     @Override
@@ -127,9 +127,9 @@ public interface PTermDeclarationType<T> extends PDeclarationType<T>
   interface PDeclarationFunctionType<T> extends PTermDeclarationType<T>
   {
     @Override
-    default TermTypeDeclarationKind termTypeDeclarationKind()
+    default AnyDeclarationKind anyDeclarationKind()
     {
-      return TermTypeDeclarationKind.TERM_DECLARATION;
+      return AnyDeclarationKind.TERM_DECLARATION;
     }
 
     @Override
@@ -194,9 +194,9 @@ public interface PTermDeclarationType<T> extends PDeclarationType<T>
   interface PDeclarationSignatureType<T> extends PTermDeclarationType<T>
   {
     @Override
-    default TermTypeDeclarationKind termTypeDeclarationKind()
+    default AnyDeclarationKind anyDeclarationKind()
     {
-      return TermTypeDeclarationKind.TERM_DECLARATION;
+      return AnyDeclarationKind.TERM_DECLARATION;
     }
 
     @Override
