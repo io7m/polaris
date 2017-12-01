@@ -22,14 +22,14 @@
   <url>http://github.com/io7m/polaris</url>
 
   <modules>
-    <module>com.io7m.polaris.tests</module>
-    <module>com.io7m.polaris.checkstyle</module>
-    <module>com.io7m.polaris.documentation</module>
     <module>com.io7m.polaris.ast</module>
+    <module>com.io7m.polaris.checkstyle</module>
     <module>com.io7m.polaris.core</module>
+    <module>com.io7m.polaris.documentation</module>
     <module>com.io7m.polaris.parser.api</module>
     <module>com.io7m.polaris.parser</module>
     <module>com.io7m.polaris.specification</module>
+    <module>com.io7m.polaris.tests</module>
   </modules>
 
   <properties>
